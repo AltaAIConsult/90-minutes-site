@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>90 Minutes or More | Football Media Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .font-anton {
+            font-family: 'Anton', sans-serif;
+        }
+        .hero-overlay-crisp-black {
+            background-color: #0A0A0A;
+        }
+        .hero-outline-wrapper {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            padding-top: calc(4rem + 1rem);
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            padding-bottom: 1rem;
+            display: flex;
+            z-index: 5;
+        }
+        .hero-content-bordered {
+            border: 2px solid white;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 2rem 1rem 1rem 1rem;
+        }
+        .hero-main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .hero-form-container {
+            margin-top: auto;
+        }
+
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
+        .nav-link:hover::after { width: 100%; }
+        .service-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(239, 68, 68, 0.15); }
+        .about-image:hover { transform: scale(1.05); }
+
+        .custom-list li { padding-left: 1.5em; position: relative; margin-bottom: 0.5em; }
+        .custom-list li::before { content: "⚽"; position: absolute; left: 0; top: 1px; color: #ef4444; }
+
+        .podcast-iframe-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; margin-bottom: 0.75rem;}
+        .podcast-iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        .about-us-standout-statement {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
+            line-height: 1.25;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2.5rem;
+        }
+        @media (min-width: 768px) {
+            .about-us-standout-statement {
+                font-size: 3.25rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-main-content-text-area {
+                 padding-bottom: 1rem;
+                 padding-left: 0.5rem;
+                 padding-right: 0.5rem;
+            }
+            #home { min-height: 100vh; }
+            .about-us-title-container h2,
+            .about-us-content-wrapper .about-us-standout-statement {
+                 text-align: center;
+            }
+            .hero-outline-wrapper {
+                padding-top: calc(3.5rem + 0.5rem);
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+                padding-bottom: 0.5rem;
+            }
+            .hero-content-bordered {
+                border-width: 1px;
+                padding: 0.75rem;
+            }
+            .about-us-content-wrapper h3, .about-us-content-wrapper h4,
+            .services-detailed-content h3, .services-detailed-content h4 {
+                text-align: center;
+            }
+             .services-detailed-grid > div {
+                margin-bottom: 2rem;
+            }
+            .services-detailed-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white text-black">
+    <nav class="fixed w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="images/logo.jpeg" alt="90 Minutes or More Nav Logo" class="h-14 mr-2">
+                <div class="hidden sm:block">
+                    <span class="text-xl font-bold text-red-600">90</span><span class="text-xl font-bold text-black">Minutes</span>
+                    <span class="text-lg font-medium text-black"> or More</span>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-5 xl:space-x-6">
+                <a href="#home" class="nav-link text-sm lg:text-base text-black hover:text-red-600">Home</a>
+                <a href="#services" class="nav-link text-sm lg:text-base text-black hover:text-red-600">Services</a>
+                <a href="#shop" class="nav-link text-sm lg:text-base text-black hover:text-red-600">Shop</a>
+                <a href="#about" class="nav-link text-sm lg:text-base text-black hover:text-red-600">About Us</a>
+                <a href="#podcast" class="nav-link text-sm lg:text-base text-black hover:text-red-600">Podcast</a>
+                <a href="#gallery" class="nav-link text-sm lg:text-base text-black hover:text-red-600">Gallery</a>
+                <a href="#contact" class="nav-link text-sm lg:text-base text-black hover:text-red-600">Contact</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-black focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white w-full px-6 pb-4">
+            <a href="#home" class="block text-black hover:text-red-600 py-2">Home</a>
+            <a href="#services" class="block text-black hover:text-red-600 py-2">Services</a>
+            <a href="#shop" class="block text-black hover:text-red-600 py-2">Shop</a>
+            <a href="#about" class="block text-black hover:text-red-600 py-2">About Us</a>
+            <a href="#podcast" class="block text-black hover:text-red-600 py-2">Podcast</a>
+            <a href="#gallery" class="block text-black hover:text-red-600 py-2">Gallery</a>
+            <a href="#contact" class="block text-black hover:text-red-600 py-2">Contact</a>
+        </div>
+    </nav>
+
+    <section id="home" class="relative h-screen flex flex-col items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579952363871-5d706eefd9b4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center z-0"></div>
+        <div class="absolute inset-0 hero-overlay-crisp-black z-1"></div>
+        
+        <div class="hero-outline-wrapper z-10">
+            <div class="hero-content-bordered">
+                <div class="hero-main-content">
+                    <div class="relative text-center hero-main-content-text-area">
+                        <h1 class="font-anton text-5xl sm:text-6xl md:text-8xl font-black text-white uppercase tracking-wider mb-3 md:mb-4">90 Minutes or More</h1>
+                        <h2 class="text-lg sm:text-xl md:text-2xl text-gray-200 mb-6 md:mb-8">Sharing real stories and conversations about the beautiful game.</h2>
+                        <div class="my-4 md:my-6">
+                            <img src="images/logo.jpeg" alt="90 Minutes or More Logo" class="max-h-40 md:max-h-52 lg:max-h-60 mx-auto">
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-form-container relative w-full max-w-3xl mx-auto p-2 sm:p-4 pb-4 md:pb-6">
+                    <div class="bg-black/50 backdrop-blur-sm rounded-md shadow-2xl overflow-hidden md:flex border border-white/20">
+                        <div class="md:w-1/2 p-4 sm:p-6 bg-red-500/90 text-white">
+                            <h3 class="text-lg md:text-xl font-bold mb-3">Join Our Football Community</h3>
+                            <p class="mb-4 text-xs sm:text-sm">Stay ahead of the game. Exclusive updates straight to your inbox.</p>
+                            <div class="flex space-x-3 justify-center md:justify-start">
+                                <a href="#" class="text-white hover:text-gray-200"><i class="fab fa-twitter text-lg md:text-xl"></i></a>
+                                <a href="https://www.instagram.com/90.minutesormore" target="_blank" class="text-white hover:text-gray-200"><i class="fab fa-instagram text-lg md:text-xl"></i></a>
+                                <a href="#" class="text-white hover:text-gray-200"><i class="fab fa-youtube text-lg md:text-xl"></i></a>
+                            </div>
+                        </div>
+                        <div class="md:w-1/2 p-4 sm:p-6">
+                            <h3 class="text-lg md:text-xl font-bold mb-4 text-white">Sign Up Now</h3>
+                            <form name="signup" netlify>
+                                <input type="hidden" name="form-name" value="signup" />
+                                <div class="mb-3"><input type="text" id="name" name="name" placeholder="Your Name" class="w-full px-3 py-2 border border-gray-300/50 bg-white/20 text-white placeholder-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"></div>
+                                <div class="mb-3"><input type="email" id="email" name="email" placeholder="Your Email" class="w-full px-3 py-2 border border-gray-300/50 bg-white/20 text-white placeholder-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"></div>
+                                <div class="mb-3">
+                                    <label for="club" class="hidden">Favorite Club</label>
+                                    <select id="club" name="club" class="w-full px-3 py-2 border border-gray-300/50 bg-white/20 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm appearance-none" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 0.65em auto;"></select>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="country" class="hidden">Favorite Country</label>
+                                    <select id="country" name="country" class="w-full px-3 py-2 border border-gray-300/50 bg-white/20 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm appearance-none" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 0.65em auto;"></select>
+                                </div>
+                                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 text-sm">Join the Squad</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">What We <span class="text-red-600">Bring to the Pitch</span></h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16">We connect brands, partners, and football clubs to the heart of the culture — the fans. Here's how we elevate your game.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 shadow-lg service-card transition duration-300"><div class="text-red-600 mb-4 text-3xl"><i class="fas fa-bullhorn"></i></div><h3 class="text-xl font-bold mb-2">Branding & Social Revamp</h3><p class="text-gray-600 text-sm mb-4">Optimize your online presence with high-impact content, branding strategies, and engagement-focused campaigns.</p><a href="#" class="mt-3 inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 text-sm">LEARN MORE</a></div>
+                <div class="bg-white p-6 shadow-lg service-card transition duration-300"><div class="text-red-600 mb-4 text-3xl"><i class="fas fa-video"></i></div><h3 class="text-xl font-bold mb-2">Video Production</h3><p class="text-gray-600 text-sm mb-4">High-quality video including trending Reels, professional editing, and compelling visual storytelling.</p><a href="#" class="mt-3 inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 text-sm">LEARN MORE</a></div>
+                <div class="bg-white p-6 shadow-lg service-card transition duration-300"><div class="text-red-600 mb-4 text-3xl"><i class="fas fa-chart-line"></i></div><h3 class="text-xl font-bold mb-2">Influencer & Growth Strategy</h3><p class="text-gray-600 text-sm mb-4">Leverage influencer collaborations and trend-based social media strategies for maximum reach.</p><a href="#" class="mt-3 inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 text-sm">LEARN MORE</a></div>
+                <div class="bg-white p-6 shadow-lg service-card transition duration-300"><div class="text-red-600 mb-4 text-3xl"><i class="fas fa-handshake-angle"></i></div><h3 class="text-xl font-bold mb-2">Sponsorships & Partnerships</h3><p class="text-gray-600 text-sm mb-4">Gain exposure through our digital platforms with custom advertising packages for your brand.</p><a href="#" class="mt-3 inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 text-sm">LEARN MORE</a></div>
+                <div class="bg-white p-6 shadow-lg service-card transition duration-300"><div class="text-red-600 mb-4 text-3xl"><i class="fas fa-users-rays"></i></div><h3 class="text-xl font-bold mb-2">Fan Engagement</h3><p class="text-gray-600 text-sm mb-4">Curate viral street interviews, freestyle challenges, and emotion-driven content that connects.</p><a href="#" class="mt-3 inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 text-sm">LEARN MORE</a></div>
+                <div class="bg-white p-6 shadow-lg service-card transition duration-300"><div class="text-red-600 mb-4 text-3xl"><i class="fas fa-street-view"></i></div><h3 class="text-xl font-bold mb-2">Experiential Activations</h3><p class="text-gray-600 text-sm mb-4">Transform events into memorable, fan-centric experiences and ensure brand messaging aligns with modern football culture.</p><a href="#" class="mt-3 inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 text-sm">LEARN MORE</a></div>
+            </div>
+
+            <div class="mt-16 pt-10 border-t border-gray-300 services-detailed-content">
+                <div class="grid md:grid-cols-2 gap-10 mb-10 services-detailed-grid">
+                    <div class="bg-white p-8 shadow-md border border-gray-200 rounded-sm">
+                        <h3 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-5">What We Do</h3>
+                        <p class="text-gray-700 mb-6 leading-relaxed">
+                            We are in the business of football media and engagement — connecting big brands,
+                            partners, and football clubs to real fans on the ground.
+                        </p>
+                        <p class="text-gray-700 leading-relaxed">
+                            While clubs and companies focus on expanding business operations, we focus on bridging
+                            the emotional connection between fans and the game. Our strength is in storytelling,
+                            excitement, and cultural connection.
+                        </p>
+                    </div>
+                    <div class="bg-white p-8 shadow-md border border-gray-200 rounded-sm">
+                        <h4 class="text-2xl font-semibold text-gray-800 mb-6">Key Services & Activities:</h4>
+                        <ul class="custom-list list-inside text-gray-700 space-y-2 leading-relaxed">
+                            <li>On-street interviews using viral audio and trending formats</li>
+                            <li>In-person football challenges and trick shot activations</li>
+                            <li>High-energy fan interaction at stadiums, training grounds, and football festivals</li>
+                            <li>Behind-the-scenes matchday storytelling</li>
+                            <li>Collaborations with grassroots and pro clubs to showcase authentic fan experiences</li>
+                            <li>Creation of emotional and engaging video/photo content</li>
+                            <li>Event hype squads to amplify your next football-related event</li>
+                            <li>Branded campaigns with a "cool factor" that connects with the next generation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-10 mb-12 services-detailed-grid">
+                    <div class="bg-white p-6 shadow-md border border-gray-200 rounded-sm">
+                        <h4 class="text-xl md:text-2xl font-semibold text-red-500 mb-4">Experience Highlights and Media Tours</h4>
+                        <ul class="custom-list list-inside space-y-2 text-gray-700 leading-relaxed text-sm">
+                            <li>Sports Journalist Media Tour in Argentina: Over 6 cities & 10 stadiums visited including: La Bombonera (Boca Juniors), El Monumental (River Plate), Racing Avellaneda & Independiente Avellaneda, Estadio Marcelo Bielsa (Newell's Old Boys), Deportivo Museo de Rosario, Lionel Messi Neighborhood Tour, La Plata Clásico: Gimnasia vs Estudiantes</li>
+                            <li>Media Access Rights for Gimnasia de La Plata</li>
+                            <li>Volunteer at FIFA U20 World Cup 2007</li>
+                            <li>Media Day Activation for Scarborough United FC</li>
+                            <li>Youth Soccer Coach & Referee (Scarborough Blizzard)</li>
+                            <li>Interview with La Liga legend & Pacific FC Coach Armando Sá</li>
+                            <li>Partner Sponsor of Gotham FC (NWSL)</li>
+                            <li>Participated in and covered 100+ professional games worldwide as volunteer, sponsor, photographer, and journalist</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 shadow-md border border-gray-200 rounded-sm">
+                        <h4 class="text-xl md:text-2xl font-semibold text-red-500 mb-4">Our Reach & Network</h4>
+                         <p class="text-gray-600 text-sm mb-4">(Based off Data Analytics)</p>
+                        <ul class="custom-list list-inside text-gray-700 space-y-2 leading-relaxed">
+                            <li>Over 25,000+ followers across platforms and growing</li>
+                            <li>Averaging 5+ million monthly visits/views through digital impressions and content shares</li>
+                            <li>Top audience cities: London, Belgrade, New York, Sydney</li>
+                            <li>Top countries: Germany, USA, United Kingdom, France</li>
+                            <li>Top demographic:
+                                <ul class="list-disc list-inside ml-5 mt-1 text-sm">
+                                    <li>25–34 years old: 43.8%</li>
+                                    <li>35–44 years old: 28.2%</li>
+                                    <li>18–24 years old: 13%</li>
+                                    <li>45+: 9%</li>
+                                </ul>
+                            </li>
+                            <li>Active and growing on: Instagram, YouTube, TikTok, Facebook</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="text-gray-700 leading-relaxed max-w-3xl mx-auto text-center">
+                     We make sure that any brand, event, or football entity we partner with becomes part of
+                    something unforgettable. Our presence turns regular matches or activations into movements
+                    that fans feel connected to long after the final whistle.
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <section id="shop" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4"><span class="text-red-600">Shop</span> Our Merch</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16">Exclusive apparel and gear from 90 Minutes or More.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
+                    <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
+                        <img src="images/puffer-jacket.jpg" alt="90 Minutes Or More Puffer Jacket" class="w-full h-full object-cover transition duration-500 hover:scale-105">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">90 Minutes Or More Puffer Jacket</h3>
+                    <p class="text-gray-600 text-lg font-semibold mb-4">$99.99</p>
+                    <button onclick="handleBuyNow('price_1Rn3CVAT9uhI3dbEO4BuyOmU')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
+                </div>
+                <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
+                    <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
+                        <img src="images/left-chest-tshirt.jpg" alt="90 Minutes Or More Left Chest T Shirt" class="w-full h-full object-cover transition duration-500 hover:scale-105">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">90 Minutes Or More Left Chest T Shirt</h3>
+                    <p class="text-gray-600 text-lg font-semibold mb-4">$19.99</p>
+                    <button onclick="handleBuyNow('price_1Rn3BAAT9uhI3dbEH9gzMgRF')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
+                </div>
+                <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
+                    <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
+                        <img src="images/tshirt.jpg" alt="90 Minutes or More T-Shirt" class="w-full h-full object-cover transition duration-500 hover:scale-105">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">90 Minutes or More T-Shirt</h3>
+                    <p class="text-gray-600 text-lg font-semibold mb-4">$24.99</p>
+                    <button onclick="handleBuyNow('price_1Rn39ZAT9uhI3dbEv72ZogXK')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="mb-10 md:mb-12 about-us-title-container"><h2 class="text-4xl md:text-5xl font-bold text-gray-800 md:text-left text-center">About Us</h2></div>
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/2 md:pr-8 lg:pr-12 mb-10 md:mb-0 flex flex-col items-center md:items-start space-y-8">
+                    <img src="images/about-us-image-1.jpg" alt="CEO Jahvel Adriano with Sebastian Giovinco" class="w-full md:w-11/12 lg:w-10/12 h-[30rem] object-cover shadow-xl about-image">
+                    <img src="images/about-us-image-2.jpg" alt="90 Minutes or More team or event" class="w-full md:w-11/11 lg:w-10/12 h-[30rem] object-cover shadow-xl about-image">
+                </div>
+                <div class="md:w-1/2 about-us-content-wrapper">
+                    <p class="about-us-standout-statement text-center md:text-left">
+                        <span class="text-red-600">90 Minutes or More</span> <span class="text-black">is not just a community,</span> <span class="text-red-600">we are a culture.</span>
+                    </p>
+                    <h3 class="text-2xl font-bold mb-2 text-black md:text-left text-center">Revolutionizing Football Culture in North America</h3>
+                    <p class="text-lg text-gray-600 mb-6 md:text-left text-center italic">
+                        Breaking stories, in-depth analysis, media magic — 90 Minutes or More brings football to life.
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        At 90 Minutes or More Media, we passionately celebrate football culture by delivering engaging content, insightful coverage, and promotional opportunities, fostering connections within the vibrant football community for fans and professionals alike.
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        90 Minutes or More is more than just a media brand; it's a movement aimed at revolutionizing football culture in North America. Through strategic partnerships, engaging content, and data-driven marketing, we are poised to become a dominant force in the industry. With a proven track record of digital growth and a deep understanding of football culture, we offer businesses a unique opportunity to elevate their brand and reach a passionate, engaged audience.
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        Founded in 2023 by CEO Jahvel Adriano, (in the picture to the left with Football Legend Sebastian Giovinco) our goal is to become the go-to platform for football culture, media engagement, and brand partnerships, integrating digital media with real-world football experiences.
+                    </p>
+                    <p class="text-gray-700 mb-8 leading-relaxed">
+                        We achieve this by offering high-quality content creation, branding consultancy, sponsorship opportunities, and community-driven campaigns. With the rise of football in North America, particularly with the expansion of MLS, the upcoming 2026 FIFA World Cup, and increasing grassroots engagement, 90 Minutes or More is strategically positioned to capitalize on this growing market.
+                    </p>
+                     <p class="text-gray-700 mb-8 leading-relaxed">
+                        90 Minutes or More is a forward-thinking football (soccer) media and marketing brand that
+                        blends engaging content, strategic branding, and community-driven initiatives to elevate the
+                        football experience for fans and businesses alike. Our goal is to become the go-to platform
+                        for football culture, media engagement, and brand partnerships, integrating digital media
+                        with real-world football experiences.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="podcast" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">The <span class="text-red-600">90+</span> Podcast</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16">Where football minds meet and stories unfold — straight from our mic to your screen.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl">
+                    <div class="podcast-iframe-container">
+                        <iframe src="https://www.youtube.com/embed/DikkDdpWi6Q?si=IbFL7GzhtZjddQN_" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-6 text-center"><h3 class="text-xl font-bold mb-2">90 Minutes or More - Episode 1, Part 1</h3><a href="https://www.youtube.com/watch?v=DikkDdpWi6Q" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a></div>
+                </div>
+                <div class="podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl">
+                     <div class="podcast-iframe-container">
+                        <iframe src="https://www.youtube.com/embed/bS_k7G6hMHI?si=grH64IxgSFYbBjZ0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-6 text-center"><h3 class="text-xl font-bold mb-2">90 Minutes or More - Episode 1, Part 2</h3><a href="https://www.youtube.com/watch?v=bS_k7G6hMHI" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a></div>
+                </div>
+                <div class="podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl">
+                    <div class="podcast-iframe-container">
+                        <iframe src="https://www.youtube.com/embed/L4ejhaZbk1o?si=3AVSbFacDj6WWan8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-6 text-center"><h3 class="text-xl font-bold mb-2">90 Minutes or More - Episode 2</h3><a href="https://www.youtube.com/watch?v=L4ejhaZbk1o" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Our <span class="text-red-600">Gallery</span></h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16">Check out the memories and experiences we've shared through our football journey.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery1.jpg" alt="Gallery Image 1" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery2.jpg" alt="Gallery Image 2" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery3.jpg" alt="Gallery Image 3" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery4.jpg" alt="Gallery Image 4" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery5.jpg" alt="Gallery Image 5" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery6.jpg" alt="Gallery Image 6" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery7.jpg" alt="Gallery Image 7" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery8.jpg" alt="Gallery Image 8" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery9.jpg" alt="Gallery Image 9" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery10.jpg" alt="Gallery Image 10" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery11.jpg" alt="Gallery Image 11" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery12.jpg" alt="Gallery Image 12" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery13.jpg" alt="Gallery Image 13" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery14.jpg" alt="Gallery Image 14" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery15.jpg" alt="Gallery Image 15" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/IMG_3528.jpg" alt="Gallery Image 16" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/IMG_3533.jpg" alt="Gallery Image 17" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/IMG_3537.jpg" alt="Gallery Image 18" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/IMG_3549.jpg" alt="Gallery Image 19" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+                <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/IMG_3561.jpg" alt="Gallery Image 20" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Get in <span class="text-red-600">Touch</span></h2>
+            <div class="flex flex-col lg:flex-row gap-12">
+                 <div class="lg:w-1/2">
+                    <h3 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-6 text-center lg:text-left">Send Us a Message</h3>
+                    <form name="contact" netlify class="space-y-6">
+                        <input type="hidden" name="form-name" value="contact" />
+                        <div><label for="name" class="block text-gray-700 font-medium mb-1">Your Name</label><input type="text" id="name" name="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"></div>
+                        <div><label for="email" class="block text-gray-700 font-medium mb-1">Email Address</label><input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"></div>
+                        <div><label for="inquiry" class="block text-gray-700 font-medium mb-1">Type of Inquiry</label><select id="inquiry" name="inquiry" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"><option value="">Select an option</option><option value="general">General Question</option><option value="collab">Collaboration Request</option><option value="media">Media Inquiry</option><option value="feedback">Feedback/Suggestions</option></select></div>
+                        <div><label for="message" class="block text-gray-700 font-medium mb-1">Your Message</label><textarea id="message" name="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"></textarea></div>
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 shadow-md transition duration-300">Send Message</button>
+                    </form>
+                </div>
+                <div class="lg:w-1/2">
+                    <div class="bg-gray-50 p-8 shadow-lg h-full">
+                        <h3 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-6">Our Team & Contact</h3>
+                        <div class="mb-8 space-y-1">
+                            <p class="text-gray-700"><strong class="text-black">Jahvel Adriano</strong> – CEO & Creative Director</p>
+                            <p class="text-gray-700"><strong class="text-black">Steven Santos</strong> – Co-Host, Strategist</p>
+                            <p class="text-gray-700"><strong class="text-black">Miguel Hunter</strong> – Co-Host, Cultural Curator</p>
+                            <p class="text-gray-700"><strong class="text-black">Vicente D.</strong> – Co-Host, Journalist</p>
+                        </div>
+                        <p class="text-gray-700 mb-6 italic">Want to work with us? Let's make magic on and off the pitch.</p>
+
+                        <div class="space-y-5">
+                            <div class="flex items-start"><div class="text-red-600 mt-1 mr-3 w-5 text-center"><i class="fas fa-envelope text-xl"></i></div><div><h4 class="font-semibold text-lg">Email Us</h4><p class="text-gray-600 hover:text-red-600"><a href="mailto:90minutesom@gmail.com">90minutesom@gmail.com</a></p></div></div>
+                            <div class="flex items-start"><div class="text-red-600 mt-1 mr-3 w-5 text-center"><i class="fas fa-phone-alt text-xl"></i></div><div><h4 class="font-semibold text-lg">Call Us</h4><p class="text-gray-600">1-(647) 213-5462</p></div></div>
+                             <div class="flex items-start"><div class="text-red-600 mt-1 mr-3 w-5 text-center"><i class="fas fa-link text-xl"></i></div><div><h4 class="font-semibold text-lg">Website & Portfolio</h4><p class="text-gray-600 hover:text-red-600"><a href="https://90minutesormore.com" target="_blank" rel="noopener noreferrer">90minutesormore.com</a></p></div></div>
+                            <div class="flex items-start"><div class="text-red-600 mt-1 mr-3 w-5 text-center"><i class="fab fa-instagram text-xl"></i></div><div><h4 class="font-semibold text-lg">Instagram</h4><p class="text-gray-600 hover:text-red-600"><a href="https://www.instagram.com/90.minutesormore" target="_blank" rel="noopener noreferrer">@90.minutesormore</a></p></div></div>
+                        </div>
+
+                        <div class="mt-10">
+                            <h4 class="font-bold text-lg mb-4">Follow Us (General)</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-red-600 text-gray-700 hover:text-white flex items-center justify-center transition duration-300"><i class="fab fa-twitter"></i></a>
+                                <a href="https://www.instagram.com/90.minutesormore" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-red-600 text-gray-700 hover:text-white flex items-center justify-center transition duration-300"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-red-600 text-gray-700 hover:text-white flex items-center justify-center transition duration-300"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-red-600 text-gray-700 hover:text-white flex items-center justify-center transition duration-300"><i class="fab fa-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black text-white py-12">
+        <div class="container mx-auto px-6"><div class="flex flex-col md:flex-row justify-between"><div class="mb-8 md:mb-0"> <img src="images/logo.jpeg" alt="90 Minutes or More Footer Logo" class="h-10 mb-3"> <p class="text-gray-400 max-w-xs">Your comprehensive football media platform covering all aspects of the beautiful game.</p></div><div class="grid grid-cols-2 md:grid-cols-3 gap-8"><div><h4 class="text-lg font-bold mb-4 text-red-600">Explore</h4><ul class="space-y-2"><li><a href="#home" class="text-gray-400 hover:text-white transition duration-300">Home</a></li><li><a href="#services" class="text-gray-400 hover:text-white transition duration-300">Services</a></li><li><a href="#shop" class="text-gray-400 hover:text-white transition duration-300">Shop</a></li><li><a href="#about" class="text-gray-400 hover:text-white transition duration-300">About Us</a></li><li><a href="#podcast" class="text-gray-400 hover:text-white transition duration-300">Podcast</a></li><li><a href="#gallery" class="text-gray-400 hover:text-white transition duration-300">Gallery</a></li></ul></div><div><h4 class="text-lg font-bold mb-4 text-red-600">Legal</h4><ul class="space-y-2"><li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Privacy Policy</a></li><li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Terms of Service</a></li><li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Cookie Policy</a></li></ul></div><div><h4 class="text-lg font-bold mb-4 text-red-600">Newsletter</h4><form class="space-y-3"><input type="email" placeholder="Your Email" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-white"><button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 shadow-md w-full transition duration-300">Subscribe</button></form></div></div></div><div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"><p class="text-gray-400 mb-4 md:mb-0">© 2024 90 Minutes or More. All rights reserved.</p><div class="flex space-x-6"><a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-twitter"></i></a><a href="https://www.instagram.com/90.minutesormore" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-instagram"></i></a><a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-facebook-f"></i></a><a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-youtube"></i></a></div></div></div>
+    </footer>
+
+    <script>
+        // Dropdown data
+        const clubs = ["AC Milan", "Al-Ahly (Egypt)", "Al-Hilal", "Al-Ittihad", "Al-Nassr", "Arsenal", "AS Monaco", "AS Roma", "Aston Villa", "Atalanta", "Athletic Bilbao", "Atletico Madrid", "Atlético Mineiro", "Atlético Nacional", "Atlanta United", "Auckland City", "Barcelona", "Bayern Munich", "Benfica", "Boca Juniors", "Bologna", "Borussia Dortmund", "Botafogo", "Brighton", "Chelsea", "Chicago Fire FC", "Columbus Crew", "Como", "Corinthians", "Crystal Palace", "Cruz Azul", "Espanyol", "Estudiantes", "FC Nantes", "FC Toulouse", "Fiorentina", "Flamengo", "Fluminense", "Genoa", "Gimnasia De La Plata", "Grêmio", "Guadalajara", "Inter Miami CF", "Inter Milan", "Internacional", "Juventus", "LA Galaxy", "Las Palmas", "Lazio", "LDU Quito", "Leeds United", "León", "Liverpool", "LOSC Lille", "Los Angeles FC", "Mamelodi Sundowns", "Manchester City", "Manchester United", "Monterrey", "Napoli", "New England Revolution", "New York City FC", "New York Red Bulls", "Newcastle United", "Nottingham Forest", "OGC Nice", "Olympique Lyon", "Olympique Marseille", "Orlando City SC", "Palmeiras", "Paris FC", "Paris Saint-Germain", "Porto", "Portland Timbers", "Racing", "Real Betis", "Real Madrid", "Red Bull Salzburg", "River Plate", "San Lorenzo", "Santos", "São Paulo", "Seattle Sounders FC", "Sevilla", "Stade Brestois 29", "Stade Rennais FC", "Toronto FC", "Tottenham Hotspur", "Ulsan Hyundai", "Urawa Red Diamonds", "Valencia", "Vancouver Whitecaps FC", "Vasco da Gama", "Villarreal", "West Ham United"];
+        const countries = ["Algeria", "Argentina", "Australia", "Austria", "Belgium", "Bolivia", "Bosnia-Herzegovina", "Brazil", "Canada", "Chile", "China", "Colombia", "Costa Rica", "Croatia", "Czech Republic", "Denmark", "Ecuador", "Egypt", "England", "France", "Georgia", "Germany", "Greece", "Guatemala", "Honduras", "Hungary", "Ireland", "Italy", "Ivory Coast", "Jamaica", "Japan", "Mali", "Mexico", "Morocco", "Netherlands", "Nigeria", "Panama", "Paraguay", "Peru", "Portugal", "Qatar", "Saudi Arabia", "Scotland", "Senegal", "Slovenia", "South Africa", "South Korea", "Spain", "Suriname", "Sweden", "Switzerland", "Turkiye", "United Arab Emirates", "United States", "Uruguay", "Venezuela"];
+
+        // Function to populate a dropdown
+        function populateDropdown(selectElement, optionsArray, defaultText) {
+            if (!selectElement) return;
+            
+            selectElement.innerHTML = `<option value="" class="text-black bg-white">${defaultText}</option>`;
+            optionsArray.forEach(optionText => {
+                const option = document.createElement('option');
+                option.value = optionText.toLowerCase().replace(/ /g, '-');
+                option.textContent = optionText;
+                option.classList.add('text-black', 'bg-white');
+                selectElement.appendChild(option);
+            });
+            const otherOption = document.createElement('option');
+            otherOption.value = 'other';
+            otherOption.textContent = 'Other';
+            otherOption.classList.add('text-black', 'bg-white');
+            selectElement.appendChild(otherOption);
+        }
+
+        // Stripe checkout handler
+        async function handleBuyNow(priceId) {
+            try {
+                // Show loading state
+                const buttons = document.querySelectorAll('button[onclick^="handleBuyNow"]');
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                });
+
+                const response = await fetch('/.netlify/functions/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ priceId: priceId }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const session = await response.json();
+                
+                if (session.url) {
+                    window.location.href = session.url;
+                } else {
+                    throw new Error('No URL returned from server');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // Reset buttons
+                const buttons = document.querySelectorAll('button[onclick^="handleBuyNow"]');
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.textContent = 'Buy Now';
+                });
+
+                // Show user-friendly error
+                alert('There was an error processing your payment. Please try again or contact support if the problem persists.');
+            }
+        }
+
+        // Initialize the page
+        function initPage() {
+            // Populate dropdowns
+            const clubSelect = document.getElementById('club');
+            const countrySelect = document.getElementById('country');
+            populateDropdown(clubSelect, clubs, 'Favorite Club');
+            populateDropdown(countrySelect, countries, 'Favorite Country');
+
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+            
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        const mobileMenu = document.getElementById('mobile-menu');
+                        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.add('hidden');
+                        }
+                        const headerOffset = document.querySelector('nav').offsetHeight;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Add shadow to nav on scroll
+            window.addEventListener('scroll', function() {
+                const nav = document.querySelector('nav');
+                if (window.scrollY > 50) {
+                    nav.classList.add('shadow-lg');
+                } else {
+                    nav.classList.remove('shadow-lg');
+                }
+            });
+        }
+
+        // Wait for DOM to load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPage);
+        } else {
+            initPage();
+        }
+    </script>
+</body>
+</html>

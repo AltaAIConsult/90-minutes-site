@@ -48,6 +48,13 @@
             padding-bottom: 1rem;
             width: 100%;
         }
+        .logo-text-flex {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
 
         .nav-link { position: relative; }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
@@ -76,6 +83,10 @@
         }
 
         @media (max-width: 768px) {
+            .logo-text-flex {
+                flex-direction: column;
+                gap: 1rem;
+            }
             .hero-main-content-text-area {
                  padding-bottom: 1rem;
                  padding-left: 0.5rem;
@@ -149,11 +160,11 @@
             <div class="hero-content-bordered">
                 <div class="hero-main-content">
                     <div class="relative text-center hero-main-content-text-area">
-                        <h1 class="font-anton text-5xl sm:text-6xl md:text-8xl font-black text-white uppercase tracking-wider mb-3 md:mb-4">90 Minutes or More</h1>
-                        <h2 class="text-lg sm:text-xl md:text-2xl text-gray-200 mb-6 md:mb-8">Sharing real stories and conversations about the beautiful game.</h2>
-                        <div class="my-4 md:my-6">
-                            <img src="images/logo.jpeg" alt="90 Minutes or More Logo" class="max-h-40 md:max-h-52 lg:max-h-60 mx-auto">
+                        <div class="logo-text-flex">
+                            <img src="images/logo.jpeg" alt="90 Minutes or More Logo" class="max-h-40 md:max-h-52 lg:max-h-60">
+                            <h1 class="font-anton text-5xl sm:text-6xl md:text-8xl font-black text-white uppercase tracking-wider">90 Minutes or More</h1>
                         </div>
+                        <h2 class="text-lg sm:text-xl md:text-2xl text-gray-200 mb-6 md:mb-8">Sharing real stories and conversations about the beautiful game.</h2>
                     </div>
                 </div>
                 <div class="hero-form-container">
@@ -204,77 +215,6 @@
                 <div class="bg-white p-6 shadow-lg service-card transition duration-300"><div class="text-red-600 mb-4 text-3xl"><i class="fas fa-users-rays"></i></div><h3 class="text-xl font-bold mb-2">Fan Engagement</h3><p class="text-gray-600 text-sm mb-4">Curate viral street interviews, freestyle challenges, and emotion-driven content that connects.</p><a href="#" class="mt-3 inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 text-sm">LEARN MORE</a></div>
                 <div class="bg-white p-6 shadow-lg service-card transition duration-300"><div class="text-red-600 mb-4 text-3xl"><i class="fas fa-street-view"></i></div><h3 class="text-xl font-bold mb-2">Experiential Activations</h3><p class="text-gray-600 text-sm mb-4">Transform events into memorable, fan-centric experiences and ensure brand messaging aligns with modern football culture.</p><a href="#" class="mt-3 inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 text-sm">LEARN MORE</a></div>
             </div>
-
-            <div class="mt-16 pt-10 border-t border-gray-300 services-detailed-content">
-                <div class="grid md:grid-cols-2 gap-10 mb-10 services-detailed-grid">
-                    <div class="bg-white p-8 shadow-md border border-gray-200 rounded-sm">
-                        <h3 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-5">What We Do</h3>
-                        <p class="text-gray-700 mb-6 leading-relaxed">
-                            We are in the business of football media and engagement — connecting big brands,
-                            partners, and football clubs to real fans on the ground.
-                        </p>
-                        <p class="text-gray-700 leading-relaxed">
-                            While clubs and companies focus on expanding business operations, we focus on bridging
-                            the emotional connection between fans and the game. Our strength is in storytelling,
-                            excitement, and cultural connection.
-                        </p>
-                    </div>
-                    <div class="bg-white p-8 shadow-md border border-gray-200 rounded-sm">
-                        <h4 class="text-2xl font-semibold text-gray-800 mb-6">Key Services & Activities:</h4>
-                        <ul class="custom-list list-inside text-gray-700 space-y-2 leading-relaxed">
-                            <li>On-street interviews using viral audio and trending formats</li>
-                            <li>In-person football challenges and trick shot activations</li>
-                            <li>High-energy fan interaction at stadiums, training grounds, and football festivals</li>
-                            <li>Behind-the-scenes matchday storytelling</li>
-                            <li>Collaborations with grassroots and pro clubs to showcase authentic fan experiences</li>
-                            <li>Creation of emotional and engaging video/photo content</li>
-                            <li>Event hype squads to amplify your next football-related event</li>
-                            <li>Branded campaigns with a "cool factor" that connects with the next generation</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-10 mb-12 services-detailed-grid">
-                    <div class="bg-white p-6 shadow-md border border-gray-200 rounded-sm">
-                        <h4 class="text-xl md:text-2xl font-semibold text-red-500 mb-4">Experience Highlights and Media Tours</h4>
-                        <ul class="custom-list list-inside space-y-2 text-gray-700 leading-relaxed text-sm">
-                            <li>Sports Journalist Media Tour in Argentina: Over 6 cities & 10 stadiums visited including: La Bombonera (Boca Juniors), El Monumental (River Plate), Racing Avellaneda & Independiente Avellaneda, Estadio Marcelo Bielsa (Newell's Old Boys), Deportivo Museo de Rosario, Lionel Messi Neighborhood Tour, La Plata Clásico: Gimnasia vs Estudiantes</li>
-                            <li>Media Access Rights for Gimnasia de La Plata</li>
-                            <li>Volunteer at FIFA U20 World Cup 2007</li>
-                            <li>Media Day Activation for Scarborough United FC</li>
-                            <li>Youth Soccer Coach & Referee (Scarborough Blizzard)</li>
-                            <li>Interview with La Liga legend & Pacific FC Coach Armando Sá</li>
-                            <li>Partner Sponsor of Gotham FC (NWSL)</li>
-                            <li>Participated in and covered 100+ professional games worldwide as volunteer, sponsor, photographer, and journalist</li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-white p-6 shadow-md border border-gray-200 rounded-sm">
-                        <h4 class="text-xl md:text-2xl font-semibold text-red-500 mb-4">Our Reach & Network</h4>
-                         <p class="text-gray-600 text-sm mb-4">(Based off Data Analytics)</p>
-                        <ul class="custom-list list-inside text-gray-700 space-y-2 leading-relaxed">
-                            <li>Over 25,000+ followers across platforms and growing</li>
-                            <li>Averaging 5+ million monthly visits/views through digital impressions and content shares</li>
-                            <li>Top audience cities: London, Belgrade, New York, Sydney</li>
-                            <li>Top countries: Germany, USA, United Kingdom, France</li>
-                            <li>Top demographic:
-                                <ul class="list-disc list-inside ml-5 mt-1 text-sm">
-                                    <li>25–34 years old: 43.8%</li>
-                                    <li>35–44 years old: 28.2%</li>
-                                    <li>18–24 years old: 13%</li>
-                                    <li>45+: 9%</li>
-                                </ul>
-                            </li>
-                            <li>Active and growing on: Instagram, YouTube, TikTok, Facebook</li>
-                        </ul>
-                    </div>
-                </div>
-                <p class="text-gray-700 leading-relaxed max-w-3xl mx-auto text-center">
-                     We make sure that any brand, event, or football entity we partner with becomes part of
-                    something unforgettable. Our presence turns regular matches or activations into movements
-                    that fans feel connected to long after the final whistle.
-                </p>
-            </div>
         </div>
     </section>
     
@@ -285,27 +225,27 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
                     <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                        <img src="images/puffer-jacket.jpg" alt="90 Minutes Or More Puffer Jacket" class="w-full h-full object-cover transition duration-500 hover:scale-105">
+                        <img src="images/pibe.png" alt="PIBE DE ORO TEE" class="w-full h-full object-cover transition duration-500 hover:scale-105">
                     </div>
-                    <h3 class="text-xl font-bold mb-2">90 Minutes Or More Puffer Jacket</h3>
-                    <p class="text-gray-600 text-lg font-semibold mb-4">$99.99</p>
-                    <button onclick="handleBuyNow('price_1Rn3CVAT9uhI3dbEO4BuyOmU')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
-                </div>
-                <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
-                    <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                        <img src="images/left-chest-tshirt.jpg" alt="90 Minutes Or More Left Chest T Shirt" class="w-full h-full object-cover transition duration-500 hover:scale-105">
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">90 Minutes Or More Left Chest T Shirt</h3>
-                    <p class="text-gray-600 text-lg font-semibold mb-4">$19.99</p>
-                    <button onclick="handleBuyNow('price_1Rn3BAAT9uhI3dbEH9gzMgRF')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
-                </div>
-                <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
-                    <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                        <img src="images/tshirt.jpg" alt="90 Minutes or More T-Shirt" class="w-full h-full object-cover transition duration-500 hover:scale-105">
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">90 Minutes or More T-Shirt</h3>
+                    <h3 class="text-xl font-bold mb-2">PIBE DE ORO TEE</h3>
                     <p class="text-gray-600 text-lg font-semibold mb-4">$24.99</p>
-                    <button onclick="handleBuyNow('price_1Rn39ZAT9uhI3dbEv72ZogXK')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
+                    <button onclick="handleBuyNow('')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
+                </div>
+                <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
+                    <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
+                        <img src="images/special.png" alt="THE SPECIAL ONE TEE" class="w-full h-full object-cover transition duration-500 hover:scale-105">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">THE SPECIAL ONE TEE</h3>
+                    <p class="text-gray-600 text-lg font-semibold mb-4">$24.99</p>
+                    <button onclick="handleBuyNow('')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
+                </div>
+                <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
+                    <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
+                        <img src="images/heritage.png" alt="FOOTBALL HERITAGE R9 X ADP TEE" class="w-full h-full object-cover transition duration-500 hover:scale-105">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">FOOTBALL HERITAGE R9 X ADP TEE</h3>
+                    <p class="text-gray-600 text-lg font-semibold mb-4">$24.99</p>
+                    <button onclick="handleBuyNow('')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
                 </div>
             </div>
         </div>
@@ -370,9 +310,9 @@
                 </div>
                 <div class="podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl">
                     <div class="podcast-iframe-container">
-                        <iframe src="https://www.youtube.com/embed/L4ejhaZbk1o?si=3AVSbFacDj6WWan8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <iframe src="https://www.youtube.com/embed/cG2jCfJWqrk?si=yvcLLm3upZnD0bt8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     </div>
-                    <div class="p-6 text-center"><h3 class="text-xl font-bold mb-2">90 Minutes or More - Episode 2</h3><a href="https://www.youtube.com/watch?v=L4ejhaZbk1o" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a></div>
+                    <div class="p-6 text-center"><h3 class="text-xl font-bold mb-2">90 Minutes or More - Episode 3: Football Heritage</h3><a href="https://www.youtube.com/embed/cG2jCfJWqrk?si=yvcLLm3upZnD0bt8" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a></div>
                 </div>
             </div>
         </div>
@@ -382,7 +322,7 @@
         <div class="container mx-auto px-6">
             <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Our <span class="text-red-600">Gallery</span></h2>
             <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16">Check out the memories and experiences we've shared through our football journey.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-colds-5 gap-4">
                 <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery1.jpg" alt="Gallery Image 1" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
                 <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery2.jpg" alt="Gallery Image 2" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>
                 <div class="gallery-item relative overflow-hidden shadow-lg aspect-square"><img src="images/gallery3.jpg" alt="Gallery Image 3" class="w-full h-full object-cover transition duration-500 hover:scale-110"><div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center"><i class="fas fa-search-plus text-white text-3xl opacity-0 hover:opacity-100 transition duration-300"></i></div></div>

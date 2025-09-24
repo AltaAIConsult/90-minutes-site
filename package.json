@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@sanity/client": "^7.11.2",
     "stripe": "^18.3.0"
   }
 }

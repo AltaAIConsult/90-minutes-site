@@ -15,8 +15,9 @@
         .font-anton {
             font-family: 'Anton', sans-serif;
         }
+        /* MODIFIED: The overlay is now a separate element */
         .hero-overlay-crisp-black {
-            background-color: #0A0A0A;
+            background-color: rgba(10, 10, 10, 0.5); /* Semi-transparent black overlay */
         }
         .hero-outline-wrapper {
             position: absolute;
@@ -151,8 +152,9 @@
         </div>
     </nav>
 
+    <!-- HERO SECTION MODIFIED -->
     <section id="home" class="relative h-screen flex flex-col items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579952363871-5d706eefd9b4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center z-0"></div>
+        <!-- The background will be prepended here by JS -->
         <div class="absolute inset-0 hero-overlay-crisp-black z-1"></div>
         
         <div class="hero-outline-wrapper z-10">
@@ -217,35 +219,13 @@
         </div>
     </section>
     
+    <!-- SHOP SECTION MODIFIED -->
     <section id="shop" class="py-20 bg-white">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl md:text-4xl font-bold text-center mb-4"><span class="text-red-600">Shop</span> Our Merch</h2>
             <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16">Exclusive apparel and gear from 90 Minutes or More.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
-                    <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                        <img src="images/pibe.png" alt="PIBE DE ORO TEE" class="w-full h-full object-cover transition duration-500 hover:scale-105">
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">PIBE DE ORO TEE</h3>
-                    <p class="text-gray-600 text-lg font-semibold mb-4">$24.99</p>
-                    <button onclick="handleBuyNow('')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
-                </div>
-                <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
-                    <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                        <img src="images/special.png" alt="THE SPECIAL ONE TEE" class="w-full h-full object-cover transition duration-500 hover:scale-105">
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">THE SPECIAL ONE TEE</h3>
-                    <p class="text-gray-600 text-lg font-semibold mb-4">$24.99</p>
-                    <button onclick="handleBuyNow('')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
-                </div>
-                <div class="bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl">
-                    <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                        <img src="images/heritage.png" alt="FOOTBALL HERITAGE R9 X ADP TEE" class="w-full h-full object-cover transition duration-500 hover:scale-105">
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">FOOTBALL HERITAGE R9 X ADP TEE</h3>
-                    <p class="text-gray-600 text-lg font-semibold mb-4">$24.99</p>
-                    <button onclick="handleBuyNow('')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
-                </div>
+            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- This area will be filled by main.js -->
             </div>
         </div>
     </section>
@@ -290,29 +270,13 @@
         </div>
     </section>
 
+    <!-- PODCAST SECTION MODIFIED -->
     <section id="podcast" class="py-20 bg-gray-50">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">The <span class="text-red-600">90+</span> Podcast</h2>
             <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16">Where football minds meet and stories unfold — straight from our mic to your screen.</p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl">
-                    <div class="podcast-iframe-container">
-                        <iframe src="https://www.youtube.com/embed/DikkDdpWi6Q?si=IbFL7GzhtZjddQN_" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                    </div>
-                    <div class="p-6 text-center"><h3 class="text-xl font-bold mb-2">90 Minutes or More - Episode 1, Part 1</h3><a href="https://www.youtube.com/watch?v=DikkDdpWi6Q" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a></div>
-                </div>
-                <div class="podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl">
-                     <div class="podcast-iframe-container">
-                        <iframe src="https://www.youtube.com/embed/bS_k7G6hMHI?si=grH64IxgSFYbBjZ0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                    </div>
-                    <div class="p-6 text-center"><h3 class="text-xl font-bold mb-2">90 Minutes or More - Episode 1, Part 2</h3><a href="https://www.youtube.com/watch?v=bS_k7G6hMHI" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a></div>
-                </div>
-                <div class="podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl">
-                    <div class="podcast-iframe-container">
-                        <iframe src="https://www.youtube.com/embed/cG2jCfJWqrk?si=yvcLLm3upZnD0bt8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                    </div>
-                    <div class="p-6 text-center"><h3 class="text-xl font-bold mb-2">90 Minutes or More - Episode 3: Football Heritage</h3><a href="https://www.youtube.com/embed/cG2jCfJWqrk?si=yvcLLm3upZnD0bt8" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a></div>
-                </div>
+            <div id="podcast-list" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- This area will be filled by main.js -->
             </div>
         </div>
     </section>
@@ -523,5 +487,6 @@
             initPage();
         }
     </script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>

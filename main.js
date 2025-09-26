@@ -3,24 +3,97 @@
 import {createClient} from 'https://esm.sh/@sanity/client'
 import imageUrlBuilder from 'https://esm.sh/@sanity/image-url'
 
-// 1. CONFIGURE THE SANITY CLIENT (for Hero and Podcasts)
+// --- SANITY CLIENT CONFIG ---
 const client = createClient({
-  projectId: 'llmrml4v', // Your Sanity project ID
+  projectId: 'llmrml4v',
   dataset: 'production',
-  useCdn: true, // `false` if you want to ensure fresh data
-  apiVersion: '2024-03-11', // use a UTC date in YYYY-MM-DD format
+  useCdn: true,
+  apiVersion: '2024-03-11',
 })
 
-// Helper to get image URLs from Sanity
 const builder = imageUrlBuilder(client)
 function urlFor(source) {
   return builder.image(source)
 }
 
 // ==========================================================
-// HERO SECTION LOGIC (from Sanity)
+// SHOPPING CART LOGIC
+// ==========================================================
+let cart = [];
+
+function addToCart(productId, productName, productPrice, productImageUrl) {
+  // Check if product is already in the cart
+  const existingProductIndex = cart.findIndex(item => item.id === productId);
+
+  if (existingProductIndex > -1) {
+    // If it exists, just increase the quantity
+    cart[existingProductIndex].quantity += 1;
+  } else {
+    // If it doesn't exist, add it to the cart
+    cart.push({
+      id: productId,
+      name: productName,
+      price: productPrice,
+      imageUrl: productImageUrl,
+      quantity: 1,
+    });
+  }
+
+  console.log('Cart updated:', cart);
+  updateCartDisplay(); // A function to update a visual cart count
+}
+
+function updateCartDisplay() {
+  const cartCountElement = document.getElementById('cart-count');
+  if (cartCountElement) {
+    const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+    cartCountElement.textContent = totalItems;
+    cartCountElement.classList.toggle('hidden', totalItems === 0);
+  }
+}
+
+async function handleCheckout() {
+  const checkoutButton = document.getElementById('checkout-button');
+  if (!checkoutButton || cart.length === 0) return;
+
+  checkoutButton.disabled = true;
+  checkoutButton.textContent = 'Processing...';
+
+  try {
+    const response = await fetch('/.netlify/functions/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ cart: cart }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create checkout session');
+    }
+
+    const session = await response.json();
+    // Redirect to Stripe's checkout page
+    window.location.href = session.url;
+
+  } catch (error) {
+    console.error('Checkout error:', error);
+    alert('Could not initiate checkout. Please try again.');
+    checkoutButton.disabled = false;
+    checkoutButton.textContent = 'Checkout';
+  }
+}
+
+// Expose addToCart and handleCheckout to the global scope so inline onclicks can find them
+window.addToCart = addToCart;
+window.handleCheckout = handleCheckout;
+
+
+// ==========================================================
+// HERO SECTION LOGIC
 // ==========================================================
 async function getHero() {
+  // ... (Your existing getHero function code remains here, unchanged)
   const heroSection = document.getElementById('home');
   const heroData = await client.fetch('*[_type == "hero" && _id == "hero"][0]');
 
@@ -28,15 +101,11 @@ async function getHero() {
     console.log('Hero section not found or no data.')
     return;
   }
-
-  // Clear existing background image/video if any
   const existingBg = heroSection.querySelector('#hero-background');
   if (existingBg) {
     existingBg.remove();
   }
-
   let backgroundElement;
-
   if (heroData.backgroundType === 'video' && heroData.backgroundVideo?.asset?._ref) {
     const videoAsset = await client.getDocument(heroData.backgroundVideo.asset._ref);
     if(videoAsset.url) {
@@ -54,23 +123,21 @@ async function getHero() {
     backgroundElement.style.backgroundImage = `url(${imageUrl})`;
     backgroundElement.className = 'absolute inset-0 bg-cover bg-center z-0';
   }
-
   if (backgroundElement) {
     backgroundElement.id = 'hero-background';
-    heroSection.prepend(backgroundElement); // Add it as the first child
+    heroSection.prepend(backgroundElement);
   }
 }
 
-
 // ==========================================================
-// SHOP SECTION LOGIC (from Printful via Netlify Function)
+// SHOP SECTION LOGIC
 // ==========================================================
 async function getProducts() {
+  // ... (Your existing getProducts function code is updated below)
   const productList = document.getElementById('product-list');
   if (!productList) return;
 
   try {
-    // Call our own secure Netlify Function instead of Sanity
     const response = await fetch('/.netlify/functions/get-products');
     if (!response.ok) {
       throw new Error(`Failed to fetch products: ${response.statusText}`);
@@ -88,14 +155,14 @@ async function getProducts() {
       const card = document.createElement('div');
       card.className = 'bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl';
       
-      // The `product.imageUrl` and other properties now come directly from our function's response
+      // We pass all product details to the addToCart function
       card.innerHTML = `
         <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
             <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition duration-500 hover:scale-105">
         </div>
         <h3 class="text-xl font-bold mb-2">${product.name}</h3>
         <p class="text-gray-600 text-lg font-semibold mb-4">$${parseFloat(product.price).toFixed(2)}</p>
-        <button onclick="alert('Checkout integration for product ID ${product.id} pending!')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Buy Now</button>
+        <button onclick="addToCart('${product.id}', '${product.name}', ${product.price}, '${product.imageUrl}')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Add to Cart</button>
       `;
 
       productList.appendChild(card);
@@ -106,20 +173,18 @@ async function getProducts() {
   }
 }
 
-
 // ==========================================================
-// PODCAST SECTION LOGIC (from Sanity)
+// PODCAST SECTION LOGIC
 // ==========================================================
 async function getPodcasts() {
+  // ... (Your existing getPodcasts function code remains here, unchanged)
   const podcastList = document.getElementById('podcast-list');
   const podcasts = await client.fetch('*[_type == "podcast"]');
   
   if (!podcastList || podcasts.length === 0) {
     return;
   }
-
   podcastList.innerHTML = '';
-
   podcasts.forEach(podcast => {
     const card = document.createElement('div');
     card.className = 'podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl';
@@ -145,7 +210,7 @@ async function getPodcasts() {
 
 
 // ==========================================================
-// RUN ALL FUNCTIONS WHEN THE PAGE LOADS
+// RUN ALL FUNCTIONS
 // ==========================================================
 getHero();
 getProducts();

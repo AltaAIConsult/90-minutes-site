@@ -8,7 +8,6 @@ exports.handler = async function(event, context) {
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
-        // FINAL FIX: Using the correct 'Bearer' token authentication method
         'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
         'Content-Type': 'application/json'
       }
@@ -33,7 +32,8 @@ exports.handler = async function(event, context) {
       id: product.id,
       name: product.name,
       imageUrl: product.thumbnail_url,
-      price: product.variants.length > 0 ? product.variants[0].price : '0.00'
+      // CORRECTED LINE: Uses 'retail_price' to get the price you set.
+      price: product.variants.length > 0 ? product.variants[0].retail_price : '0.00'
     }));
 
     return {

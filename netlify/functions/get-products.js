@@ -8,14 +8,13 @@ exports.handler = async function(event, context) {
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
-        // CORRECTED LINE: Using the Node.js Buffer method for Base64 encoding
-        'Authorization': `Basic ${Buffer.from(PRINTFUL_API_KEY).toString('base64')}`,
+        // FINAL FIX: Using the correct 'Bearer' token authentication method
+        'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
         'Content-Type': 'application/json'
       }
     });
 
     if (!response.ok) {
-      // Added more detailed error logging
       const errorText = await response.text();
       console.error(`Printful API responded with status: ${response.status}`, errorText);
       throw new Error(`Printful API responded with status: ${response.status}`);

@@ -15,7 +15,6 @@
         .font-anton {
             font-family: 'Anton', sans-serif;
         }
-        /* MODIFIED: The overlay is now a separate element */
         .hero-overlay-crisp-black {
             background-color: rgba(10, 10, 10, 0.5); /* Semi-transparent black overlay */
         }
@@ -67,6 +66,10 @@
 
         .podcast-iframe-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; margin-bottom: 0.75rem;}
         .podcast-iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        
+        /* Sidebar Styles */
+        #cart-sidebar { transition: transform 0.3s ease-in-out; }
+        .translate-x-full { transform: translateX(100%); }
 
         .about-us-standout-statement {
             font-family: 'Anton', sans-serif;
@@ -139,14 +142,11 @@
                 <a href="#gallery" class="nav-link text-sm lg:text-base text-black hover:text-red-600">Gallery</a>
                 <a href="#contact" class="nav-link text-sm lg:text-base text-black hover:text-red-600">Contact</a>
                 
-                <!-- NEW CART UI ADDED HERE -->
-                <div class="relative ml-4">
-                    <button id="checkout-button" onclick="handleCheckout()" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md text-sm transition duration-300 flex items-center">
-                        <i class="fas fa-shopping-cart mr-2"></i>
-                        Checkout
-                    </button>
+                <button onclick="toggleCart()" class="relative bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md text-sm transition duration-300 flex items-center">
+                    <i class="fas fa-shopping-cart mr-2"></i>
+                    <span>Shopping Cart</span>
                     <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-                </div>
+                </button>
             </div>
             <button id="mobile-menu-button" class="md:hidden text-black focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
         </div>
@@ -161,11 +161,27 @@
         </div>
     </nav>
 
-    <!-- HERO SECTION MODIFIED -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl z-[60] p-6 flex flex-col translate-x-full">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Your Cart</h2>
+            <button onclick="toggleCart()" class="text-2xl text-gray-500 hover:text-gray-800">&times;</button>
+        </div>
+        <div id="cart-items" class="flex-grow overflow-y-auto -mr-2 pr-2">
+            <p class="text-gray-500">Your cart is empty.</p>
+        </div>
+        <div class="border-t pt-4 mt-4">
+            <div class="flex justify-between font-bold text-lg mb-4">
+                <span>Total:</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button id="sidebar-checkout-button" onclick="handleCheckout()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md transition duration-300 flex items-center justify-center">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
     <section id="home" class="relative h-screen flex flex-col items-center justify-center overflow-hidden">
-        <!-- The background will be prepended here by JS -->
         <div class="absolute inset-0 hero-overlay-crisp-black z-1"></div>
-        
         <div class="hero-outline-wrapper z-10">
             <div class="hero-content-bordered">
                 <div class="hero-main-content">
@@ -228,7 +244,6 @@
         </div>
     </section>
     
-    <!-- SHOP SECTION MODIFIED -->
     <section id="shop" class="py-20 bg-white">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl md:text-4xl font-bold text-center mb-4"><span class="text-red-600">Shop</span> Our Merch</h2>
@@ -279,7 +294,6 @@
         </div>
     </section>
 
-    <!-- PODCAST SECTION MODIFIED -->
     <section id="podcast" class="py-20 bg-gray-50">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">The <span class="text-red-600">90+</span> Podcast</h2>

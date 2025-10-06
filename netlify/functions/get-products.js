@@ -7,45 +7,32 @@ exports.handler = async function(event, context) {
   try {
     const response = await fetch(apiUrl, {
       method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
-        'Content-Type': 'application/json'
-      }
+      headers: { 'Authorization': `Bearer ${PRINTFUL_API_KEY}` }
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`Printful API responded with status: ${response.status}`, errorText);
-      throw new Error(`Printful API responded with status: ${response.status}`);
+      throw new Error(`Printful API Error: ${response.statusText}`);
     }
-
     const data = await response.json();
-
     if (!data.result || data.result.length === 0) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify([]),
-      };
+      return { statusCode: 200, body: JSON.stringify([]) };
     }
 
-    const products = data.result.map(product => ({
-      id: product.id,
-      name: product.name,
-      imageUrl: product.thumbnail_url,
-      // CORRECTED LINE: Uses 'retail_price' to get the price you set.
-      price: product.variants.length > 0 ? product.variants[0].retail_price : '0.00'
-    }));
+    const products = data.result.map(product => {
+        // Find the first variant to get its ID and retail price
+        const firstVariant = product.variants.length > 0 ? product.variants[0] : null;
+        return {
+            id: product.id,
+            variantId: firstVariant ? firstVariant.id : null, // Crucial for creating Printful order
+            name: product.name,
+            imageUrl: product.thumbnail_url,
+            price: firstVariant ? firstVariant.retail_price : '0.00' // Use retail_price
+        };
+    });
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(products),
-    };
-
+    return { statusCode: 200, body: JSON.stringify(products) };
   } catch (error) {
-    console.error('Error in Printful function execution:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to fetch products from Printful' }),
-    };
+    console.error('Error fetching from Printful:', error);
+    return { statusCode: 500, body: JSON.stringify({ error: 'Failed to fetch products' }) };
   }
 };

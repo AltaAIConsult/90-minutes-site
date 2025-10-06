@@ -14,19 +14,20 @@ exports.handler = async function(event, context) {
       throw new Error(`Printful API Error: ${response.statusText}`);
     }
     const data = await response.json();
+
     if (!data.result || data.result.length === 0) {
       return { statusCode: 200, body: JSON.stringify([]) };
     }
 
     const products = data.result.map(product => {
-        // Find the first variant to get its ID and retail price
-        const firstVariant = product.variants.length > 0 ? product.variants[0] : null;
+        const firstVariant = product.variants[0]; // Assume first variant
         return {
             id: product.id,
-            variantId: firstVariant ? firstVariant.id : null, // Crucial for creating Printful order
+            variantId: firstVariant ? firstVariant.id : null, // Pass the variant ID
             name: product.name,
             imageUrl: product.thumbnail_url,
-            price: firstVariant ? firstVariant.retail_price : '0.00' // Use retail_price
+            // FINAL FIX: Convert the retail price string to a number
+            price: firstVariant ? parseFloat(firstVariant.retail_price) : 0.00 
         };
     });
 

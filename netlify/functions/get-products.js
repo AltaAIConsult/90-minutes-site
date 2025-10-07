@@ -1,12 +1,11 @@
 // netlify/functions/get-products.js
-// Version 2: Final Price Fix
-
 exports.handler = async function(event, context) {
   const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
-  const apiUrl = 'https://api.printful.com/store/products';
+  const baseUrl = 'https://api.printful.com/store/products';
 
   try {
-    const response = await fetch(apiUrl, {
+    // First, get all products
+    const listResponse = await fetch(baseUrl, {
       method: 'GET',
       headers: { 
         'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
@@ -14,38 +13,40 @@ exports.handler = async function(event, context) {
       }
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`Printful API responded with status: ${response.status}`, errorText);
-      throw new Error(`Printful API responded with status: ${response.status}`);
+    if (!listResponse.ok) {
+      const errorText = await listResponse.text();
+      console.error(`Printful API responded with status: ${listResponse.status}`, errorText);
+      throw new Error(`Printful API responded with status: ${listResponse.status}`);
     }
 
-    const data = await response.json();
+    const listData = await listResponse.json();
 
-    if (!data.result || data.result.length === 0) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify([]),
-      };
-    }
+    // Fetch full details for each product to access variants and retail_price
+    const detailedProducts = await Promise.all(
+      listData.result.map(async (p) => {
+        const detailResponse = await fetch(`${baseUrl}/${p.id}`, {
+          method: 'GET',
+          headers: { 
+            'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const detailData = await detailResponse.json();
+        const firstVariant = detailData.result.sync_variants?.[0] || null;
 
-    const products = data.result.map(product => {
-        // Find the first variant to get its ID and retail price
-        const firstVariant = product.variants.length > 0 ? product.variants[0] : null;
-        
         return {
-            id: product.id,
-            variantId: firstVariant ? firstVariant.id : null, // This is crucial for creating the final Printful order
-            name: product.name,
-            imageUrl: product.thumbnail_url,
-            // THIS IS THE FINAL FIX: Use parseFloat on the retail_price field
-            price: firstVariant ? parseFloat(firstVariant.retail_price) : 0.00 
+          id: p.id,
+          variantId: firstVariant ? firstVariant.id : null,
+          name: p.name,
+          imageUrl: p.thumbnail_url,
+          price: firstVariant ? parseFloat(firstVariant.retail_price) : 0.00
         };
-    });
+      })
+    );
 
     return {
       statusCode: 200,
-      body: JSON.stringify(products),
+      body: JSON.stringify(detailedProducts),
     };
 
   } catch (error) {

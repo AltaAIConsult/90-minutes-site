@@ -8,17 +8,16 @@ exports.handler = async (event, context) => {
 
   const lineItems = cart.map(item => ({
     price_data: {
-      currency: 'cad', // Ensure this matches your store currency
+      currency: 'cad',
       product_data: {
         name: item.name,
         images: [item.imageUrl],
-        // Pass the variantId so we can retrieve it later
+        // THIS METADATA IS CRUCIAL
         metadata: {
             printfulVariantId: item.variantId 
         }
       },
-      // Price must be an integer in cents
-      unit_amount: Math.round(item.price * 100), 
+      unit_amount: Math.round(item.price * 100),
     },
     quantity: item.quantity,
   }));
@@ -27,12 +26,14 @@ exports.handler = async (event, context) => {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       shipping_address_collection: {
-        allowed_countries: ['US', 'CA'], 
+        allowed_countries: ['US', 'CA'],
       },
       line_items: lineItems,
       mode: 'payment',
       success_url: `${YOUR_DOMAIN}/payment-success.html`,
       cancel_url: `${YOUR_DOMAIN}/payment-cancelled.html`,
+      // IMPORTANT: This tells Stripe to include product metadata when we retrieve it later
+      expand: ['line_items.data.price.product'],
     });
 
     return {

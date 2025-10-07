@@ -4,7 +4,7 @@ exports.handler = async function(event, context) {
   const baseUrl = 'https://api.printful.com/store/products';
 
   try {
-    // First, get all products
+    // Fetch product list
     const listResponse = await fetch(baseUrl, {
       method: 'GET',
       headers: { 
@@ -21,7 +21,7 @@ exports.handler = async function(event, context) {
 
     const listData = await listResponse.json();
 
-    // Fetch full details for each product to access variants and retail_price
+    // Fetch full details for each product to access variants, price, and sizes
     const detailedProducts = await Promise.all(
       listData.result.map(async (p) => {
         const detailResponse = await fetch(`${baseUrl}/${p.id}`, {
@@ -32,14 +32,22 @@ exports.handler = async function(event, context) {
           }
         });
         const detailData = await detailResponse.json();
-        const firstVariant = detailData.result.sync_variants?.[0] || null;
+
+        // Grab all variants (sizes)
+        const variants = (detailData.result.sync_variants || []).map(v => ({
+          id: v.id,
+          size: v.size || v.name?.match(/Size:\s*(\w+)/)?.[1] || 'One Size',
+          price: parseFloat(v.retail_price) || 0.00
+        }));
+
+        const firstVariant = variants[0] || null;
 
         return {
           id: p.id,
-          variantId: firstVariant ? firstVariant.id : null,
           name: p.name,
           imageUrl: p.thumbnail_url,
-          price: firstVariant ? parseFloat(firstVariant.retail_price) : 0.00
+          price: firstVariant ? firstVariant.price : 0.00,
+          variants
         };
       })
     );

@@ -1,57 +1,106 @@
-// main.js - FINAL FINAL VERSION
+// main.js - FINAL VERSION, compatible with detailed get-products function
+
 import {createClient} from 'https://esm.sh/@sanity/client'
 import imageUrlBuilder from 'https://esm.sh/@sanity/image-url'
+
+// --- SANITY CLIENT CONFIG ---
 const client = createClient({projectId: 'llmrml4v', dataset: 'production', useCdn: true, apiVersion: '2024-03-11'})
 const builder = imageUrlBuilder(client)
 function urlFor(source) { return builder.image(source) }
+
+// ==========================================================
+// SHOPPING CART LOGIC V2 (with Sidebar)
+// ==========================================================
 let cart = [];
+
 function addToCart(productId, variantId, productName, productPrice, productImageUrl) {
   const existingProduct = cart.find(item => item.variantId === variantId);
-  if (existingProduct) { existingProduct.quantity += 1; } 
-  else { cart.push({ id: productId, variantId, name: productName, price: productPrice, imageUrl: productImageUrl, quantity: 1 }); }
+  if (existingProduct) {
+    existingProduct.quantity += 1;
+  } else {
+    cart.push({ id: productId, variantId, name: productName, price: productPrice, imageUrl: productImageUrl, quantity: 1 });
+  }
   updateCartDisplay();
 }
+
 function updateCartDisplay() {
   const cartCount = document.getElementById('cart-count');
   const cartItems = document.getElementById('cart-items');
   const cartTotal = document.getElementById('cart-total');
   if (!cartItems || !cartTotal) return;
+
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  if (cartCount) { cartCount.textContent = totalItems; cartCount.classList.toggle('hidden', totalItems === 0); }
+  if (cartCount) {
+    cartCount.textContent = totalItems;
+    cartCount.classList.toggle('hidden', totalItems === 0);
+  }
   cartItems.innerHTML = '';
-  if (cart.length === 0) { cartItems.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>'; } 
-  else {
+  if (cart.length === 0) {
+    cartItems.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
+  } else {
     cart.forEach(item => {
       const itemEl = document.createElement('div');
       itemEl.className = 'flex justify-between items-center py-2 border-b';
       itemEl.innerHTML = `
-        <div class="flex items-center"><img src="${item.imageUrl}" alt="${item.name}" class="w-16 h-16 object-cover mr-4 rounded"><div><p class="font-semibold text-sm">${item.name}</p><p class="text-xs text-gray-600">${item.quantity} x $${parseFloat(item.price).toFixed(2)}</p></div></div>
-        <button onclick="removeFromCart(${item.variantId})" class="text-red-500 hover:text-red-700 font-bold text-lg">&times;</button>`;
+        <div class="flex items-center">
+          <img src="${item.imageUrl}" alt="${item.name}" class="w-16 h-16 object-cover mr-4 rounded">
+          <div>
+            <p class="font-semibold text-sm">${item.name}</p>
+            <p class="text-xs text-gray-600">${item.quantity} x $${parseFloat(item.price).toFixed(2)}</p>
+          </div>
+        </div>
+        <button onclick="removeFromCart(${item.variantId})" class="text-red-500 hover:text-red-700 font-bold text-lg">&times;</button>
+      `;
       cartItems.appendChild(itemEl);
     });
   }
   const totalPrice = cart.reduce((sum, item) => sum + (item.quantity * item.price), 0);
   cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
 }
-function removeFromCart(variantId) { cart = cart.filter(item => item.variantId !== variantId); updateCartDisplay(); }
-function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('translate-x-full'); }
+
+function removeFromCart(variantId) {
+    cart = cart.filter(item => item.variantId !== variantId);
+    updateCartDisplay();
+}
+
+function toggleCart() {
+  document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
+}
+
 async function handleCheckout() {
     const btn = document.getElementById('sidebar-checkout-button');
     if (!btn || cart.length === 0) return;
-    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
     try {
         const response = await fetch('/.netlify/functions/create-checkout-session', {
-            method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ cart }),
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ cart }),
         });
-        if (!response.ok) { const errorInfo = await response.json(); throw new Error(errorInfo.error || 'Failed to create checkout session'); }
+        if (!response.ok) {
+          const errorInfo = await response.json();
+          throw new Error(errorInfo.error || 'Failed to create checkout session');
+        }
         const session = await response.json();
         window.location.href = session.url;
     } catch (error) {
-        console.error('Checkout error:', error); alert(`Could not initiate checkout. Please try again. Error: ${error.message}`);
-        btn.disabled = false; btn.textContent = 'Proceed to Checkout';
+        console.error('Checkout error:', error);
+        alert(`Could not initiate checkout. Please try again. Error: ${error.message}`);
+        btn.disabled = false;
+        btn.textContent = 'Proceed to Checkout';
     }
 }
-window.addToCart = addToCart; window.handleCheckout = handleCheckout; window.toggleCart = toggleCart; window.removeFromCart = removeFromCart;
+
+// Expose functions to the global scope
+window.addToCart = addToCart;
+window.handleCheckout = handleCheckout;
+window.toggleCart = toggleCart;
+window.removeFromCart = removeFromCart;
+
+// ==========================================================
+// HERO SECTION LOGIC
+// ==========================================================
 async function getHero() {
   const heroSection = document.getElementById('home');
   const heroData = await client.fetch('*[_type == "hero" && _id == "hero"][0]');
@@ -73,31 +122,89 @@ async function getHero() {
     backgroundElement.style.backgroundImage = `url(${imageUrl})`;
     backgroundElement.className = 'absolute inset-0 bg-cover bg-center z-0';
   }
-  if (backgroundElement) { backgroundElement.id = 'hero-background'; heroSection.prepend(backgroundElement); }
+  if (backgroundElement) {
+    backgroundElement.id = 'hero-background';
+    heroSection.prepend(backgroundElement);
+  }
 }
+
+// ==========================================================
+// SHOP SECTION LOGIC (UPDATED FOR SIZE VARIANTS)
+// ==========================================================
 async function getProducts() {
   const productList = document.getElementById('product-list');
   if (!productList) return;
+
   try {
     const response = await fetch('/.netlify/functions/get-products');
     if (!response.ok) throw new Error(`Failed to fetch products: ${response.statusText}`);
     const products = await response.json();
-    if (products.length === 0) { productList.innerHTML = '<p>No products found at this time.</p>'; return; }
+
+    if (products.length === 0) {
+      productList.innerHTML = '<p>No products found at this time.</p>';
+      return;
+    }
+    
     productList.innerHTML = '';
+    
     products.forEach(product => {
       const card = document.createElement('div');
-      card.className = 'bg-white p-6 shadow-lg rounded-lg border border-gray-200 transition duration-300 hover:shadow-xl';
+      card.className = 'bg-white p-6 shadow-lg rounded-lg border border-gray-200 flex flex-col';
+      
+      const sizeOptions = product.variants.map(variant => 
+        `<option value="${variant.id}">${variant.size}</option>`
+      ).join('');
+
+      const initialPrice = product.price; // Use the top-level price from your new function
+
       card.innerHTML = `
-        <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden"><img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition duration-500 hover:scale-105"></div>
+        <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
+            <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover">
+        </div>
         <h3 class="text-xl font-bold mb-2">${product.name}</h3>
-        <p class="text-gray-600 text-lg font-semibold mb-4">$${parseFloat(product.price).toFixed(2)}</p>
-        <button onclick="addToCart('${product.id}', ${product.variantId}, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.imageUrl}')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Add to Cart</button>`;
+        <div class="flex justify-between items-center mb-4">
+            <p id="price-display-${product.id}" class="text-gray-600 text-lg font-semibold">$${parseFloat(initialPrice).toFixed(2)}</p>
+            <select id="size-selector-${product.id}" class="border border-gray-300 rounded-md p-1 text-sm">
+                ${sizeOptions}
+            </select>
+        </div>
+        <div class="mt-auto">
+            <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Add to Cart</button>
+        </div>
+      `;
+
+      const sizeSelector = card.querySelector(`#size-selector-${product.id}`);
+      const priceDisplay = card.querySelector(`#price-display-${product.id}`);
+      
+      // Update price display when size changes
+      sizeSelector.addEventListener('change', () => {
+          const selectedVariant = product.variants.find(v => v.id == sizeSelector.value);
+          if (selectedVariant) {
+              priceDisplay.textContent = `$${parseFloat(selectedVariant.price).toFixed(2)}`;
+          }
+      });
+      
+      const addToCartButton = card.querySelector('button');
+      addToCartButton.addEventListener('click', () => {
+        const selectedVariantId = parseInt(sizeSelector.value);
+        const selectedVariant = product.variants.find(v => v.id === selectedVariantId);
+        
+        if (selectedVariant) {
+          addToCart(product.id, selectedVariant.id, product.name + ` - ${selectedVariant.size}`, selectedVariant.price, product.imageUrl);
+        }
+      });
+      
       productList.appendChild(card);
     });
   } catch (error) {
-    console.error('Error in getProducts:', error); productList.innerHTML = '<p class="text-red-500">Error loading products. Please try again later.</p>';
+    console.error('Error in getProducts:', error); 
+    productList.innerHTML = '<p class="text-red-500">Error loading products. Please try again later.</p>';
   }
 }
+
+// ==========================================================
+// PODCAST SECTION LOGIC
+// ==========================================================
 async function getPodcasts() {
   const podcastList = document.getElementById('podcast-list');
   const podcasts = await client.fetch('*[_type == "podcast"]');
@@ -118,6 +225,10 @@ async function getPodcasts() {
     podcastList.appendChild(card);
   });
 }
+
+// ==========================================================
+// RUN ALL FUNCTIONS
+// ==========================================================
 getHero();
 getProducts();
 getPodcasts();

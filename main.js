@@ -202,27 +202,11 @@ async function getProducts() {
 }
 
 // ==========================================================
-// PODCAST SECTION LOGIC (FINAL ROBUST FIX V2)
+// PODCAST SECTION LOGIC (SIMPLE, FINAL FIX)
 // ==========================================================
 async function getPodcasts() {
   const podcastList = document.getElementById('podcast-list');
   if (!podcastList) return;
-
-  // Helper function to reliably get the YouTube ID from any URL format
-  function getYouTubeID(url) {
-    if (!url || typeof url !== 'string') return null;
-    let ID = '';
-    // This regular expression covers youtube.com/watch, youtu.be/, and /embed/ formats
-    const urlParts = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-    if (urlParts && urlParts[2].length === 11) {
-      ID = urlParts[2];
-    } else {
-        // Fallback for cases where regex fails
-        const urlParams = new URLSearchParams(new URL(url).search);
-        ID = urlParams.get('v');
-    }
-    return ID;
-  }
 
   try {
     const podcasts = await client.fetch('*[_type == "podcast"]');
@@ -230,21 +214,30 @@ async function getPodcasts() {
       podcastList.innerHTML = ''; return;
     }
     podcastList.innerHTML = '';
+
     podcasts.forEach(podcast => {
-      const videoId = getYouTubeID(podcast.youtubeLink);
-      if (!videoId) {
-        console.warn(`Skipping invalid or un-parsable YouTube URL: ${podcast.youtubeLink}`);
-        return; // Skip this podcast if we can't get a valid ID
+      if (!podcast.youtubeLink || typeof podcast.youtubeLink !== 'string') {
+        console.warn('Skipping podcast with missing or invalid URL');
+        return;
       }
+      
+      let embedUrl = podcast.youtubeLink;
+
+      // The most reliable, simple conversion:
+      // If it's a 'watch' link, convert it to 'embed'.
+      if (embedUrl.includes('watch?v=')) {
+        embedUrl = embedUrl.replace('watch?v=', 'embed/');
+        // Also, strip any other parameters like &t= or &si= to be safe
+        const urlParts = embedUrl.split('&');
+        embedUrl = urlParts[0];
+      }
+      // You can add more simple `if` statements here for other formats if needed
 
       const card = document.createElement('div');
       card.className = 'podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl';
-
+      
       const iframeContainer = document.createElement('div');
       iframeContainer.className = 'podcast-iframe-container';
-      
-      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-
       iframeContainer.innerHTML = `<iframe 
         src="${embedUrl}" 
         title="YouTube video player" 

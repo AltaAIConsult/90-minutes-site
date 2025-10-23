@@ -202,21 +202,24 @@ async function getProducts() {
 }
 
 // ==========================================================
-// PODCAST SECTION LOGIC (FINAL ROBUST FIX)
+// PODCAST SECTION LOGIC (FINAL ROBUST FIX V2)
 // ==========================================================
 async function getPodcasts() {
   const podcastList = document.getElementById('podcast-list');
   if (!podcastList) return;
 
+  // Helper function to reliably get the YouTube ID from any URL format
   function getYouTubeID(url) {
     if (!url || typeof url !== 'string') return null;
     let ID = '';
-    const urlParts = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
-    if (urlParts[2] !== undefined) {
-      ID = urlParts[2].split(/[^0-9a-z_\-]/i);
-      ID = ID[0];
+    // This regular expression covers youtube.com/watch, youtu.be/, and /embed/ formats
+    const urlParts = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+    if (urlParts && urlParts[2].length === 11) {
+      ID = urlParts[2];
     } else {
-      ID = url;
+        // Fallback for cases where regex fails
+        const urlParams = new URLSearchParams(new URL(url).search);
+        ID = urlParams.get('v');
     }
     return ID;
   }
@@ -230,8 +233,8 @@ async function getPodcasts() {
     podcasts.forEach(podcast => {
       const videoId = getYouTubeID(podcast.youtubeLink);
       if (!videoId) {
-        console.warn(`Skipping invalid YouTube URL: ${podcast.youtubeLink}`);
-        return;
+        console.warn(`Skipping invalid or un-parsable YouTube URL: ${podcast.youtubeLink}`);
+        return; // Skip this podcast if we can't get a valid ID
       }
 
       const card = document.createElement('div');

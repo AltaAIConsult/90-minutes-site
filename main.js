@@ -1,4 +1,4 @@
-// main.js - FINAL VERSION with definitive podcast fix
+// main.js - FINAL VERSION with all functions merged and definitive podcast fix
 
 import {createClient} from 'https://esm.sh/@sanity/client'
 import imageUrlBuilder from 'https://esm.sh/@sanity/image-url'
@@ -202,32 +202,45 @@ async function getProducts() {
 }
 
 // ==========================================================
-// PODCAST SECTION LOGIC (DEFINITIVE FIX)
+// PODCAST SECTION LOGIC (FINAL ROBUST FIX)
 // ==========================================================
 async function getPodcasts() {
   const podcastList = document.getElementById('podcast-list');
   if (!podcastList) return;
 
+  function getYouTubeID(url) {
+    if (!url || typeof url !== 'string') return null;
+    let ID = '';
+    const urlParts = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+    if (urlParts[2] !== undefined) {
+      ID = urlParts[2].split(/[^0-9a-z_\-]/i);
+      ID = ID[0];
+    } else {
+      ID = url;
+    }
+    return ID;
+  }
+
   try {
     const podcasts = await client.fetch('*[_type == "podcast"]');
-    
     if (!podcasts || podcasts.length === 0) {
-      podcastList.innerHTML = '';
-      return;
+      podcastList.innerHTML = ''; return;
     }
-
     podcastList.innerHTML = '';
-
     podcasts.forEach(podcast => {
+      const videoId = getYouTubeID(podcast.youtubeLink);
+      if (!videoId) {
+        console.warn(`Skipping invalid YouTube URL: ${podcast.youtubeLink}`);
+        return;
+      }
+
       const card = document.createElement('div');
       card.className = 'podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl';
 
       const iframeContainer = document.createElement('div');
       iframeContainer.className = 'podcast-iframe-container';
       
-      const embedUrl = podcast.youtubeLink && typeof podcast.youtubeLink === 'string' 
-        ? podcast.youtubeLink.replace('watch?v=', 'embed/') 
-        : '';
+      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
 
       iframeContainer.innerHTML = `<iframe 
         src="${embedUrl}" 
@@ -254,7 +267,6 @@ async function getPodcasts() {
       podcastList.innerHTML = '<p class="text-red-500">Error loading podcasts.</p>';
   }
 }
-
 
 // ==========================================================
 // RUN ALL FUNCTIONS

@@ -1,4 +1,4 @@
-// main.js - FINAL VERSION, compatible with detailed get-products function
+// main.js - FINAL VERSION with definitive podcast fix
 
 import {createClient} from 'https://esm.sh/@sanity/client'
 import imageUrlBuilder from 'https://esm.sh/@sanity/image-url'
@@ -155,7 +155,7 @@ async function getProducts() {
         `<option value="${variant.id}">${variant.size}</option>`
       ).join('');
 
-      const initialPrice = product.price; // Use the top-level price from your new function
+      const initialPrice = product.price;
 
       card.innerHTML = `
         <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
@@ -176,7 +176,6 @@ async function getProducts() {
       const sizeSelector = card.querySelector(`#size-selector-${product.id}`);
       const priceDisplay = card.querySelector(`#price-display-${product.id}`);
       
-      // Update price display when size changes
       sizeSelector.addEventListener('change', () => {
           const selectedVariant = product.variants.find(v => v.id == sizeSelector.value);
           if (selectedVariant) {
@@ -203,28 +202,59 @@ async function getProducts() {
 }
 
 // ==========================================================
-// PODCAST SECTION LOGIC
+// PODCAST SECTION LOGIC (DEFINITIVE FIX)
 // ==========================================================
 async function getPodcasts() {
   const podcastList = document.getElementById('podcast-list');
-  const podcasts = await client.fetch('*[_type == "podcast"]');
-  if (!podcastList || podcasts.length === 0) return;
-  podcastList.innerHTML = '';
-  podcasts.forEach(podcast => {
-    const card = document.createElement('div');
-    card.className = 'podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl';
-    const iframeContainer = document.createElement('div');
-    iframeContainer.className = 'podcast-iframe-container';
-    const embedUrl = podcast.youtubeLink.replace('watch?v=', 'embed/');
-    iframeContainer.innerHTML = `<iframe src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
-    const textContainer = document.createElement('div');
-    textContainer.className = 'p-6 text-center';
-    textContainer.innerHTML = `<h3 class="text-xl font-bold mb-2">${podcast.title}</h3><a href="${podcast.youtubeLink}" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a>`;
-    card.appendChild(iframeContainer);
-    card.appendChild(textContainer);
-    podcastList.appendChild(card);
-  });
+  if (!podcastList) return;
+
+  try {
+    const podcasts = await client.fetch('*[_type == "podcast"]');
+    
+    if (!podcasts || podcasts.length === 0) {
+      podcastList.innerHTML = '';
+      return;
+    }
+
+    podcastList.innerHTML = '';
+
+    podcasts.forEach(podcast => {
+      const card = document.createElement('div');
+      card.className = 'podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl';
+
+      const iframeContainer = document.createElement('div');
+      iframeContainer.className = 'podcast-iframe-container';
+      
+      const embedUrl = podcast.youtubeLink && typeof podcast.youtubeLink === 'string' 
+        ? podcast.youtubeLink.replace('watch?v=', 'embed/') 
+        : '';
+
+      iframeContainer.innerHTML = `<iframe 
+        src="${embedUrl}" 
+        title="YouTube video player" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        referrerpolicy="strict-origin-when-cross-origin" 
+        allowfullscreen>
+      </iframe>`;
+
+      const textContainer = document.createElement('div');
+      textContainer.className = 'p-6 text-center';
+      textContainer.innerHTML = `
+        <h3 class="text-xl font-bold mb-2">${podcast.title || 'Untitled Episode'}</h3>
+        <a href="${podcast.youtubeLink || '#'}" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a>
+      `;
+
+      card.appendChild(iframeContainer);
+      card.appendChild(textContainer);
+      podcastList.appendChild(card);
+    });
+  } catch (error) {
+      console.error("Error fetching podcasts:", error);
+      podcastList.innerHTML = '<p class="text-red-500">Error loading podcasts.</p>';
+  }
 }
+
 
 // ==========================================================
 // RUN ALL FUNCTIONS

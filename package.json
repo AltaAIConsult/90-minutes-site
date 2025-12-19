@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@sanity/client": "^7.11.2",
+    "node-fetch": "^2.7.0",
     "stripe": "^18.5.0"
   }
 }

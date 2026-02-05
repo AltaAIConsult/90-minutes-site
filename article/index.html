@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles | 90 Minutes or More - Football Culture & Analysis</title>
+    <meta name="description" content="In-depth football articles, culture pieces, and analysis from 90 Minutes or More. Stories from the pitch and beyond.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .font-anton { font-family: 'Anton', sans-serif; }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
+        .nav-link:hover::after { width: 100%; }
+        .article-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-white text-black">
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center">
+                <img src="../images/logo.jpeg" alt="90 Minutes or More" class="h-14 mr-2">
+                <div class="hidden sm:block">
+                    <span class="text-xl font-bold text-red-600">90</span><span class="text-xl font-bold text-black">Minutes</span>
+                    <span class="text-lg font-medium text-black"> or More</span>
+                </div>
+            </a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="../index.html" class="nav-link text-sm text-black hover:text-red-600">Home</a>
+                <a href="../shop/index.html" class="nav-link text-sm text-black hover:text-red-600">Shop</a>
+                <a href="index.html" class="nav-link text-sm text-red-600 font-semibold">Articles</a>
+                <a href="../news/index.html" class="nav-link text-sm text-black hover:text-red-600">News</a>
+                <a href="../podcast/index.html" class="nav-link text-sm text-black hover:text-red-600">Podcast</a>
+                <a href="../about/index.html" class="nav-link text-sm text-black hover:text-red-600">About</a>
+                <a href="../contact/index.html" class="nav-link text-sm text-black hover:text-red-600">Contact</a>
+                
+                <button onclick="toggleCart()" class="relative bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md text-sm transition duration-300 flex items-center">
+                    <i class="fas fa-shopping-cart mr-2"></i>
+                    <span>Cart</span>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-12 bg-gray-50">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="font-anton text-5xl md:text-6xl font-black uppercase mb-4">Latest <span class="text-red-600">Articles</span></h1>
+            <p class="text-gray-600 max-w-2xl mx-auto text-lg">Deep dives into football culture, analysis, and stories from the community.</p>
+        </div>
+    </section>
+
+    <!-- Articles Grid -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Articles loaded from Sanity -->
+                <div class="animate-pulse bg-gray-200 h-96 rounded-lg"></div>
+                <div class="animate-pulse bg-gray-200 h-96 rounded-lg"></div>
+                <div class="animate-pulse bg-gray-200 h-96 rounded-lg"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl z-[60] p-6 flex flex-col translate-x-full transition-transform duration-300">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Your Cart</h2>
+            <button onclick="toggleCart()" class="text-2xl text-gray-500 hover:text-gray-800">&times;</button>
+        </div>
+        <div id="cart-items" class="flex-grow overflow-y-auto">
+            <p class="text-gray-500">Your cart is empty.</p>
+        </div>
+        <div class="border-t pt-4 mt-4">
+            <div class="flex justify-between font-bold text-lg mb-4">
+                <span>Total:</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button onclick="handleCheckout()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md transition duration-300">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <img src="../images/logo.jpeg" alt="90 Minutes or More" class="h-10 mb-4">
+                    <p class="text-gray-400 text-sm">Your comprehensive football media platform covering all aspects of the beautiful game.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-red-600">Content</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="index.html" class="hover:text-white">Articles</a></li>
+                        <li><a href="../news/index.html" class="hover:text-white">News</a></li>
+                        <li><a href="../podcast/index.html" class="hover:text-white">Podcast</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-red-600">Legal</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="../privacy/index.html" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="../terms/index.html" class="hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-red-600">Newsletter</h4>
+                    <form class="space-y-3">
+                        <input type="email" placeholder="Your Email" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm">
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg text-sm">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2024 90 Minutes or More. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import {createClient} from 'https://esm.sh/@sanity/client'
+        import imageUrlBuilder from 'https://esm.sh/@sanity/image-url'
+        
+        const client = createClient({
+            projectId: 'llmrml4v',
+            dataset: 'production',
+            useCdn: true,
+            apiVersion: '2024-03-11'
+        })
+        
+        const builder = imageUrlBuilder(client)
+        function urlFor(source) { return builder.image(source) }
+
+        async function loadArticles() {
+            const articles = await client.fetch(`*[_type == "article"] | order(publishedAt desc) {
+                title,
+                slug,
+                excerpt,
+                mainImage,
+                category,
+                publishedAt,
+                "author": author->name
+            }`)
+            
+            const grid = document.getElementById('articles-grid')
+            
+            if (!articles.length) {
+                grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-12">No articles yet. Check back soon!</p>'
+                return
+            }
+            
+            grid.innerHTML = articles.map(article => `
+                <article class="article-card bg-white shadow-lg overflow-hidden transition duration-300 rounded-lg">
+                    <div class="h-48 bg-gray-200 overflow-hidden">
+                        ${article.mainImage ? `
+                            <img src="${urlFor(article.mainImage).width(600).url()}" 
+                                 alt="${article.title}" 
+                                 class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                        ` : '<div class="w-full h-full bg-red-100 flex items-center justify-center"><i class="fas fa-image text-red-300 text-4xl"></i></div>'}
+                    </div>
+                    <div class="p-6">
+                        <span class="text-red-600 text-xs font-bold uppercase tracking-wide">${article.category || 'Article'}</span>
+                        <h2 class="text-xl font-bold mt-2 mb-3">
+                            <a href="${article.slug.current}.html" class="hover:text-red-600 transition">${article.title}</a>
+                        </h2>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">${article.excerpt || ''}</p>
+                        <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-4">
+                            <span class="font-medium">${article.author || 'Staff'}</span>
+                            <span>${new Date(article.publishedAt).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                </article>
+            `).join('')
+        }
+        
+        loadArticles()
+    </script>
+    <script type="module" src="../main.js"></script>
+</body>
+</html>

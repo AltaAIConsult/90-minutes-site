@@ -1,61 +1,812 @@
-// main.js - FINAL VERSION with all functions merged and definitive podcast fix
+// ==========================================================
+// SANITY CONFIG
+// ==========================================================
+const SANITY_PROJECT_ID = 'llmrml4v';
+const SANITY_DATASET = 'production';
+const SANITY_API_VERSION = 'v2024-03-11';
 
-import {createClient} from 'https://esm.sh/@sanity/client'
-import imageUrlBuilder from 'https://esm.sh/@sanity/image-url'
-
-// --- SANITY CLIENT CONFIG ---
-const client = createClient({projectId: 'llmrml4v', dataset: 'production', useCdn: true, apiVersion: '2024-03-11'})
-const builder = imageUrlBuilder(client)
-function urlFor(source) { return builder.image(source) }
+function getSanityUrl(query) {
+    const encodedQuery = encodeURIComponent(query);
+    return `https://${SANITY_PROJECT_ID}.api.sanity.io/${SANITY_API_VERSION}/data/query/${SANITY_DATASET}?query=${encodedQuery}`;
+}
 
 // ==========================================================
-// SHOPPING CART LOGIC V2 (with Sidebar)
+// HERO SLIDES FROM SANITY
+// ==========================================================
+async function loadHeroSlides() {
+    try {
+        const query = `*[_type == "heroSlide" && active == true] | order(order asc) {
+            title,
+            subtitle,
+            "imageUrl": backgroundImage.asset->url,
+            tag,
+            buttonText,
+            link
+        }`;
+        
+        const response = await fetch(getSanityUrl(query));
+        
+        if (!response.ok) {
+            throw new Error(`Sanity API error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const slides = data.result;
+        
+        console.log('Sanity slides loaded:', slides);
+        
+        if (!slides || slides.length === 0) {
+            console.log('No slides in Sanity - keeping fallback');
+            return;
+        }
+        
+        let slidesHTML = slides.map((slide, i) => {
+            let imgHtml = '';
+            let bgClass = 'bg-gradient-to-b from-black/60 to-black/40';
+            
+            if (slide.imageUrl) {
+                imgHtml = `<img src="${slide.imageUrl}" alt="${slide.title}" class="w-full h-full object-cover opacity-60" onerror="this.style.display='none'; this.parentElement.classList.add('bg-gradient-to-b', 'from-black/60', 'to-black/40')">`;
+                bgClass = '';
+            }
+            
+            return `
+            <div class="hero-slide ${i === 0 ? 'active' : ''} relative h-[70vh] bg-gray-900 ${bgClass}">
+                ${imgHtml}
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="container mx-auto px-6 text-center text-white relative z-10">
+                        <span class="bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wide mb-4 inline-block">${slide.tag || 'Update'}</span>
+                        <h1 class="font-anton text-5xl md:text-7xl font-black uppercase mb-4 leading-tight">${slide.title}</h1>
+                        <p class="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto mb-8">${slide.subtitle}</p>
+                        <a href="${slide.link || '#'}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-md transition duration-300 inline-block">${slide.buttonText || 'Read More'}</a>
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+        
+        slidesHTML += `
+            <button onclick="changeSlide(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition z-10">
+                <i class="fas fa-chevron-left text-2xl"></i>
+            </button>
+            <button onclick="changeSlide(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition z-10">
+                <i class="fas fa-chevron-right text-2xl"></i>
+            </button>
+            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+                ${slides.map((_, i) => `<span class="dot w-3 h-3 bg-white rounded-full cursor-pointer ${i === 0 ? 'opacity-100' : 'opacity-50'}" onclick="currentSlide(${i + 1})"></span>`).join('')}
+            </div>
+        `;
+        
+        const heroSection = document.getElementById('hero-section');
+        if (heroSection) {
+            heroSection.innerHTML = slidesHTML;
+            console.log('✓ Hero slides rendered:', slides.length);
+            slideIndex = 1;
+            showSlides(1);
+        }
+        
+    } catch (err) {
+        console.error('✗ Hero slides error:', err);
+    }
+}
+
+// ==========================================================
+// HEADLINES - 6 FROM SANITY
+// ==========================================================
+async function loadHeadlines() {
+    const headlinesRow = document.getElementById('headlines-row');
+    if (!headlinesRow) return;
+    
+    try {
+        const query = `*[_type == "headline" && featured == true] | order(order asc, publishedAt desc) [0...6] {
+            title,
+            "imageUrl": mainImage.asset->url,
+            "link": link,
+            publishedAt,
+            category
+        }`;
+        
+        const response = await fetch(getSanityUrl(query));
+        const data = await response.json();
+        const headlines = data.result;
+        
+        console.log('Headlines loaded:', headlines);
+        
+        if (!headlines || headlines.length === 0) {
+            // Fallback to hardcoded if none in Sanity
+            renderFallbackHeadlines(headlinesRow);
+            return;
+        }
+        
+        headlinesRow.innerHTML = headlines.map(h => {
+            const timeAgo = getTimeAgo(h.publishedAt);
+            const categoryLabel = h.category ? h.category.toUpperCase() : 'NEWS';
+            
+            return `
+            <a href="${h.link || '#'}" class="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
+                <div class="h-32 bg-gray-200 overflow-hidden relative">
+                    ${h.imageUrl ? 
+                        `<img src="${h.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="">` :
+                        `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500">
+                            <i class="fas fa-newspaper text-3xl"></i>
+                        </div>`
+                    }
+                    <span class="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded">${categoryLabel}</span>
+                </div>
+                <div class="p-3">
+                    <h3 class="font-bold text-sm line-clamp-2 group-hover:text-red-600 transition">${h.title}</h3>
+                    <span class="text-xs text-gray-500 mt-1 block">${timeAgo}</span>
+                </div>
+            </a>
+            `;
+        }).join('');
+        
+        console.log('✓ Headlines rendered:', headlines.length);
+        
+    } catch (err) {
+        console.error('✗ Headlines error:', err);
+        renderFallbackHeadlines(headlinesRow);
+    }
+}
+
+function renderFallbackHeadlines(container) {
+    const headlines = [
+        { title: "Premier League Transfer Window: All the Major Moves", time: "2 hours ago", image: null },
+        { title: "Champions League Draw: Tough Group for Canadian Sides", time: "4 hours ago", image: null },
+        { title: "MLS Playoffs: Toronto FC's Road to the Final", time: "6 hours ago", image: null },
+        { title: "Women's World Cup 2027: Expansion Plans Revealed", time: "8 hours ago", image: null },
+        { title: "Canadian Premier League: New Stadium Announcement", time: "10 hours ago", image: null },
+        { title: "Euro 2024: Underdog Stories and Dark Horses", time: "12 hours ago", image: null }
+    ];
+    
+    container.innerHTML = headlines.map(h => `
+        <a href="#" class="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
+            <div class="h-32 bg-gray-200 overflow-hidden">
+                <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500">
+                    <i class="fas fa-newspaper text-2xl"></i>
+                </div>
+            </div>
+            <div class="p-3">
+                <h3 class="font-bold text-sm line-clamp-2 group-hover:text-red-600 transition">${h.title}</h3>
+                <span class="text-xs text-gray-500 mt-1 block">${h.time}</span>
+            </div>
+        </a>
+    `).join('');
+}
+
+function getTimeAgo(dateString) {
+    if (!dateString) return 'Recently';
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + " years ago";
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + " months ago";
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + " days ago";
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + " hours ago";
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + " minutes ago";
+    return "Just now";
+}
+
+// ==========================================================
+// CANADIAN CORNER FROM SANITY
+// ==========================================================
+async function loadCanadianCorner() {
+    const container = document.querySelector('.canadian-corner')?.parentElement?.parentElement;
+    if (!container) return;
+    
+    try {
+        // Fetch the Canadian Corner document OR fetch latest 4 Canadian Soccer news
+        const query = `*[_type == "canadianCorner"][0] {
+            featuredArticle {
+                title,
+                "imageUrl": mainImage.asset->url,
+                excerpt,
+                link,
+                tag
+            },
+            sidebarArticles
+        }`;
+        
+        const response = await fetch(getSanityUrl(query));
+        const data = await response.json();
+        const corner = data.result;
+        
+        // If no Canadian Corner doc, fetch from news category
+        if (!corner) {
+            const newsQuery = `*[_type == "news" && category == "canadian-soccer"] | order(publishedAt desc) [0...4] {
+                title,
+                "imageUrl": mainImage.asset->url,
+                excerpt,
+                "slug": slug.current,
+                publishedAt
+            }`;
+            
+            const newsResponse = await fetch(getSanityUrl(newsQuery));
+            const newsData = await newsResponse.json();
+            const articles = newsData.result;
+            
+            if (!articles || articles.length === 0) {
+                console.log('No Canadian Corner content');
+                return;
+            }
+            
+            // Use first as featured, rest as sidebar
+            const featured = articles[0];
+            const sidebar = articles.slice(1, 4);
+            
+            renderCanadianCorner(featured, sidebar);
+            return;
+        }
+        
+        renderCanadianCorner(corner.featuredArticle, corner.sidebarArticles);
+        
+    } catch (err) {
+        console.error('✗ Canadian Corner error:', err);
+    }
+}
+
+function renderCanadianCorner(featured, sidebar) {
+    const container = document.querySelector('.canadian-corner');
+    if (!container || !featured) return;
+    
+    // Update featured article
+    const featuredHtml = `
+        <div class="md:w-1/2">
+            <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
+                ${featured.imageUrl ? 
+                    `<img src="${featured.imageUrl}" class="w-full h-full object-cover" alt="">` :
+                    `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
+                }
+            </div>
+        </div>
+        <div class="md:w-1/2 flex flex-col justify-center">
+            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">${featured.tag || 'Featured'}</span>
+            <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featured.title}</h3>
+            <p class="text-gray-700 mb-4">${featured.excerpt || ''}</p>
+            <a href="${featured.link || `/news/article.html?slug=${featured.slug || ''}`}" class="text-red-600 font-semibold hover:underline">Read Full Story →</a>
+        </div>
+    `;
+    
+    container.querySelector('.flex.flex-col.md\\:flex-row').innerHTML = featuredHtml;
+    
+    // Update sidebar
+    const sidebarContainer = container.nextElementSibling;
+    if (sidebarContainer && sidebar) {
+        sidebarContainer.innerHTML = sidebar.map(item => {
+            const link = item.link || `/news/article.html?slug=${item.slug || ''}`;
+            const time = item.publishedAt ? getTimeAgo(item.publishedAt) : (item.publishedAt || 'Recently');
+            
+            return `
+            <a href="${link}" class="block bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition border-l-4 border-red-600">
+                <h4 class="font-bold mb-2 hover:text-red-600">${item.title}</h4>
+                <span class="text-xs text-gray-500">${time}</span>
+            </a>
+            `;
+        }).join('');
+    }
+}
+
+// ==========================================================
+// PRODUCTS FROM NETLIFY FUNCTION
+// ==========================================================
+async function getProducts() {
+    const list = document.getElementById('product-list');
+    if (!list) return;
+
+    try {
+        const response = await fetch('/.netlify/functions/get-products');
+        if (!response.ok) throw new Error(`Failed to fetch products: ${response.statusText}`);
+        const products = await response.json();
+
+        if (products.length === 0) {
+            list.innerHTML = '<p class="text-center col-span-4">No products found.</p>';
+            return;
+        }
+        
+        list.innerHTML = '';
+        
+        products.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'bg-white p-6 shadow-lg rounded-lg border border-gray-200 flex flex-col';
+            
+            const sizeOptions = product.variants.map(variant => 
+                `<option value="${variant.id}">${variant.size}</option>`
+            ).join('');
+
+            const initialPrice = product.price;
+
+            card.innerHTML = `
+                <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
+                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover">
+                </div>
+                <h3 class="text-xl font-bold mb-2">${product.name}</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <p id="price-display-${product.id}" class="text-gray-600 text-lg font-semibold">$${parseFloat(initialPrice).toFixed(2)}</p>
+                    <select id="size-selector-${product.id}" class="border border-gray-300 rounded-md p-1 text-sm">
+                        ${sizeOptions}
+                    </select>
+                </div>
+                <div class="mt-auto">
+                    <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Add to Cart</button>
+                </div>
+            `;
+
+            const sizeSelector = card.querySelector(`#size-selector-${product.id}`);
+            const priceDisplay = card.querySelector(`#price-display-${product.id}`);
+            
+            sizeSelector.addEventListener('change', () => {
+                const selectedVariant = product.variants.find(v => v.id == sizeSelector.value);
+                if (selectedVariant) {
+                    priceDisplay.textContent = `$${parseFloat(selectedVariant.price).toFixed(2)}`;
+                }
+            });
+            
+            const addToCartButton = card.querySelector('button');
+            addToCartButton.addEventListener('click', () => {
+                const selectedVariantId = parseInt(sizeSelector.value);
+                const selectedVariant = product.variants.find(v => v.id === selectedVariantId);
+                
+                if (selectedVariant) {
+                    addToCart(product.id, selectedVariant.id, product.name + ` - ${selectedVariant.size}`, selectedVariant.price, product.imageUrl);
+                }
+            });
+            
+            list.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Error in getProducts:', error); 
+        list.innerHTML = '<p class="text-center col-span-4 text-gray-500">Products available on live site only.</p>';
+    }
+}
+
+// ==========================================================
+// PODCASTS FROM SANITY
+// ==========================================================
+async function loadPodcasts() {
+    const list = document.getElementById('podcast-list');
+    if (!list) return;
+    
+    try {
+        const query = `*[_type == "podcast"] | order(_createdAt desc) {
+            title,
+            youtubeLink
+        }`;
+        
+        const response = await fetch(getSanityUrl(query));
+        const data = await response.json();
+        const podcasts = data.result;
+        
+        console.log('Podcasts loaded:', podcasts);
+        
+        if (!podcasts || podcasts.length === 0) {
+            list.innerHTML = '<p class="text-gray-400 text-center col-span-3">No episodes yet. Add some in Sanity!</p>';
+            return;
+        }
+        
+        list.innerHTML = podcasts.map(p => {
+            let embed = p.youtubeLink || '';
+            if (embed.includes('watch?v=')) {
+                embed = embed.replace('watch?v=', 'embed/').split('&')[0];
+            } else if (embed.includes('youtu.be/')) {
+                const id = embed.split('youtu.be/')[1];
+                embed = `https://www.youtube.com/embed/${id}`;
+            }
+            
+            return `
+                <div class="bg-gray-900 rounded-lg overflow-hidden">
+                    <div class="h-48 bg-gray-800">
+                        <iframe src="${embed}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2">${p.title || 'Untitled Episode'}</h3>
+                        <a href="${p.youtubeLink}" target="_blank" class="text-red-500 hover:text-red-400 text-sm">Watch on YouTube →</a>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        console.log('✓ Podcasts rendered:', podcasts.length);
+        
+    } catch (err) {
+        console.error('✗ Podcasts error:', err);
+        list.innerHTML = '<p class="text-red-500 text-center col-span-3">Error loading podcasts</p>';
+    }
+}
+
+// ==========================================================
+// NEWS PAGE LOGIC (with pagination)
+// ==========================================================
+async function loadNewsPage() {
+    const featuredContainer = document.getElementById('featured-news');
+    const gridContainer = document.getElementById('news-grid');
+    if (!featuredContainer || !gridContainer) return;
+    
+    // Get page from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = parseInt(urlParams.get('page')) || 1;
+    const category = urlParams.get('category') || 'all';
+    const perPage = 20;
+    const start = (page - 1) * perPage;
+    
+    try {
+        // Build query based on category
+        let categoryFilter = category !== 'all' ? `&& category == "${category}"` : '';
+        const query = `*[_type == "news" ${categoryFilter}] | order(publishedAt desc) [${start}...${start + perPage}] {
+            title,
+            "slug": slug.current,
+            "imageUrl": mainImage.asset->url,
+            excerpt,
+            category,
+            publishedAt,
+            "author": author->name
+        }`;
+        
+        const countQuery = `count(*[_type == "news" ${categoryFilter}])`;
+        
+        const [articlesResponse, countResponse] = await Promise.all([
+            fetch(getSanityUrl(query)),
+            fetch(getSanityUrl(countQuery))
+        ]);
+        
+        const articles = (await articlesResponse.json()).result;
+        const totalCount = (await countResponse.json()).result;
+        
+        if (!articles || articles.length === 0) {
+            gridContainer.innerHTML = '<p class="col-span-3 text-center text-gray-500">No articles found.</p>';
+            return;
+        }
+        
+        // Featured article (first one)
+        const featured = articles[0];
+        featuredContainer.innerHTML = `
+            <div class="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-lg">
+                <div class="md:w-1/2 h-64 md:h-auto">
+                    ${featured.imageUrl ? 
+                        `<img src="${featured.imageUrl}" class="w-full h-full object-cover" alt="">` :
+                        `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
+                    }
+                </div>
+                <div class="md:w-1/2 p-8 flex flex-col justify-center">
+                    <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">${featured.category || 'News'}</span>
+                    <h2 class="text-3xl font-bold mb-4 hover:text-red-600 cursor-pointer">${featured.title}</h2>
+                    <p class="text-gray-600 mb-4">${featured.excerpt || ''}</p>
+                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                        <span>${featured.author || 'Staff'}</span>
+                        <span class="mx-2">•</span>
+                        <span>${getTimeAgo(featured.publishedAt)}</span>
+                    </div>
+                    <a href="article.html?slug=${featured.slug}" class="text-red-600 font-semibold hover:underline">Read Full Story →</a>
+                </div>
+            </div>
+        `;
+        
+        // Grid (remaining articles)
+        const gridArticles = articles.slice(1);
+        gridContainer.innerHTML = gridArticles.map(article => `
+            <a href="article.html?slug=${article.slug}" class="article-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 block">
+                <div class="h-48 bg-gray-200 overflow-hidden">
+                    ${article.imageUrl ? 
+                        `<img src="${article.imageUrl}" class="w-full h-full object-cover hover:scale-105 transition duration-300" alt="">` :
+                        `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500"><i class="fas fa-newspaper text-3xl"></i></div>`
+                    }
+                </div>
+                <div class="p-6">
+                    <span class="text-red-600 text-xs font-bold uppercase">${article.category || 'News'}</span>
+                    <h3 class="font-bold text-lg mt-2 mb-2 hover:text-red-600 transition">${article.title}</h3>
+                    <p class="text-gray-600 text-sm line-clamp-2 mb-4">${article.excerpt || ''}</p>
+                    <div class="flex items-center text-xs text-gray-500">
+                        <span>${getTimeAgo(article.publishedAt)}</span>
+                    </div>
+                </div>
+            </a>
+        `).join('');
+        
+        // Pagination
+        renderPagination(page, totalCount, perPage, category);
+        
+        // Setup filters
+        setupNewsFilters(category);
+        
+    } catch (err) {
+        console.error('✗ News page error:', err);
+        gridContainer.innerHTML = '<p class="col-span-3 text-center text-red-500">Error loading news.</p>';
+    }
+}
+
+function renderPagination(currentPage, totalCount, perPage, currentCategory) {
+    const totalPages = Math.ceil(totalCount / perPage);
+    const container = document.getElementById('load-more')?.parentElement;
+    if (!container) return;
+    
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    let html = '<div class="flex justify-center space-x-2 mt-8">';
+    
+    // Previous
+    if (currentPage > 1) {
+        html += `<a href="?page=${currentPage - 1}${currentCategory !== 'all' ? '&category=' + currentCategory : ''}" class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100">← Prev</a>`;
+    }
+    
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+            html += `<span class="px-4 py-2 bg-red-600 text-white rounded-md">${i}</span>`;
+        } else {
+            html += `<a href="?page=${i}${currentCategory !== 'all' ? '&category=' + currentCategory : ''}" class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100">${i}</a>`;
+        }
+    }
+    
+    // Next
+    if (currentPage < totalPages) {
+        html += `<a href="?page=${currentPage + 1}${currentCategory !== 'all' ? '&category=' + currentCategory : ''}" class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100">Next →</a>`;
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function setupNewsFilters(currentCategory) {
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const category = btn.dataset.category;
+            window.location.href = `?category=${category}&page=1`;
+        });
+        
+        // Set active state
+        if (btn.dataset.category === currentCategory) {
+            btn.classList.add('bg-red-600', 'text-white');
+            btn.classList.remove('bg-white', 'text-gray-700');
+        }
+    });
+}
+
+// ==========================================================
+// ARTICLE PAGE LOGIC
+// ==========================================================
+async function loadArticlePage() {
+    const container = document.getElementById('article-content');
+    if (!container) return;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const slug = urlParams.get('slug');
+    
+    if (!slug) {
+        container.innerHTML = '<p class="text-center text-red-500">Article not found.</p>';
+        return;
+    }
+    
+    try {
+        const query = `*[_type == "news" && slug.current == "${slug}"][0] {
+            title,
+            "imageUrl": mainImage.asset->url,
+            content,
+            category,
+            publishedAt,
+            "author": author->name,
+            "authorImage": author->image.asset->url,
+            tags
+        }`;
+        
+        const response = await fetch(getSanityUrl(query));
+        const article = (await response.json()).result;
+        
+        if (!article) {
+            container.innerHTML = '<p class="text-center text-red-500">Article not found.</p>';
+            return;
+        }
+        
+        // Update page title
+        document.title = `${article.title} | 90 Minutes or More`;
+        
+        // Render article
+        container.innerHTML = `
+            <article class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+                ${article.imageUrl ? 
+                    `<div class="h-64 md:h-96 w-full">
+                        <img src="${article.imageUrl}" class="w-full h-full object-cover" alt="">
+                    </div>` : ''
+                }
+                <div class="p-8 md:p-12">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold uppercase">${article.category || 'News'}</span>
+                        <span class="text-gray-500">${getTimeAgo(article.publishedAt)}</span>
+                    </div>
+                    
+                    <h1 class="font-anton text-4xl md:text-5xl uppercase mb-6">${article.title}</h1>
+                    
+                    <div class="flex items-center mb-8 pb-8 border-b border-gray-200">
+                        ${article.authorImage ? 
+                            `<img src="${article.authorImage}" class="w-12 h-12 rounded-full mr-4 object-cover" alt="">` :
+                            `<div class="w-12 h-12 rounded-full bg-gray-300 mr-4 flex items-center justify-center"><i class="fas fa-user text-gray-500"></i></div>`
+                        }
+                        <div>
+                            <p class="font-bold">${article.author || 'Staff Writer'}</p>
+                            <p class="text-sm text-gray-500">${new Date(article.publishedAt).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="prose prose-lg max-w-none">
+                        ${article.content ? renderPortableText(article.content) : '<p>No content available.</p>'}
+                    </div>
+                    
+                    ${article.tags ? `
+                    <div class="mt-8 pt-8 border-t border-gray-200">
+                        <p class="text-sm text-gray-600 mb-2">Tags:</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${article.tags.map(tag => `<span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">#${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            </article>
+        `;
+        
+    } catch (err) {
+        console.error('✗ Article page error:', err);
+        container.innerHTML = '<p class="text-center text-red-500">Error loading article.</p>';
+    }
+}
+
+function renderPortableText(blocks) {
+    if (!blocks) return '';
+    
+    return blocks.map(block => {
+        if (block._type === 'block') {
+            const text = block.children?.map(child => child.text).join('') || '';
+            if (block.style === 'h2') return `<h2 class="text-2xl font-bold mt-8 mb-4">${text}</h2>`;
+            if (block.style === 'h3') return `<h3 class="text-xl font-bold mt-6 mb-3">${text}</h3>`;
+            return `<p class="mb-4 leading-relaxed">${text}</p>`;
+        }
+        if (block._type === 'image') {
+            return `<img src="${block.asset?.url || ''}" class="w-full rounded-lg my-6" alt="">`;
+        }
+        return '';
+    }).join('');
+}
+
+// ==========================================================
+// PODCAST PAGE LOGIC
+// ==========================================================
+async function loadPodcastPage() {
+    const latestContainer = document.getElementById('latest-podcast');
+    const allContainer = document.getElementById('all-podcasts');
+    if (!latestContainer || !allContainer) return;
+    
+    try {
+        const query = `*[_type == "podcast"] | order(_createdAt desc) {
+            title,
+            youtubeLink,
+            description,
+            publishedAt
+        }`;
+        
+        const response = await fetch(getSanityUrl(query));
+        const podcasts = (await response.json()).result;
+        
+        if (!podcasts || podcasts.length === 0) {
+            latestContainer.innerHTML = '<p class="p-8 text-center text-gray-400">No episodes yet.</p>';
+            allContainer.innerHTML = '';
+            return;
+        }
+        
+        // Latest episode (bigger)
+        const latest = podcasts[0];
+        let embedUrl = latest.youtubeLink || '';
+        if (embedUrl.includes('watch?v=')) {
+            embedUrl = embedUrl.replace('watch?v=', 'embed/').split('&')[0];
+        } else if (embedUrl.includes('youtu.be/')) {
+            const id = embedUrl.split('youtu.be/')[1];
+            embedUrl = `https://www.youtube.com/embed/${id}`;
+        }
+        
+        latestContainer.innerHTML = `
+            <div class="flex flex-col lg:flex-row">
+                <div class="lg:w-2/3 h-64 lg:h-96 bg-black">
+                    <iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="lg:w-1/3 p-8 flex flex-col justify-center bg-gray-800">
+                    <span class="text-red-500 font-bold mb-2">LATEST EPISODE</span>
+                    <h2 class="text-2xl font-bold mb-4">${latest.title}</h2>
+                    <p class="text-gray-400 mb-6">${latest.description || ''}</p>
+                    <a href="${latest.youtubeLink}" target="_blank" class="text-red-500 hover:text-red-400 font-semibold">Watch on YouTube →</a>
+                </div>
+            </div>
+        `;
+        
+        // All other episodes
+        const rest = podcasts.slice(1);
+        allContainer.innerHTML = rest.map(p => {
+            let embed = p.youtubeLink || '';
+            if (embed.includes('watch?v=')) {
+                embed = embed.replace('watch?v=', 'embed/').split('&')[0];
+            } else if (embed.includes('youtu.be/')) {
+                const id = embed.split('youtu.be/')[1];
+                embed = `https://www.youtube.com/embed/${id}`;
+            }
+            
+            return `
+            <div class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
+                <div class="h-48 bg-black">
+                    <iframe src="${embed}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="p-6">
+                    <h3 class="font-bold text-xl mb-2">${p.title}</h3>
+                    <p class="text-gray-400 text-sm mb-4 line-clamp-2">${p.description || ''}</p>
+                    <a href="${p.youtubeLink}" target="_blank" class="text-red-500 hover:text-red-400 text-sm font-semibold">Watch on YouTube →</a>
+                </div>
+            </div>
+            `;
+        }).join('');
+        
+    } catch (err) {
+        console.error('✗ Podcast page error:', err);
+    }
+}
+
+// ==========================================================
+// CART FUNCTIONALITY
 // ==========================================================
 let cart = [];
 
 function addToCart(productId, variantId, productName, productPrice, productImageUrl) {
-  const existingProduct = cart.find(item => item.variantId === variantId);
-  if (existingProduct) {
-    existingProduct.quantity += 1;
-  } else {
-    cart.push({ id: productId, variantId, name: productName, price: productPrice, imageUrl: productImageUrl, quantity: 1 });
-  }
-  updateCartDisplay();
+    const existing = cart.find(item => item.variantId === variantId);
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.push({ 
+            id: productId, 
+            variantId, 
+            name: productName, 
+            price: parseFloat(productPrice), 
+            imageUrl: productImageUrl, 
+            quantity: 1 
+        });
+    }
+    updateCartDisplay();
 }
 
 function updateCartDisplay() {
-  const cartCount = document.getElementById('cart-count');
-  const cartItems = document.getElementById('cart-items');
-  const cartTotal = document.getElementById('cart-total');
-  if (!cartItems || !cartTotal) return;
+    const cartCount = document.getElementById('cart-count');
+    const cartItems = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    
+    if (!cartItems) return;
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  if (cartCount) {
-    cartCount.textContent = totalItems;
-    cartCount.classList.toggle('hidden', totalItems === 0);
-  }
-  cartItems.innerHTML = '';
-  if (cart.length === 0) {
-    cartItems.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
-  } else {
-    cart.forEach(item => {
-      const itemEl = document.createElement('div');
-      itemEl.className = 'flex justify-between items-center py-2 border-b';
-      itemEl.innerHTML = `
-        <div class="flex items-center">
-          <img src="${item.imageUrl}" alt="${item.name}" class="w-16 h-16 object-cover mr-4 rounded">
-          <div>
-            <p class="font-semibold text-sm">${item.name}</p>
-            <p class="text-xs text-gray-600">${item.quantity} x $${parseFloat(item.price).toFixed(2)}</p>
-          </div>
-        </div>
-        <button onclick="removeFromCart(${item.variantId})" class="text-red-500 hover:text-red-700 font-bold text-lg">&times;</button>
-      `;
-      cartItems.appendChild(itemEl);
-    });
-  }
-  const totalPrice = cart.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-  cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
+    if (cartCount) {
+        cartCount.textContent = totalItems;
+        cartCount.classList.toggle('hidden', totalItems === 0);
+    }
+    
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
+    } else {
+        cartItems.innerHTML = cart.map(item => `
+            <div class="flex justify-between items-center py-2 border-b">
+                <div class="flex items-center">
+                    <img src="${item.imageUrl}" class="w-16 h-16 object-cover mr-4 rounded">
+                    <div>
+                        <p class="font-semibold text-sm">${item.name}</p>
+                        <p class="text-xs text-gray-600">${item.quantity} x $${item.price.toFixed(2)}</p>
+                    </div>
+                </div>
+                <button onclick="removeFromCart(${item.variantId})" class="text-red-500 hover:text-red-700 font-bold text-lg">&times;</button>
+            </div>
+        `).join('');
+    }
+    
+    const totalPrice = cart.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+    if (cartTotal) cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
 }
 
 function removeFromCart(variantId) {
@@ -64,209 +815,74 @@ function removeFromCart(variantId) {
 }
 
 function toggleCart() {
-  document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
+    const sidebar = document.getElementById('cart-sidebar');
+    if (sidebar) sidebar.classList.toggle('translate-x-full');
 }
 
 async function handleCheckout() {
     const btn = document.getElementById('sidebar-checkout-button');
     if (!btn || cart.length === 0) return;
+    
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+    
     try {
         const response = await fetch('/.netlify/functions/create-checkout-session', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ cart }),
         });
-        if (!response.ok) {
-          const errorInfo = await response.json();
-          throw new Error(errorInfo.error || 'Failed to create checkout session');
-        }
+        
+        if (!response.ok) throw new Error('Checkout failed');
+        
         const session = await response.json();
         window.location.href = session.url;
     } catch (error) {
         console.error('Checkout error:', error);
-        alert(`Could not initiate checkout. Please try again. Error: ${error.message}`);
+        alert('Could not initiate checkout. Please try again.');
         btn.disabled = false;
         btn.textContent = 'Proceed to Checkout';
     }
 }
 
-// Expose functions to the global scope
 window.addToCart = addToCart;
 window.handleCheckout = handleCheckout;
 window.toggleCart = toggleCart;
 window.removeFromCart = removeFromCart;
 
 // ==========================================================
-// HERO SECTION LOGIC
+// MOBILE MENU
 // ==========================================================
-async function getHero() {
-  const heroSection = document.getElementById('home');
-  const heroData = await client.fetch('*[_type == "hero" && _id == "hero"][0]');
-  if (!heroSection || !heroData) return;
-  const existingBg = heroSection.querySelector('#hero-background');
-  if (existingBg) existingBg.remove();
-  let backgroundElement;
-  if (heroData.backgroundType === 'video' && heroData.backgroundVideo?.asset?._ref) {
-    const videoAsset = await client.getDocument(heroData.backgroundVideo.asset._ref);
-    if(videoAsset.url) {
-      backgroundElement = document.createElement('video');
-      backgroundElement.src = videoAsset.url;
-      backgroundElement.className = 'absolute inset-0 w-full h-full object-cover z-0';
-      backgroundElement.autoplay = true; backgroundElement.loop = true; backgroundElement.muted = true; backgroundElement.playsInline = true;
+function initMobileMenu() {
+    const btn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
+    if (btn && menu) {
+        btn.addEventListener('click', () => menu.classList.toggle('hidden'));
     }
-  } else if (heroData.backgroundType === 'image' && heroData.backgroundImage) {
-    backgroundElement = document.createElement('div');
-    const imageUrl = urlFor(heroData.backgroundImage).width(1920).quality(80).url();
-    backgroundElement.style.backgroundImage = `url(${imageUrl})`;
-    backgroundElement.className = 'absolute inset-0 bg-cover bg-center z-0';
-  }
-  if (backgroundElement) {
-    backgroundElement.id = 'hero-background';
-    heroSection.prepend(backgroundElement);
-  }
 }
 
 // ==========================================================
-// SHOP SECTION LOGIC (UPDATED FOR SIZE VARIANTS)
+// INITIALIZE BASED ON PAGE
 // ==========================================================
-async function getProducts() {
-  const productList = document.getElementById('product-list');
-  if (!productList) return;
-
-  try {
-    const response = await fetch('/.netlify/functions/get-products');
-    if (!response.ok) throw new Error(`Failed to fetch products: ${response.statusText}`);
-    const products = await response.json();
-
-    if (products.length === 0) {
-      productList.innerHTML = '<p>No products found at this time.</p>';
-      return;
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Initializing...');
+    initMobileMenu();
     
-    productList.innerHTML = '';
+    // Check which page we're on and load appropriate content
+    const path = window.location.pathname;
     
-    products.forEach(product => {
-      const card = document.createElement('div');
-      card.className = 'bg-white p-6 shadow-lg rounded-lg border border-gray-200 flex flex-col';
-      
-      const sizeOptions = product.variants.map(variant => 
-        `<option value="${variant.id}">${variant.size}</option>`
-      ).join('');
-
-      const initialPrice = product.price;
-
-      card.innerHTML = `
-        <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
-            <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover">
-        </div>
-        <h3 class="text-xl font-bold mb-2">${product.name}</h3>
-        <div class="flex justify-between items-center mb-4">
-            <p id="price-display-${product.id}" class="text-gray-600 text-lg font-semibold">$${parseFloat(initialPrice).toFixed(2)}</p>
-            <select id="size-selector-${product.id}" class="border border-gray-300 rounded-md p-1 text-sm">
-                ${sizeOptions}
-            </select>
-        </div>
-        <div class="mt-auto">
-            <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Add to Cart</button>
-        </div>
-      `;
-
-      const sizeSelector = card.querySelector(`#size-selector-${product.id}`);
-      const priceDisplay = card.querySelector(`#price-display-${product.id}`);
-      
-      sizeSelector.addEventListener('change', () => {
-          const selectedVariant = product.variants.find(v => v.id == sizeSelector.value);
-          if (selectedVariant) {
-              priceDisplay.textContent = `$${parseFloat(selectedVariant.price).toFixed(2)}`;
-          }
-      });
-      
-      const addToCartButton = card.querySelector('button');
-      addToCartButton.addEventListener('click', () => {
-        const selectedVariantId = parseInt(sizeSelector.value);
-        const selectedVariant = product.variants.find(v => v.id === selectedVariantId);
-        
-        if (selectedVariant) {
-          addToCart(product.id, selectedVariant.id, product.name + ` - ${selectedVariant.size}`, selectedVariant.price, product.imageUrl);
-        }
-      });
-      
-      productList.appendChild(card);
-    });
-  } catch (error) {
-    console.error('Error in getProducts:', error); 
-    productList.innerHTML = '<p class="text-red-500">Error loading products. Please try again later.</p>';
-  }
-}
-
-// ==========================================================
-// PODCAST SECTION LOGIC (SIMPLE, FINAL FIX)
-// ==========================================================
-async function getPodcasts() {
-  const podcastList = document.getElementById('podcast-list');
-  if (!podcastList) return;
-
-  try {
-    const podcasts = await client.fetch('*[_type == "podcast"]');
-    if (!podcasts || podcasts.length === 0) {
-      podcastList.innerHTML = ''; return;
+    if (path.includes('/news/article.html')) {
+        loadArticlePage();
+    } else if (path.includes('/news/')) {
+        loadNewsPage();
+    } else if (path.includes('/podcast/')) {
+        loadPodcastPage();
+    } else {
+        // Homepage
+        loadHeroSlides();
+        loadHeadlines();
+        loadCanadianCorner();
+        loadPodcasts();
+        getProducts();
     }
-    podcastList.innerHTML = '';
-
-    podcasts.forEach(podcast => {
-      if (!podcast.youtubeLink || typeof podcast.youtubeLink !== 'string') {
-        console.warn('Skipping podcast with missing or invalid URL');
-        return;
-      }
-      
-      let embedUrl = podcast.youtubeLink;
-
-      // The most reliable, simple conversion:
-      // If it's a 'watch' link, convert it to 'embed'.
-      if (embedUrl.includes('watch?v=')) {
-        embedUrl = embedUrl.replace('watch?v=', 'embed/');
-        // Also, strip any other parameters like &t= or &si= to be safe
-        const urlParts = embedUrl.split('&');
-        embedUrl = urlParts[0];
-      }
-      // You can add more simple `if` statements here for other formats if needed
-
-      const card = document.createElement('div');
-      card.className = 'podcast-card bg-white shadow-lg overflow-hidden transition duration-300 hover:shadow-xl';
-      
-      const iframeContainer = document.createElement('div');
-      iframeContainer.className = 'podcast-iframe-container';
-      iframeContainer.innerHTML = `<iframe 
-        src="${embedUrl}" 
-        title="YouTube video player" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-        referrerpolicy="strict-origin-when-cross-origin" 
-        allowfullscreen>
-      </iframe>`;
-
-      const textContainer = document.createElement('div');
-      textContainer.className = 'p-6 text-center';
-      textContainer.innerHTML = `
-        <h3 class="text-xl font-bold mb-2">${podcast.title || 'Untitled Episode'}</h3>
-        <a href="${podcast.youtubeLink || '#'}" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 font-medium text-sm block mt-2">Watch on YouTube</a>
-      `;
-
-      card.appendChild(iframeContainer);
-      card.appendChild(textContainer);
-      podcastList.appendChild(card);
-    });
-  } catch (error) {
-      console.error("Error fetching podcasts:", error);
-      podcastList.innerHTML = '<p class="text-red-500">Error loading podcasts.</p>';
-  }
-}
-
-// ==========================================================
-// RUN ALL FUNCTIONS
-// ==========================================================
-getHero();
-getProducts();
-getPodcasts();
+});

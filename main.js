@@ -21,7 +21,12 @@ async function loadHeroSlides() {
             "imageUrl": backgroundImage.asset->url,
             tag,
             buttonText,
-            link
+            link,
+            "sourceArticle": sourceArticle->{
+                title,
+                "slug": slug.current,
+                "imageUrl": mainImage.asset->url
+            }
         }`;
         
         const response = await fetch(getSanityUrl(query));
@@ -44,8 +49,10 @@ async function loadHeroSlides() {
             let imgHtml = '';
             let bgClass = 'bg-gradient-to-b from-black/60 to-black/40';
             
-            if (slide.imageUrl) {
-                imgHtml = `<img src="${slide.imageUrl}" alt="${slide.title}" class="w-full h-full object-cover opacity-60" onerror="this.style.display='none'; this.parentElement.classList.add('bg-gradient-to-b', 'from-black/60', 'to-black/40')">`;
+            const imageUrl = slide.imageUrl || (slide.sourceArticle?.imageUrl);
+            
+            if (imageUrl) {
+                imgHtml = `<img src="${imageUrl}" alt="${slide.title}" class="w-full h-full object-cover opacity-60" onerror="this.style.display='none'; this.parentElement.classList.add('bg-gradient-to-b', 'from-black/60', 'to-black/40')">`;
                 bgClass = '';
             }
             
@@ -56,7 +63,7 @@ async function loadHeroSlides() {
                     <div class="container mx-auto px-6 text-center text-white relative z-10">
                         <span class="bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wide mb-4 inline-block">${slide.tag || 'Update'}</span>
                         <h1 class="font-anton text-5xl md:text-7xl font-black uppercase mb-4 leading-tight">${slide.title}</h1>
-                        <p class="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto mb-8">${slide.subtitle}</p>
+                        <p class="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto mb-8">${slide.subtitle || ''}</p>
                         <a href="${slide.link || '#'}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-md transition duration-300 inline-block">${slide.buttonText || 'Read More'}</a>
                     </div>
                 </div>
@@ -102,7 +109,12 @@ async function loadHeadlines() {
             "imageUrl": mainImage.asset->url,
             "link": link,
             publishedAt,
-            category
+            category,
+            "sourceArticle": sourceArticle->{
+                title,
+                "slug": slug.current,
+                "imageUrl": mainImage.asset->url
+            }
         }`;
         
         const response = await fetch(getSanityUrl(query));
@@ -112,7 +124,6 @@ async function loadHeadlines() {
         console.log('Headlines loaded:', headlines);
         
         if (!headlines || headlines.length === 0) {
-            // Fallback to hardcoded if none in Sanity
             renderFallbackHeadlines(headlinesRow);
             return;
         }
@@ -120,12 +131,13 @@ async function loadHeadlines() {
         headlinesRow.innerHTML = headlines.map(h => {
             const timeAgo = getTimeAgo(h.publishedAt);
             const categoryLabel = h.category ? h.category.toUpperCase() : 'NEWS';
+            const imageUrl = h.imageUrl || (h.sourceArticle?.imageUrl);
             
             return `
             <a href="${h.link || '#'}" class="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
                 <div class="h-32 bg-gray-200 overflow-hidden relative">
-                    ${h.imageUrl ? 
-                        `<img src="${h.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="">` :
+                    ${imageUrl ? 
+                        `<img src="${imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="">` :
                         `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500">
                             <i class="fas fa-newspaper text-3xl"></i>
                         </div>`
@@ -193,21 +205,21 @@ function getTimeAgo(dateString) {
 }
 
 // ==========================================================
-// CANADIAN CORNER FROM SANITY
+// CANADIAN CORNER FROM SANITY - WHITE BUTTON FIX
 // ==========================================================
 async function loadCanadianCorner() {
     const container = document.querySelector('.canadian-corner')?.parentElement?.parentElement;
     if (!container) return;
     
     try {
-        // Fetch the Canadian Corner document OR fetch latest 4 Canadian Soccer news
         const query = `*[_type == "canadianCorner"][0] {
             featuredArticle {
                 title,
                 "imageUrl": mainImage.asset->url,
                 excerpt,
                 link,
-                tag
+                tag,
+                "slug": slug.current
             },
             sidebarArticles
         }`;
@@ -216,9 +228,8 @@ async function loadCanadianCorner() {
         const data = await response.json();
         const corner = data.result;
         
-        // If no Canadian Corner doc, fetch from news category
         if (!corner) {
-            const newsQuery = `*[_type == "news" && category == "canadian-soccer"] | order(publishedAt desc) [0...4] {
+            const newsQuery = `*[_type == "news" && category == "canadian-corner"] | order(publishedAt desc) [0...4] {
                 title,
                 "imageUrl": mainImage.asset->url,
                 excerpt,
@@ -235,7 +246,6 @@ async function loadCanadianCorner() {
                 return;
             }
             
-            // Use first as featured, rest as sidebar
             const featured = articles[0];
             const sidebar = articles.slice(1, 4);
             
@@ -254,7 +264,7 @@ function renderCanadianCorner(featured, sidebar) {
     const container = document.querySelector('.canadian-corner');
     if (!container || !featured) return;
     
-    // Update featured article
+    // WHITE BUTTON FIX: text-white instead of text-red-600
     const featuredHtml = `
         <div class="md:w-1/2">
             <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
@@ -268,13 +278,12 @@ function renderCanadianCorner(featured, sidebar) {
             <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">${featured.tag || 'Featured'}</span>
             <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featured.title}</h3>
             <p class="text-gray-700 mb-4">${featured.excerpt || ''}</p>
-            <a href="${featured.link || `/news/article.html?slug=${featured.slug || ''}`}" class="text-red-600 font-semibold hover:underline">Read Full Story →</a>
+            <a href="${featured.link || `/news/article.html?slug=${featured.slug || ''}`}" class="text-white font-semibold hover:underline">Read Full Story →</a>
         </div>
     `;
     
     container.querySelector('.flex.flex-col.md\\:flex-row').innerHTML = featuredHtml;
     
-    // Update sidebar
     const sidebarContainer = container.nextElementSibling;
     if (sidebarContainer && sidebar) {
         sidebarContainer.innerHTML = sidebar.map(item => {
@@ -290,6 +299,66 @@ function renderCanadianCorner(featured, sidebar) {
         }).join('');
     }
 }
+
+// ==========================================================
+// SLIDER LOGIC - 8 SECONDS FIX
+// ==========================================================
+let slideIndex = 1;
+let slideInterval;
+
+function showSlides(n) {
+    let i;
+    let slides = document.getElementsByClassName("hero-slide");
+    let dots = document.getElementsByClassName("dot");
+    
+    if (n > slides.length) { slideIndex = 1 }
+    if (n < 1) { slideIndex = slides.length }
+    
+    for (i = 0; i < slides.length; i++) {
+        slides[i].classList.remove('active');
+        slides[i].style.display = "none";
+    }
+    
+    for (i = 0; i < dots.length; i++) {
+        dots[i].classList.remove("opacity-100");
+        dots[i].classList.add("opacity-50");
+    }
+    
+    if (slides.length > 0) {
+        slides[slideIndex - 1].style.display = "block";
+        setTimeout(() => {
+            slides[slideIndex - 1].classList.add('active');
+        }, 10);
+    }
+    
+    if (dots.length > 0) {
+        dots[slideIndex - 1].classList.remove("opacity-50");
+        dots[slideIndex - 1].classList.add("opacity-100");
+    }
+}
+
+function changeSlide(n) {
+    clearInterval(slideInterval);
+    showSlides(slideIndex += n);
+    startSlideTimer();
+}
+
+function currentSlide(n) {
+    clearInterval(slideInterval);
+    showSlides(slideIndex = n);
+    startSlideTimer();
+}
+
+// 8 SECONDS FIX: Changed from 3000 to 8000
+function startSlideTimer() {
+    slideInterval = setInterval(() => {
+        slideIndex++;
+        showSlides(slideIndex);
+    }, 8000);
+}
+
+window.changeSlide = changeSlide;
+window.currentSlide = currentSlide;
 
 // ==========================================================
 // PRODUCTS FROM NETLIFY FUNCTION
@@ -426,7 +495,6 @@ async function loadNewsPage() {
     const gridContainer = document.getElementById('news-grid');
     if (!featuredContainer || !gridContainer) return;
     
-    // Get page from URL
     const urlParams = new URLSearchParams(window.location.search);
     const page = parseInt(urlParams.get('page')) || 1;
     const category = urlParams.get('category') || 'all';
@@ -434,7 +502,6 @@ async function loadNewsPage() {
     const start = (page - 1) * perPage;
     
     try {
-        // Build query based on category
         let categoryFilter = category !== 'all' ? `&& category == "${category}"` : '';
         const query = `*[_type == "news" ${categoryFilter}] | order(publishedAt desc) [${start}...${start + perPage}] {
             title,
@@ -461,7 +528,6 @@ async function loadNewsPage() {
             return;
         }
         
-        // Featured article (first one)
         const featured = articles[0];
         featuredContainer.innerHTML = `
             <div class="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-lg">
@@ -485,7 +551,6 @@ async function loadNewsPage() {
             </div>
         `;
         
-        // Grid (remaining articles)
         const gridArticles = articles.slice(1);
         gridContainer.innerHTML = gridArticles.map(article => `
             <a href="article.html?slug=${article.slug}" class="article-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 block">
@@ -506,10 +571,7 @@ async function loadNewsPage() {
             </a>
         `).join('');
         
-        // Pagination
         renderPagination(page, totalCount, perPage, category);
-        
-        // Setup filters
         setupNewsFilters(category);
         
     } catch (err) {
@@ -530,12 +592,10 @@ function renderPagination(currentPage, totalCount, perPage, currentCategory) {
     
     let html = '<div class="flex justify-center space-x-2 mt-8">';
     
-    // Previous
     if (currentPage > 1) {
         html += `<a href="?page=${currentPage - 1}${currentCategory !== 'all' ? '&category=' + currentCategory : ''}" class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100">← Prev</a>`;
     }
     
-    // Page numbers
     for (let i = 1; i <= totalPages; i++) {
         if (i === currentPage) {
             html += `<span class="px-4 py-2 bg-red-600 text-white rounded-md">${i}</span>`;
@@ -544,7 +604,6 @@ function renderPagination(currentPage, totalCount, perPage, currentCategory) {
         }
     }
     
-    // Next
     if (currentPage < totalPages) {
         html += `<a href="?page=${currentPage + 1}${currentCategory !== 'all' ? '&category=' + currentCategory : ''}" class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100">Next →</a>`;
     }
@@ -561,7 +620,6 @@ function setupNewsFilters(currentCategory) {
             window.location.href = `?category=${category}&page=1`;
         });
         
-        // Set active state
         if (btn.dataset.category === currentCategory) {
             btn.classList.add('bg-red-600', 'text-white');
             btn.classList.remove('bg-white', 'text-gray-700');
@@ -604,10 +662,8 @@ async function loadArticlePage() {
             return;
         }
         
-        // Update page title
         document.title = `${article.title} | 90 Minutes or More`;
         
-        // Render article
         container.innerHTML = `
             <article class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
                 ${article.imageUrl ? 
@@ -698,7 +754,6 @@ async function loadPodcastPage() {
             return;
         }
         
-        // Latest episode (bigger)
         const latest = podcasts[0];
         let embedUrl = latest.youtubeLink || '';
         if (embedUrl.includes('watch?v=')) {
@@ -722,7 +777,6 @@ async function loadPodcastPage() {
             </div>
         `;
         
-        // All other episodes
         const rest = podcasts.slice(1);
         allContainer.innerHTML = rest.map(p => {
             let embed = p.youtubeLink || '';
@@ -851,7 +905,7 @@ window.toggleCart = toggleCart;
 window.removeFromCart = removeFromCart;
 
 // ==========================================================
-// MOBILE MENU
+// MOBILE MENU - ADDED TO ALL PAGES
 // ==========================================================
 function initMobileMenu() {
     const btn = document.getElementById('mobile-menu-button');
@@ -868,7 +922,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Initializing...');
     initMobileMenu();
     
-    // Check which page we're on and load appropriate content
     const path = window.location.pathname;
     
     if (path.includes('/news/article.html')) {
@@ -878,11 +931,16 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (path.includes('/podcast/')) {
         loadPodcastPage();
     } else {
-        // Homepage
         loadHeroSlides();
         loadHeadlines();
         loadCanadianCorner();
         loadPodcasts();
         getProducts();
+        startSlideTimer();
     }
 });
+
+window.loadPodcastPage = loadPodcastPage;
+window.loadNewsPage = loadNewsPage;
+window.loadArticlePage = loadArticlePage;
+window.initMobileMenu = initMobileMenu;

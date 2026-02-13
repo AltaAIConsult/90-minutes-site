@@ -42,6 +42,7 @@ async function loadHeroSlides() {
         
         if (!slides || slides.length === 0) {
             console.log('No slides in Sanity - keeping fallback');
+            renderFallbackSlides();
             return;
         }
         
@@ -93,7 +94,37 @@ async function loadHeroSlides() {
         
     } catch (err) {
         console.error('✗ Hero slides error:', err);
+        renderFallbackSlides();
     }
+}
+
+function renderFallbackSlides() {
+    const heroSection = document.getElementById('hero-section');
+    if (!heroSection) return;
+    
+    heroSection.innerHTML = `
+        <div class="hero-slide active relative h-[70vh] bg-gray-900 bg-gradient-to-b from-black/60 to-black/40">
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="container mx-auto px-6 text-center text-white relative z-10">
+                    <span class="bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wide mb-4 inline-block">Welcome</span>
+                    <h1 class="font-anton text-5xl md:text-7xl font-black uppercase mb-4 leading-tight">90 Minutes or More</h1>
+                    <p class="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto mb-8">Your destination for football news, culture, and original content</p>
+                    <a href="#latest" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-md transition duration-300 inline-block">Explore</a>
+                </div>
+            </div>
+        </div>
+        <button onclick="changeSlide(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition z-10">
+            <i class="fas fa-chevron-left text-2xl"></i>
+        </button>
+        <button onclick="changeSlide(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition z-10">
+            <i class="fas fa-chevron-right text-2xl"></i>
+        </button>
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+            <span class="dot w-3 h-3 bg-white rounded-full cursor-pointer opacity-100" onclick="currentSlide(1)"></span>
+        </div>
+    `;
+    slideIndex = 1;
+    showSlides(1);
 }
 
 // ==========================================================
@@ -208,7 +239,7 @@ function getTimeAgo(dateString) {
 // CANADIAN CORNER FROM SANITY - WHITE BUTTON FIX
 // ==========================================================
 async function loadCanadianCorner() {
-    const container = document.querySelector('.canadian-corner')?.parentElement?.parentElement;
+    const container = document.querySelector('.canadian-corner');
     if (!container) return;
     
     try {
@@ -228,28 +259,8 @@ async function loadCanadianCorner() {
         const data = await response.json();
         const corner = data.result;
         
-        if (!corner) {
-            const newsQuery = `*[_type == "news" && category == "canadian-corner"] | order(publishedAt desc) [0...4] {
-                title,
-                "imageUrl": mainImage.asset->url,
-                excerpt,
-                "slug": slug.current,
-                publishedAt
-            }`;
-            
-            const newsResponse = await fetch(getSanityUrl(newsQuery));
-            const newsData = await newsResponse.json();
-            const articles = newsData.result;
-            
-            if (!articles || articles.length === 0) {
-                console.log('No Canadian Corner content');
-                return;
-            }
-            
-            const featured = articles[0];
-            const sidebar = articles.slice(1, 4);
-            
-            renderCanadianCorner(featured, sidebar);
+        if (!corner || !corner.featuredArticle) {
+            console.log('No Canadian Corner content');
             return;
         }
         
@@ -282,8 +293,12 @@ function renderCanadianCorner(featured, sidebar) {
         </div>
     `;
     
-    container.querySelector('.flex.flex-col.md\\:flex-row').innerHTML = featuredHtml;
+    const flexContainer = container.querySelector('.flex.flex-col.md\\:flex-row');
+    if (flexContainer) {
+        flexContainer.innerHTML = featuredHtml;
+    }
     
+    // Update sidebar
     const sidebarContainer = container.nextElementSibling;
     if (sidebarContainer && sidebar) {
         sidebarContainer.innerHTML = sidebar.map(item => {
@@ -361,7 +376,7 @@ window.changeSlide = changeSlide;
 window.currentSlide = currentSlide;
 
 // ==========================================================
-// PRODUCTS FROM NETLIFY FUNCTION
+// PRODUCTS FROM NETLIFY FUNCTION - PRINTFUL/STRIPE
 // ==========================================================
 async function getProducts() {
     const list = document.getElementById('product-list');
@@ -434,7 +449,7 @@ async function getProducts() {
 }
 
 // ==========================================================
-// PODCASTS FROM SANITY
+// PODCASTS FROM SANITY - YOUTUBE EMBEDS
 // ==========================================================
 async function loadPodcasts() {
     const list = document.getElementById('podcast-list');
@@ -443,7 +458,8 @@ async function loadPodcasts() {
     try {
         const query = `*[_type == "podcast"] | order(_createdAt desc) {
             title,
-            youtubeLink
+            youtubeLink,
+            description
         }`;
         
         const response = await fetch(getSanityUrl(query));
@@ -488,7 +504,86 @@ async function loadPodcasts() {
 }
 
 // ==========================================================
-// NEWS PAGE LOGIC (with pagination)
+// PODCAST PAGE LOGIC (Full Page)
+// ==========================================================
+async function loadPodcastPage() {
+    const latestContainer = document.getElementById('latest-podcast');
+    const allContainer = document.getElementById('all-podcasts');
+    if (!latestContainer || !allContainer) return;
+    
+    try {
+        const query = `*[_type == "podcast"] | order(_createdAt desc) {
+            title,
+            youtubeLink,
+            description,
+            publishedAt
+        }`;
+        
+        const response = await fetch(getSanityUrl(query));
+        const podcasts = (await response.json()).result;
+        
+        if (!podcasts || podcasts.length === 0) {
+            latestContainer.innerHTML = '<p class="p-8 text-center text-gray-400">No episodes yet.</p>';
+            allContainer.innerHTML = '';
+            return;
+        }
+        
+        // Latest episode (bigger)
+        const latest = podcasts[0];
+        let embedUrl = latest.youtubeLink || '';
+        if (embedUrl.includes('watch?v=')) {
+            embedUrl = embedUrl.replace('watch?v=', 'embed/').split('&')[0];
+        } else if (embedUrl.includes('youtu.be/')) {
+            const id = embedUrl.split('youtu.be/')[1];
+            embedUrl = `https://www.youtube.com/embed/${id}`;
+        }
+        
+        latestContainer.innerHTML = `
+            <div class="flex flex-col lg:flex-row">
+                <div class="lg:w-2/3 h-64 lg:h-96 bg-black">
+                    <iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="lg:w-1/3 p-8 flex flex-col justify-center bg-gray-800">
+                    <span class="text-red-500 font-bold mb-2">LATEST EPISODE</span>
+                    <h2 class="text-2xl font-bold mb-4">${latest.title}</h2>
+                    <p class="text-gray-400 mb-6">${latest.description || ''}</p>
+                    <a href="${latest.youtubeLink}" target="_blank" class="text-red-500 hover:text-red-400 font-semibold">Watch on YouTube →</a>
+                </div>
+            </div>
+        `;
+        
+        // All other episodes
+        const rest = podcasts.slice(1);
+        allContainer.innerHTML = rest.map(p => {
+            let embed = p.youtubeLink || '';
+            if (embed.includes('watch?v=')) {
+                embed = embed.replace('watch?v=', 'embed/').split('&')[0];
+            } else if (embed.includes('youtu.be/')) {
+                const id = embed.split('youtu.be/')[1];
+                embed = `https://www.youtube.com/embed/${id}`;
+            }
+            
+            return `
+            <div class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
+                <div class="h-48 bg-black">
+                    <iframe src="${embed}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="p-6">
+                    <h3 class="font-bold text-xl mb-2">${p.title}</h3>
+                    <p class="text-gray-400 text-sm mb-4 line-clamp-2">${p.description || ''}</p>
+                    <a href="${p.youtubeLink}" target="_blank" class="text-red-500 hover:text-red-400 text-sm font-semibold">Watch on YouTube →</a>
+                </div>
+            </div>
+            `;
+        }).join('');
+        
+    } catch (err) {
+        console.error('✗ Podcast page error:', err);
+    }
+}
+
+// ==========================================================
+// NEWS PAGE LOGIC
 // ==========================================================
 async function loadNewsPage() {
     const featuredContainer = document.getElementById('featured-news');
@@ -730,83 +825,6 @@ function renderPortableText(blocks) {
 }
 
 // ==========================================================
-// PODCAST PAGE LOGIC
-// ==========================================================
-async function loadPodcastPage() {
-    const latestContainer = document.getElementById('latest-podcast');
-    const allContainer = document.getElementById('all-podcasts');
-    if (!latestContainer || !allContainer) return;
-    
-    try {
-        const query = `*[_type == "podcast"] | order(_createdAt desc) {
-            title,
-            youtubeLink,
-            description,
-            publishedAt
-        }`;
-        
-        const response = await fetch(getSanityUrl(query));
-        const podcasts = (await response.json()).result;
-        
-        if (!podcasts || podcasts.length === 0) {
-            latestContainer.innerHTML = '<p class="p-8 text-center text-gray-400">No episodes yet.</p>';
-            allContainer.innerHTML = '';
-            return;
-        }
-        
-        const latest = podcasts[0];
-        let embedUrl = latest.youtubeLink || '';
-        if (embedUrl.includes('watch?v=')) {
-            embedUrl = embedUrl.replace('watch?v=', 'embed/').split('&')[0];
-        } else if (embedUrl.includes('youtu.be/')) {
-            const id = embedUrl.split('youtu.be/')[1];
-            embedUrl = `https://www.youtube.com/embed/${id}`;
-        }
-        
-        latestContainer.innerHTML = `
-            <div class="flex flex-col lg:flex-row">
-                <div class="lg:w-2/3 h-64 lg:h-96 bg-black">
-                    <iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-                <div class="lg:w-1/3 p-8 flex flex-col justify-center bg-gray-800">
-                    <span class="text-red-500 font-bold mb-2">LATEST EPISODE</span>
-                    <h2 class="text-2xl font-bold mb-4">${latest.title}</h2>
-                    <p class="text-gray-400 mb-6">${latest.description || ''}</p>
-                    <a href="${latest.youtubeLink}" target="_blank" class="text-red-500 hover:text-red-400 font-semibold">Watch on YouTube →</a>
-                </div>
-            </div>
-        `;
-        
-        const rest = podcasts.slice(1);
-        allContainer.innerHTML = rest.map(p => {
-            let embed = p.youtubeLink || '';
-            if (embed.includes('watch?v=')) {
-                embed = embed.replace('watch?v=', 'embed/').split('&')[0];
-            } else if (embed.includes('youtu.be/')) {
-                const id = embed.split('youtu.be/')[1];
-                embed = `https://www.youtube.com/embed/${id}`;
-            }
-            
-            return `
-            <div class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
-                <div class="h-48 bg-black">
-                    <iframe src="${embed}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-                <div class="p-6">
-                    <h3 class="font-bold text-xl mb-2">${p.title}</h3>
-                    <p class="text-gray-400 text-sm mb-4 line-clamp-2">${p.description || ''}</p>
-                    <a href="${p.youtubeLink}" target="_blank" class="text-red-500 hover:text-red-400 text-sm font-semibold">Watch on YouTube →</a>
-                </div>
-            </div>
-            `;
-        }).join('');
-        
-    } catch (err) {
-        console.error('✗ Podcast page error:', err);
-    }
-}
-
-// ==========================================================
 // CART FUNCTIONALITY
 // ==========================================================
 let cart = [];
@@ -905,7 +923,7 @@ window.toggleCart = toggleCart;
 window.removeFromCart = removeFromCart;
 
 // ==========================================================
-// MOBILE MENU - ADDED TO ALL PAGES
+// MOBILE MENU
 // ==========================================================
 function initMobileMenu() {
     const btn = document.getElementById('mobile-menu-button');
@@ -931,15 +949,17 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (path.includes('/podcast/')) {
         loadPodcastPage();
     } else {
+        // HOMEPAGE - Load all sections
         loadHeroSlides();
         loadHeadlines();
         loadCanadianCorner();
-        loadPodcasts();
-        getProducts();
-        startSlideTimer();
+        loadPodcasts();      // 90+ Podcast section
+        getProducts();       // Shop/Merch section
+        startSlideTimer();   // 8 second slider
     }
 });
 
+// Export for page-specific scripts
 window.loadPodcastPage = loadPodcastPage;
 window.loadNewsPage = loadNewsPage;
 window.loadArticlePage = loadArticlePage;

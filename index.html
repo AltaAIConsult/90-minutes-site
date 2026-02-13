@@ -365,45 +365,7 @@
         </div>
     </div>
 
-    <!-- Slider Script -->
-    <script>
-        let slideIndex = 1;
-        
-        function changeSlide(n) {
-            showSlides(slideIndex += n);
-        }
-
-        function currentSlide(n) {
-            showSlides(slideIndex = n);
-        }
-
-        function showSlides(n) {
-            let i;
-            let slides = document.getElementsByClassName("hero-slide");
-            let dots = document.getElementsByClassName("dot");
-            if (n > slides.length) {slideIndex = 1}    
-            if (n < 1) {slideIndex = slides.length}
-            for (i = 0; i < slides.length; i++) {
-                slides[i].classList.remove("active");  
-            }
-            for (i = 0; i < dots.length; i++) {
-                dots[i].style.opacity = "0.5";
-            }
-            if (slides[slideIndex-1]) {
-                slides[slideIndex-1].classList.add("active");  
-            }
-            if (dots[slideIndex-1]) {
-                dots[slideIndex-1].style.opacity = "1";
-            }
-        }
-
-        // Auto-advance
-        setInterval(() => {
-            changeSlide(1);
-        }, 5000);
-    </script>
-
-    <!-- Main JavaScript -->
+    <!-- Main JavaScript - Handles everything including slider -->
     <script src="main.js"></script>
 </body>
 </html>

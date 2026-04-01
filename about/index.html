@@ -16,6 +16,13 @@
         .nav-link:hover::after { width: 100%; }
         .about-image { transition: transform 0.3s ease; }
         .about-image:hover { transform: scale(1.02); }
+        .team-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
     </style>
 </head>
 <body class="bg-white text-black">
@@ -113,72 +120,102 @@
         </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="py-16 bg-black text-white">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center" id="stats-container">
-                <div class="stat-item">
-                    <h3 class="font-anton text-4xl md:text-5xl text-red-600 mb-2" data-target="50000">0</h3>
-                    <p class="text-gray-400 text-sm uppercase tracking-wide">Social Followers</p>
-                </div>
-                <div class="stat-item">
-                    <h3 class="font-anton text-4xl md:text-5xl text-red-600 mb-2" data-target="100">0</h3>
-                    <p class="text-gray-400 text-sm uppercase tracking-wide">Brand Partners</p>
-                </div>
-                <div class="stat-item">
-                    <h3 class="font-anton text-4xl md:text-5xl text-red-600 mb-2" data-target="45">0</h3>
-                    <p class="text-gray-400 text-sm uppercase tracking-wide">Podcast Episodes</p>
-                </div>
-                <div class="stat-item">
-                    <h3 class="font-anton text-4xl md:text-5xl text-red-600 mb-2">2026</h3>
-                    <p class="text-gray-400 text-sm uppercase tracking-wide">World Cup Ready</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Team Section -->
     <section class="py-20 bg-gray-50">
         <div class="container mx-auto px-6">
             <h2 class="font-anton text-4xl uppercase text-center mb-4">Meet the <span class="text-red-600">Team</span></h2>
             <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16">The voices behind 90 Minutes or More</p>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="team-grid">
-                <!-- Team members loaded from CMS -->
-                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="team-grid">
+                <!-- Jahvel Adriano — CEO & Creative Director/Lead Content Producer | The Visionary Builder -->
+                <div class="team-card bg-white p-6 rounded-lg shadow-lg text-center">
                     <div class="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full overflow-hidden">
-                        <img src="../images/team-jahvel.jpg" alt="Jahvel Adriano" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=J'">
+                        <img src="../images/Jahvel" 
+                             alt="Jahvel Adriano" 
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=JA'">
                     </div>
                     <h3 class="text-xl font-bold text-red-600">Jahvel Adriano</h3>
-                    <p class="text-gray-600 text-sm mb-2">CEO & Creative Director</p>
-                    <p class="text-gray-500 text-xs">Founder and visionary behind 90 Minutes or More</p>
+                    <p class="text-gray-600 text-sm mb-2">CEO & Creative Director / Lead Content Producer</p>
+                    <p class="text-gray-500 text-xs italic">"The Visionary Builder"</p>
                 </div>
 
-                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                <!-- Adam Masunda — Videoographer/Editor & Co-Host | The Strategic Operator -->
+                <div class="team-card bg-white p-6 rounded-lg shadow-lg text-center">
                     <div class="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full overflow-hidden">
-                        <img src="../images/team-steven.jpg" alt="Steven Santos" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=S'">
+                        <img src="../images/Adam" 
+                             alt="Adam Masunda" 
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=AM'">
                     </div>
-                    <h3 class="text-xl font-bold text-red-600">Steven Santos</h3>
-                    <p class="text-gray-600 text-sm mb-2">Co-Host, Strategist</p>
-                    <p class="text-gray-500 text-xs">Bringing tactical insights and business acumen</p>
+                    <h3 class="text-xl font-bold text-red-600">Adam Masunda</h3>
+                    <p class="text-gray-600 text-sm mb-2">Videographer / Editor & Co-Host</p>
+                    <p class="text-gray-500 text-xs italic">"The Strategic Operator"</p>
                 </div>
 
-                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                <!-- Vicente Eslava — Creative Strategist/Journalist/Lead Content Editor, Co-Host & Journalist | The Storyteller -->
+                <div class="team-card bg-white p-6 rounded-lg shadow-lg text-center">
                     <div class="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full overflow-hidden">
-                        <img src="../images/team-miguel.jpg" alt="Miguel Hunter" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=M'">
+                        <img src="../images/Vicente" 
+                             alt="Vicente Eslava" 
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=VE'">
+                    </div>
+                    <h3 class="text-xl font-bold text-red-600">Vicente Eslava</h3>
+                    <p class="text-gray-600 text-sm mb-2">Creative Strategist / Journalist / Lead Content Editor & Co-Host</p>
+                    <p class="text-gray-500 text-xs italic">"The Storyteller"</p>
+                </div>
+
+                <!-- Stephanie Carrillo — Personal Relations Advisor | The Relationship Architect -->
+                <div class="team-card bg-white p-6 rounded-lg shadow-lg text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full overflow-hidden">
+                        <img src="../images/Stephanie" 
+                             alt="Stephanie Carrillo" 
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=SC'">
+                    </div>
+                    <h3 class="text-xl font-bold text-red-600">Stephanie Carrillo</h3>
+                    <p class="text-gray-600 text-sm mb-2">Personal Relations Advisor</p>
+                    <p class="text-gray-500 text-xs italic">"The Relationship Architect"</p>
+                </div>
+
+                <!-- Shakori Stewart — Creative Strategist/Content Editor | The Cultural Pulse -->
+                <div class="team-card bg-white p-6 rounded-lg shadow-lg text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full overflow-hidden">
+                        <img src="../images/Shakori" 
+                             alt="Shakori Stewart" 
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=SS'">
+                    </div>
+                    <h3 class="text-xl font-bold text-red-600">Shakori Stewart</h3>
+                    <p class="text-gray-600 text-sm mb-2">Creative Strategist / Content Editor</p>
+                    <p class="text-gray-500 text-xs italic">"The Cultural Pulse"</p>
+                </div>
+
+                <!-- Miguel Hunter — Podcast Co-Host | The Voice of the Fan -->
+                <div class="team-card bg-white p-6 rounded-lg shadow-lg text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full overflow-hidden">
+                        <img src="../images/Miguel" 
+                             alt="Miguel Hunter" 
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=MH'">
                     </div>
                     <h3 class="text-xl font-bold text-red-600">Miguel Hunter</h3>
-                    <p class="text-gray-600 text-sm mb-2">Co-Host, Cultural Curator</p>
-                    <p class="text-gray-500 text-xs">Keeping it authentic to the culture</p>
+                    <p class="text-gray-600 text-sm mb-2">Podcast Co-Host</p>
+                    <p class="text-gray-500 text-xs italic">"The Voice of the Fan"</p>
                 </div>
 
-                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                <!-- Mufaro Mbudzi - Journalist/Content Producer -->
+                <div class="team-card bg-white p-6 rounded-lg shadow-lg text-center">
                     <div class="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full overflow-hidden">
-                        <img src="../images/team-vicente.jpg" alt="Vicente D." class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=V'">
+                        <img src="../images/Mufaro" 
+                             alt="Mufaro Mbudzi" 
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://via.placeholder.com/300x300/ef4444/ffffff?text=MM'">
                     </div>
-                    <h3 class="text-xl font-bold text-red-600">Vicente D.</h3>
-                    <p class="text-gray-600 text-sm mb-2">Co-Host, Journalist</p>
-                    <p class="text-gray-500 text-xs">Telling the stories that matter</p>
+                    <h3 class="text-xl font-bold text-red-600">Mufaro Mbudzi</h3>
+                    <p class="text-gray-600 text-sm mb-2">Journalist / Content Producer</p>
+                    <p class="text-gray-500 text-xs italic">Bringing stories to life</p>
                 </div>
             </div>
         </div>
@@ -199,35 +236,6 @@
     <footer class="bg-black text-white py-12 text-center">
         <p class="text-gray-400">&copy; 2024 90 Minutes or More. All rights reserved.</p>
     </footer>
-
-    <!-- Animated Stats Script -->
-    <script>
-        const stats = document.querySelectorAll('.stat-item h3[data-target]');
-        
-        const animateStats = () => {
-            stats.forEach(stat => {
-                const target = parseInt(stat.getAttribute('data-target'));
-                const duration = 2000;
-                const increment = target / (duration / 16);
-                let current = 0;
-                
-                const updateCount = () => {
-                    current += increment;
-                    if (current < target) {
-                        stat.innerText = Math.floor(current).toLocaleString() + (target > 1000 ? '+' : '');
-                        requestAnimationFrame(updateCount);
-                    } else {
-                        stat.innerText = target.toLocaleString() + (target > 1000 ? '+' : '');
-                    }
-                };
-                
-                updateCount();
-            });
-        };
-
-        // Run animation when page loads
-        window.addEventListener('load', animateStats);
-    </script>
 
 </body>
 </html>

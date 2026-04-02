@@ -139,45 +139,51 @@
         function urlFor(source) { return builder.image(source) }
 
         async function loadArticles() {
-            const articles = await client.fetch(`*[_type == "article"] | order(publishedAt desc) {
-                title,
-                slug,
-                excerpt,
-                mainImage,
-                category,
-                publishedAt,
-                "author": author->name
-            }`)
-            
-            const grid = document.getElementById('articles-grid')
-            
-            if (!articles.length) {
-                grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-12">No articles yet. Check back soon!</p>'
-                return
-            }
-            
-            grid.innerHTML = articles.map(article => `
-                <article class="article-card bg-white shadow-lg overflow-hidden transition duration-300 rounded-lg">
-                    <div class="h-48 bg-gray-200 overflow-hidden">
-                        ${article.mainImage ? `
-                            <img src="${urlFor(article.mainImage).width(600).url()}" 
-                                 alt="${article.title}" 
-                                 class="w-full h-full object-cover hover:scale-105 transition duration-300">
-                        ` : '<div class="w-full h-full bg-red-100 flex items-center justify-center"><i class="fas fa-image text-red-300 text-4xl"></i></div>'}
-                    </div>
-                    <div class="p-6">
-                        <span class="text-red-600 text-xs font-bold uppercase tracking-wide">${article.category || 'Article'}</span>
-                        <h2 class="text-xl font-bold mt-2 mb-3">
-                            <a href="${article.slug.current}.html" class="hover:text-red-600 transition">${article.title}</a>
-                        </h2>
-                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">${article.excerpt || ''}</p>
-                        <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-4">
-                            <span class="font-medium">${article.author || 'Staff'}</span>
-                            <span>${new Date(article.publishedAt).toLocaleDateString()}</span>
+            try {
+                const articles = await client.fetch(`*[_type == "news"] | order(publishedAt desc) {
+                    title,
+                    slug,
+                    excerpt,
+                    mainImage,
+                    category,
+                    publishedAt,
+                    "author": author->name
+                }`)
+                
+                console.log('Articles loaded:', articles.length)
+                const grid = document.getElementById('articles-grid')
+                
+                if (!articles || articles.length === 0) {
+                    grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-12">No articles yet. Check back soon!</p>'
+                    return
+                }
+                
+                grid.innerHTML = articles.map(article => `
+                    <article class="article-card bg-white shadow-lg overflow-hidden transition duration-300 rounded-lg">
+                        <div class="h-48 bg-gray-200 overflow-hidden">
+                            ${article.mainImage ? `
+                                <img src="${urlFor(article.mainImage).width(600).url()}" 
+                                     alt="${article.title}" 
+                                     class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                            ` : '<div class="w-full h-full bg-red-100 flex items-center justify-center"><i class="fas fa-image text-red-300 text-4xl"></i></div>'}
                         </div>
-                    </div>
-                </article>
-            `).join('')
+                        <div class="p-6">
+                            <span class="text-red-600 text-xs font-bold uppercase tracking-wide">${article.category || 'Article'}</span>
+                            <h2 class="text-xl font-bold mt-2 mb-3">
+                                <a href="article.html?slug=${article.slug.current}" class="hover:text-red-600 transition">${article.title}</a>
+                            </h2>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">${article.excerpt || ''}</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-4">
+                                <span class="font-medium">${article.author || 'Staff'}</span>
+                                <span>${new Date(article.publishedAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    </article>
+                `).join('')
+            } catch (error) {
+                console.error('Error loading articles:', error)
+                document.getElementById('articles-grid').innerHTML = '<p class="col-span-3 text-center text-red-500 py-12">Error loading articles. Please try again.</p>'
+            }
         }
         
         loadArticles()

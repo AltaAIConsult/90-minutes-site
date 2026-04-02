@@ -7,11 +7,12 @@ export default {
       name: 'title',
       title: 'Section Title',
       type: 'string',
-      initialValue: 'Canadian Corner'
+      initialValue: 'Canadian Corner',
+      readOnly: true
     },
     {
       name: 'featuredArticle',
-      title: 'Featured Main Article',
+      title: '⭐ Featured Main Article',
       type: 'object',
       fields: [
         {
@@ -33,8 +34,7 @@ export default {
           name: 'mainImage',
           title: 'Main Image',
           type: 'image',
-          options: { hotspot: true },
-          validation: Rule => Rule.required()
+          options: { hotspot: true }
         },
         {
           name: 'excerpt',
@@ -51,13 +51,13 @@ export default {
           name: 'tag',
           title: 'Tag',
           type: 'string',
-          initialValue: 'Featured'
+          initialValue: 'Canadian Corner'
         }
       ]
     },
     {
       name: 'sidebarArticles',
-      title: 'Sidebar Articles (3 items)',
+      title: '📋 Sidebar Articles (Max 3)',
       type: 'array',
       of: [
         {
@@ -76,23 +76,39 @@ export default {
             },
             {
               name: 'publishedAt',
-              title: 'Time Ago',
+              title: 'Time',
               type: 'string',
-              description: 'e.g., "1 hour ago", "3 hours ago"',
+              description: 'e.g., "2 hours ago", "Yesterday"',
               initialValue: 'Just now'
+            },
+            {
+              name: 'excerpt',
+              title: 'Short Excerpt',
+              type: 'text',
+              rows: 2
             }
           ],
           preview: {
-            select: { title: 'title' }
+            select: {
+              title: 'title',
+              subtitle: 'publishedAt'
+            }
           }
         }
       ],
-      validation: Rule => Rule.max(3).warning('Maximum 3 sidebar articles recommended')
+      validation: Rule => Rule.max(3).warning('Maximum 3 sidebar articles')
     }
   ],
   preview: {
     select: {
-      title: 'title'
+      title: 'title',
+      featured: 'featuredArticle.title'
+    },
+    prepare({title, featured}) {
+      return {
+        title: title || 'Canadian Corner',
+        subtitle: featured ? `Featured: ${featured}` : 'No featured article'
+      }
     }
   }
 }

@@ -18,7 +18,10 @@ let slideInterval;
 
 async function loadHeroSlides() {
     try {
-        const query = `*[_type == "heroSlide" && active == true] | order(order asc) {
+        // First, try to get manually created hero slides
+        let slides = [];
+        
+        const heroQuery = `*[_type == "heroSlide" && active == true] | order(order asc) {
             title,
             subtitle,
             "imageUrl": backgroundImage.asset->url,
@@ -27,19 +30,45 @@ async function loadHeroSlides() {
             link
         }`;
         
-        const response = await fetch(getSanityUrl(query));
+        const heroResponse = await fetch(getSanityUrl(heroQuery));
+        const heroData = await heroResponse.json();
+        slides = heroData.result || [];
         
-        if (!response.ok) {
-            throw new Error(`Sanity API error: ${response.status}`);
+        console.log('Hero slides from manual creation:', slides.length);
+        
+        // If no manually created slides, fall back to news articles with heroSlider distribution
+        if (!slides || slides.length === 0) {
+            const newsQuery = `*[_type == "news" && distribution.heroSlider == true] | order(distribution.heroSliderPosition asc, publishedAt desc) [0...5] {
+                title,
+                "subtitle": excerpt,
+                "imageUrl": mainImage.asset->url,
+                category,
+                "slug": slug.current,
+                distribution
+            }`;
+            
+            const newsResponse = await fetch(getSanityUrl(newsQuery));
+            const newsData = await newsResponse.json();
+            
+            if (newsData.result && newsData.result.length > 0) {
+                slides = newsData.result.map(article => ({
+                    title: article.title,
+                    subtitle: article.subtitle || '',
+                    imageUrl: article.imageUrl,
+                    tag: article.distribution?.heroSliderTag || article.category || 'Featured',
+                    buttonText: 'Read More',
+                    link: `/news/article.html?slug=${article.slug}`
+                }));
+                console.log('Using news articles as hero slides:', slides.length);
+            }
         }
         
-        const data = await response.json();
-        const slides = data.result;
-        
-        console.log('Sanity slides loaded:', slides);
-        
         if (!slides || slides.length === 0) {
-            console.log('No slides in Sanity - keeping fallback');
+            console.log('No hero slides available');
+            const heroSection = document.getElementById('hero-section');
+            if (heroSection) {
+                heroSection.innerHTML = '<div class="h-[70vh] bg-gray-900 flex items-center justify-center text-white">No slides available</div>';
+            }
             return;
         }
         
@@ -135,7 +164,6 @@ function currentSlide(n) {
     startSlideTimer();
 }
 
-// 8 SECONDS FIX
 function startSlideTimer() {
     slideInterval = setInterval(() => {
         slideIndex++;
@@ -154,19 +182,69 @@ async function loadHeadlines() {
     if (!headlinesRow) return;
     
     try {
-        const query = `*[_type == "headline" && featured == true] | order(order asc, publishedAt desc) [0...6] {
+        // First, try to get manually created headlines
+        let headlines = [];
+        
+        const headlineQuery = `*[_type == "headline"] | order(order asc, publishedAt desc) [0...6] {
             title,
             "imageUrl": mainImage.asset->url,
-            "link": link,
+            link,
             publishedAt,
             category
         }`;
         
-        const response = await fetch(getSanityUrl(query));
-        const data = await response.json();
-        const headlines = data.result;
+        const headlineResponse = await fetch(getSanityUrl(headlineQuery));
+        const headlineData = await headlineResponse.json();
+        headlines = headlineData.result || [];
         
-        console.log('Headlines loaded:', headlines);
+        console.log('Quick Headlines from manual creation:', headlines.length);
+        
+        // If no manually created headlines, fall back to news articles with quickHeadlines distribution
+        if (!headlines || headlines.length === 0) {
+            const newsQuery = `*[_type == "news" && distribution.quickHeadlines == true] | order(distribution.quickHeadlinesPosition asc, publishedAt desc) [0...6] {
+                title,
+                "imageUrl": mainImage.asset->url,
+                "slug": slug.current,
+                publishedAt,
+                category
+            }`;
+            
+            const newsResponse = await fetch(getSanityUrl(newsQuery));
+            const newsData = await newsResponse.json();
+            
+            if (newsData.result && newsData.result.length > 0) {
+                headlines = newsData.result.map(article => ({
+                    title: article.title,
+                    imageUrl: article.imageUrl,
+                    link: `/news/article.html?slug=${article.slug}`,
+                    publishedAt: article.publishedAt,
+                    category: article.category
+                }));
+                console.log('Using news articles as headlines:', headlines.length);
+            }
+        }
+        
+        // Final fallback: get latest news articles
+        if (!headlines || headlines.length === 0) {
+            const fallbackQuery = `*[_type == "news"] | order(publishedAt desc) [0...6] {
+                title,
+                "imageUrl": mainImage.asset->url,
+                "slug": slug.current,
+                publishedAt,
+                category
+            }`;
+            
+            const fallbackResponse = await fetch(getSanityUrl(fallbackQuery));
+            const fallbackData = await fallbackResponse.json();
+            
+            if (fallbackData.result && fallbackData.result.length > 0) {
+                headlines = fallbackData.result.map(n => ({
+                    ...n,
+                    link: `/news/article.html?slug=${n.slug}`
+                }));
+                console.log('Using latest news as headlines:', headlines.length);
+            }
+        }
         
         if (!headlines || headlines.length === 0) {
             renderFallbackHeadlines(headlinesRow);
@@ -176,9 +254,10 @@ async function loadHeadlines() {
         headlinesRow.innerHTML = headlines.map(h => {
             const timeAgo = getTimeAgo(h.publishedAt);
             const categoryLabel = h.category ? h.category.toUpperCase() : 'NEWS';
+            const link = h.link || `/news/article.html?slug=${h.slug}`;
             
             return `
-            <a href="${h.link || '#'}" class="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
+            <a href="${link}" class="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
                 <div class="h-32 bg-gray-200 overflow-hidden relative">
                     ${h.imageUrl ? 
                         `<img src="${h.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="">` :
@@ -196,7 +275,7 @@ async function loadHeadlines() {
             `;
         }).join('');
         
-        console.log('✓ Headlines rendered:', headlines.length);
+        console.log('✓ Quick Headlines rendered:', headlines.length);
         
     } catch (err) {
         console.error('✗ Headlines error:', err);
@@ -249,13 +328,14 @@ function getTimeAgo(dateString) {
 }
 
 // ==========================================================
-// CANADIAN CORNER FROM SANITY - WHITE BUTTON FIX
+// CANADIAN CORNER FROM SANITY
 // ==========================================================
 async function loadCanadianCorner() {
     const container = document.querySelector('.canadian-corner')?.parentElement?.parentElement;
     if (!container) return;
     
     try {
+        // First, try to get manually created Canadian Corner
         const query = `*[_type == "canadianCorner"][0] {
             featuredArticle {
                 title,
@@ -264,15 +344,73 @@ async function loadCanadianCorner() {
                 link,
                 tag
             },
-            sidebarArticles
+            sidebarArticles[] {
+                title,
+                link,
+                publishedAt,
+                excerpt
+            }
         }`;
         
         const response = await fetch(getSanityUrl(query));
         const data = await response.json();
-        const corner = data.result;
+        let corner = data.result;
         
-        if (!corner) {
-            const newsQuery = `*[_type == "news" && category == "canadian-soccer"] | order(publishedAt desc) [0...4] {
+        console.log('Canadian Corner from manual creation:', corner ? 'found' : 'not found');
+        
+        // If no manually created Canadian Corner, get from news with canadianCorner distribution
+        if (!corner || (!corner.featuredArticle && (!corner.sidebarArticles || corner.sidebarArticles.length === 0))) {
+            console.log('No manual Canadian Corner, checking news articles...');
+            
+            // Get featured article from news (position "featured")
+            const featuredQuery = `*[_type == "news" && distribution.canadianCorner == true && distribution.canadianCornerPosition == "featured"] | order(publishedAt desc) [0] {
+                title,
+                "imageUrl": mainImage.asset->url,
+                excerpt,
+                "slug": slug.current,
+                category
+            }`;
+            
+            const featuredResponse = await fetch(getSanityUrl(featuredQuery));
+            const featuredData = await featuredResponse.json();
+            const featuredArticle = featuredData.result?.[0];
+            
+            // Get sidebar articles from news (position sidebar-1, sidebar-2, sidebar-3)
+            const sidebarQuery = `*[_type == "news" && distribution.canadianCorner == true && distribution.canadianCornerPosition != "featured"] | order(distribution.canadianCornerPosition asc, publishedAt desc) [0...3] {
+                title,
+                "slug": slug.current,
+                publishedAt,
+                excerpt
+            }`;
+            
+            const sidebarResponse = await fetch(getSanityUrl(sidebarQuery));
+            const sidebarData = await sidebarResponse.json();
+            const sidebarArticles = sidebarData.result || [];
+            
+            if (featuredArticle || sidebarArticles.length > 0) {
+                // Create a virtual corner object
+                corner = {
+                    featuredArticle: featuredArticle ? {
+                        title: featuredArticle.title,
+                        imageUrl: featuredArticle.imageUrl,
+                        excerpt: featuredArticle.excerpt,
+                        link: `/news/article.html?slug=${featuredArticle.slug}`,
+                        tag: 'Canadian Corner'
+                    } : null,
+                    sidebarArticles: sidebarArticles.map(article => ({
+                        title: article.title,
+                        link: `/news/article.html?slug=${article.slug}`,
+                        publishedAt: getTimeAgo(article.publishedAt),
+                        excerpt: article.excerpt
+                    }))
+                };
+                console.log('Using news articles for Canadian Corner');
+            }
+        }
+        
+        if (!corner || (!corner.featuredArticle && (!corner.sidebarArticles || corner.sidebarArticles.length === 0))) {
+            // Final fallback: get latest canadian-corner category news
+            const fallbackQuery = `*[_type == "news" && category == "canadian-corner"] | order(publishedAt desc) [0...4] {
                 title,
                 "imageUrl": mainImage.asset->url,
                 excerpt,
@@ -280,19 +418,18 @@ async function loadCanadianCorner() {
                 publishedAt
             }`;
             
-            const newsResponse = await fetch(getSanityUrl(newsQuery));
-            const newsData = await newsResponse.json();
-            const articles = newsData.result;
+            const fallbackResponse = await fetch(getSanityUrl(fallbackQuery));
+            const fallbackData = await fallbackResponse.json();
+            const articles = fallbackData.result;
             
-            if (!articles || articles.length === 0) {
-                console.log('No Canadian Corner content');
+            if (articles && articles.length > 0) {
+                const featured = articles[0];
+                const sidebar = articles.slice(1, 4);
+                renderCanadianCornerFromNews(featured, sidebar);
                 return;
             }
             
-            const featured = articles[0];
-            const sidebar = articles.slice(1, 4);
-            
-            renderCanadianCorner(featured, sidebar);
+            console.log('No Canadian Corner content');
             return;
         }
         
@@ -303,11 +440,47 @@ async function loadCanadianCorner() {
     }
 }
 
+function renderCanadianCornerFromNews(featured, sidebar) {
+    const container = document.querySelector('.canadian-corner');
+    if (!container || !featured) return;
+    
+    const featuredHtml = `
+        <div class="md:w-1/2">
+            <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
+                ${featured.imageUrl ? 
+                    `<img src="${featured.imageUrl}" class="w-full h-full object-cover" alt="">` :
+                    `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
+                }
+            </div>
+        </div>
+        <div class="md:w-1/2 flex flex-col justify-center">
+            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">Canadian Corner</span>
+            <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featured.title}</h3>
+            <p class="text-gray-700 mb-4">${featured.excerpt || ''}</p>
+            <a href="/news/article.html?slug=${featured.slug}" class="text-white font-semibold hover:underline">Read Full Story →</a>
+        </div>
+    `;
+    
+    const featuredContainer = container.querySelector('.flex.flex-col.md\\:flex-row');
+    if (featuredContainer) {
+        featuredContainer.innerHTML = featuredHtml;
+    }
+    
+    const sidebarContainer = container.nextElementSibling;
+    if (sidebarContainer && sidebar && sidebar.length > 0) {
+        sidebarContainer.innerHTML = sidebar.map(article => `
+            <a href="/news/article.html?slug=${article.slug}" class="block bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition border-l-4 border-red-600">
+                <h4 class="font-bold mb-2 hover:text-red-600">${article.title}</h4>
+                <span class="text-xs text-gray-500">${getTimeAgo(article.publishedAt)}</span>
+            </a>
+        `).join('');
+    }
+}
+
 function renderCanadianCorner(featured, sidebar) {
     const container = document.querySelector('.canadian-corner');
     if (!container || !featured) return;
     
-    // WHITE BUTTON FIX: text-white instead of text-red-600
     const featuredHtml = `
         <div class="md:w-1/2">
             <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
@@ -321,21 +494,25 @@ function renderCanadianCorner(featured, sidebar) {
             <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">${featured.tag || 'Featured'}</span>
             <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featured.title}</h3>
             <p class="text-gray-700 mb-4">${featured.excerpt || ''}</p>
-            <a href="${featured.link || `/news/article.html?slug=${featured.slug || ''}`}" class="text-white font-semibold hover:underline">Read Full Story →</a>
+            <a href="${featured.link || '#'}" class="text-white font-semibold hover:underline">Read Full Story →</a>
         </div>
     `;
     
-    container.querySelector('.flex.flex-col.md\\:flex-row').innerHTML = featuredHtml;
+    const featuredContainer = container.querySelector('.flex.flex-col.md\\:flex-row');
+    if (featuredContainer) {
+        featuredContainer.innerHTML = featuredHtml;
+    }
     
     const sidebarContainer = container.nextElementSibling;
-    if (sidebarContainer && sidebar) {
+    if (sidebarContainer && sidebar && sidebar.length > 0) {
         sidebarContainer.innerHTML = sidebar.map(item => {
-            const link = item.link || `/news/article.html?slug=${item.slug || ''}`;
-            const time = item.publishedAt ? getTimeAgo(item.publishedAt) : (item.publishedAt || 'Recently');
+            const link = item.link || '#';
+            const time = item.publishedAt || 'Recently';
             
             return `
             <a href="${link}" class="block bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition border-l-4 border-red-600">
                 <h4 class="font-bold mb-2 hover:text-red-600">${item.title}</h4>
+                <p class="text-gray-600 text-sm mb-2 line-clamp-2">${item.excerpt || ''}</p>
                 <span class="text-xs text-gray-500">${time}</span>
             </a>
             `;
@@ -914,12 +1091,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (path.includes('/podcast/')) {
         loadPodcastPage();
     } else {
-        // Homepage - ADDED startSlideTimer()
+        // Homepage
         loadHeroSlides();
         loadHeadlines();
         loadCanadianCorner();
         loadPodcasts();
         getProducts();
-        startSlideTimer(); // This was missing!
+        startSlideTimer();
     }
 });

@@ -11,56 +11,55 @@ function getSanityUrl(query) {
 }
 
 // ==========================================================
-// HERO SLIDES FROM SANITY
+// HERO SLIDES FROM SANITY - NEWS FIRST
 // ==========================================================
 let slideIndex = 1;
 let slideInterval;
 
 async function loadHeroSlides() {
     try {
-        // First, try to get manually created hero slides
         let slides = [];
         
-        const heroQuery = `*[_type == "heroSlide" && active == true] | order(order asc) {
+        // FIRST: Try to get news articles with heroSlider distribution
+        const newsQuery = `*[_type == "news" && distribution.heroSlider == true] | order(distribution.heroSliderPosition asc, publishedAt desc) [0...5] {
             title,
-            subtitle,
-            "imageUrl": backgroundImage.asset->url,
-            tag,
-            buttonText,
-            link
+            "subtitle": excerpt,
+            "imageUrl": mainImage.asset->url,
+            category,
+            "slug": slug.current,
+            distribution
         }`;
         
-        const heroResponse = await fetch(getSanityUrl(heroQuery));
-        const heroData = await heroResponse.json();
-        slides = heroData.result || [];
+        const newsResponse = await fetch(getSanityUrl(newsQuery));
+        const newsData = await newsResponse.json();
         
-        console.log('Hero slides from manual creation:', slides.length);
+        if (newsData.result && newsData.result.length > 0) {
+            slides = newsData.result.map(article => ({
+                title: article.title,
+                subtitle: article.subtitle || '',
+                imageUrl: article.imageUrl,
+                tag: article.distribution?.heroSliderTag || article.category || 'Featured',
+                buttonText: 'Read More',
+                link: `/news/article.html?slug=${article.slug}`
+            }));
+            console.log('Using news articles as hero slides:', slides.length);
+        }
         
-        // If no manually created slides, fall back to news articles with heroSlider distribution
+        // If no news articles with heroSlider, fall back to manually created hero slides
         if (!slides || slides.length === 0) {
-            const newsQuery = `*[_type == "news" && distribution.heroSlider == true] | order(distribution.heroSliderPosition asc, publishedAt desc) [0...5] {
+            const heroQuery = `*[_type == "heroSlide" && active == true] | order(order asc) {
                 title,
-                "subtitle": excerpt,
-                "imageUrl": mainImage.asset->url,
-                category,
-                "slug": slug.current,
-                distribution
+                subtitle,
+                "imageUrl": backgroundImage.asset->url,
+                tag,
+                buttonText,
+                link
             }`;
             
-            const newsResponse = await fetch(getSanityUrl(newsQuery));
-            const newsData = await newsResponse.json();
-            
-            if (newsData.result && newsData.result.length > 0) {
-                slides = newsData.result.map(article => ({
-                    title: article.title,
-                    subtitle: article.subtitle || '',
-                    imageUrl: article.imageUrl,
-                    tag: article.distribution?.heroSliderTag || article.category || 'Featured',
-                    buttonText: 'Read More',
-                    link: `/news/article.html?slug=${article.slug}`
-                }));
-                console.log('Using news articles as hero slides:', slides.length);
-            }
+            const heroResponse = await fetch(getSanityUrl(heroQuery));
+            const heroData = await heroResponse.json();
+            slides = heroData.result || [];
+            console.log('Hero slides from manual creation:', slides.length);
         }
         
         if (!slides || slides.length === 0) {
@@ -175,53 +174,52 @@ window.changeSlide = changeSlide;
 window.currentSlide = currentSlide;
 
 // ==========================================================
-// HEADLINES - 6 FROM SANITY
+// HEADLINES - NEWS FIRST
 // ==========================================================
 async function loadHeadlines() {
     const headlinesRow = document.getElementById('headlines-row');
     if (!headlinesRow) return;
     
     try {
-        // First, try to get manually created headlines
         let headlines = [];
         
-        const headlineQuery = `*[_type == "headline"] | order(order asc, publishedAt desc) [0...6] {
+        // FIRST: Try to get news articles with quickHeadlines distribution
+        const newsQuery = `*[_type == "news" && distribution.quickHeadlines == true] | order(distribution.quickHeadlinesPosition asc, publishedAt desc) [0...6] {
             title,
             "imageUrl": mainImage.asset->url,
-            link,
+            "slug": slug.current,
             publishedAt,
             category
         }`;
         
-        const headlineResponse = await fetch(getSanityUrl(headlineQuery));
-        const headlineData = await headlineResponse.json();
-        headlines = headlineData.result || [];
+        const newsResponse = await fetch(getSanityUrl(newsQuery));
+        const newsData = await newsResponse.json();
         
-        console.log('Quick Headlines from manual creation:', headlines.length);
+        if (newsData.result && newsData.result.length > 0) {
+            headlines = newsData.result.map(article => ({
+                title: article.title,
+                imageUrl: article.imageUrl,
+                link: `/news/article.html?slug=${article.slug}`,
+                publishedAt: article.publishedAt,
+                category: article.category
+            }));
+            console.log('Using news articles as headlines:', headlines.length);
+        }
         
-        // If no manually created headlines, fall back to news articles with quickHeadlines distribution
+        // If no news articles with quickHeadlines, fall back to manually created headlines
         if (!headlines || headlines.length === 0) {
-            const newsQuery = `*[_type == "news" && distribution.quickHeadlines == true] | order(distribution.quickHeadlinesPosition asc, publishedAt desc) [0...6] {
+            const headlineQuery = `*[_type == "headline"] | order(order asc, publishedAt desc) [0...6] {
                 title,
                 "imageUrl": mainImage.asset->url,
-                "slug": slug.current,
+                link,
                 publishedAt,
                 category
             }`;
             
-            const newsResponse = await fetch(getSanityUrl(newsQuery));
-            const newsData = await newsResponse.json();
-            
-            if (newsData.result && newsData.result.length > 0) {
-                headlines = newsData.result.map(article => ({
-                    title: article.title,
-                    imageUrl: article.imageUrl,
-                    link: `/news/article.html?slug=${article.slug}`,
-                    publishedAt: article.publishedAt,
-                    category: article.category
-                }));
-                console.log('Using news articles as headlines:', headlines.length);
-            }
+            const headlineResponse = await fetch(getSanityUrl(headlineQuery));
+            const headlineData = await headlineResponse.json();
+            headlines = headlineData.result || [];
+            console.log('Quick Headlines from manual creation:', headlines.length);
         }
         
         // Final fallback: get latest news articles
@@ -328,84 +326,83 @@ function getTimeAgo(dateString) {
 }
 
 // ==========================================================
-// CANADIAN CORNER FROM SANITY
+// CANADIAN CORNER - NEWS FIRST
 // ==========================================================
 async function loadCanadianCorner() {
     const container = document.querySelector('.canadian-corner')?.parentElement?.parentElement;
     if (!container) return;
     
     try {
-        // First, try to get manually created Canadian Corner
-        const query = `*[_type == "canadianCorner"][0] {
-            featuredArticle {
-                title,
-                "imageUrl": mainImage.asset->url,
-                excerpt,
-                link,
-                tag
-            },
-            sidebarArticles[] {
-                title,
-                link,
-                publishedAt,
-                excerpt
-            }
+        let corner = null;
+        
+        // FIRST: Try to get from news with canadianCorner distribution
+        const featuredQuery = `*[_type == "news" && distribution.canadianCorner == true && distribution.canadianCornerPosition == "featured"] | order(publishedAt desc) [0] {
+            title,
+            "imageUrl": mainImage.asset->url,
+            excerpt,
+            "slug": slug.current,
+            category
         }`;
         
-        const response = await fetch(getSanityUrl(query));
-        const data = await response.json();
-        let corner = data.result;
+        const sidebarQuery = `*[_type == "news" && distribution.canadianCorner == true && distribution.canadianCornerPosition != "featured"] | order(distribution.canadianCornerPosition asc, publishedAt desc) [0...3] {
+            title,
+            "slug": slug.current,
+            publishedAt,
+            excerpt
+        }`;
         
-        console.log('Canadian Corner from manual creation:', corner ? 'found' : 'not found');
+        const [featuredResponse, sidebarResponse] = await Promise.all([
+            fetch(getSanityUrl(featuredQuery)),
+            fetch(getSanityUrl(sidebarQuery))
+        ]);
         
-        // If no manually created Canadian Corner, get from news with canadianCorner distribution
-        if (!corner || (!corner.featuredArticle && (!corner.sidebarArticles || corner.sidebarArticles.length === 0))) {
-            console.log('No manual Canadian Corner, checking news articles...');
-            
-            // Get featured article from news (position "featured")
-            const featuredQuery = `*[_type == "news" && distribution.canadianCorner == true && distribution.canadianCornerPosition == "featured"] | order(publishedAt desc) [0] {
-                title,
-                "imageUrl": mainImage.asset->url,
-                excerpt,
-                "slug": slug.current,
-                category
+        const featuredData = await featuredResponse.json();
+        const sidebarData = await sidebarResponse.json();
+        
+        const featuredArticle = featuredData.result?.[0];
+        const sidebarArticles = sidebarData.result || [];
+        
+        if (featuredArticle || sidebarArticles.length > 0) {
+            corner = {
+                featuredArticle: featuredArticle ? {
+                    title: featuredArticle.title,
+                    imageUrl: featuredArticle.imageUrl,
+                    excerpt: featuredArticle.excerpt,
+                    link: `/news/article.html?slug=${featuredArticle.slug}`,
+                    tag: 'Canadian Corner'
+                } : null,
+                sidebarArticles: sidebarArticles.map(article => ({
+                    title: article.title,
+                    link: `/news/article.html?slug=${article.slug}`,
+                    publishedAt: getTimeAgo(article.publishedAt),
+                    excerpt: article.excerpt
+                }))
+            };
+            console.log('Using news articles for Canadian Corner');
+        }
+        
+        // If no news with canadianCorner, fall back to manually created Canadian Corner
+        if (!corner) {
+            const query = `*[_type == "canadianCorner"][0] {
+                featuredArticle {
+                    title,
+                    "imageUrl": mainImage.asset->url,
+                    excerpt,
+                    link,
+                    tag
+                },
+                sidebarArticles[] {
+                    title,
+                    link,
+                    publishedAt,
+                    excerpt
+                }
             }`;
             
-            const featuredResponse = await fetch(getSanityUrl(featuredQuery));
-            const featuredData = await featuredResponse.json();
-            const featuredArticle = featuredData.result?.[0];
-            
-            // Get sidebar articles from news (position sidebar-1, sidebar-2, sidebar-3)
-            const sidebarQuery = `*[_type == "news" && distribution.canadianCorner == true && distribution.canadianCornerPosition != "featured"] | order(distribution.canadianCornerPosition asc, publishedAt desc) [0...3] {
-                title,
-                "slug": slug.current,
-                publishedAt,
-                excerpt
-            }`;
-            
-            const sidebarResponse = await fetch(getSanityUrl(sidebarQuery));
-            const sidebarData = await sidebarResponse.json();
-            const sidebarArticles = sidebarData.result || [];
-            
-            if (featuredArticle || sidebarArticles.length > 0) {
-                // Create a virtual corner object
-                corner = {
-                    featuredArticle: featuredArticle ? {
-                        title: featuredArticle.title,
-                        imageUrl: featuredArticle.imageUrl,
-                        excerpt: featuredArticle.excerpt,
-                        link: `/news/article.html?slug=${featuredArticle.slug}`,
-                        tag: 'Canadian Corner'
-                    } : null,
-                    sidebarArticles: sidebarArticles.map(article => ({
-                        title: article.title,
-                        link: `/news/article.html?slug=${article.slug}`,
-                        publishedAt: getTimeAgo(article.publishedAt),
-                        excerpt: article.excerpt
-                    }))
-                };
-                console.log('Using news articles for Canadian Corner');
-            }
+            const response = await fetch(getSanityUrl(query));
+            const data = await response.json();
+            corner = data.result;
+            console.log('Canadian Corner from manual creation:', corner ? 'found' : 'not found');
         }
         
         if (!corner || (!corner.featuredArticle && (!corner.sidebarArticles || corner.sidebarArticles.length === 0))) {

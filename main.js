@@ -76,7 +76,7 @@ async function loadHeroSlides() {
             let bgClass = 'bg-gradient-to-b from-black/60 to-black/40';
             
             if (slide.imageUrl) {
-                imgHtml = `<img src="${slide.imageUrl}" alt="${slide.title}" class="w-full h-full object-cover opacity-60" onerror="this.style.display='none'; this.parentElement.classList.add('bg-gradient-to-b', 'from-black/60', 'to-black/40')">`;
+                imgHtml = `<img src="${slide.imageUrl}" alt="${slide.title}" class="w-full h-full object-cover object-top opacity-60" onerror="this.style.display='none'; this.parentElement.classList.add('bg-gradient-to-b', 'from-black/60', 'to-black/40')">`;
                 bgClass = '';
             }
             
@@ -258,7 +258,7 @@ async function loadHeadlines() {
             <a href="${link}" class="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
                 <div class="h-32 bg-gray-200 overflow-hidden relative">
                     ${h.imageUrl ? 
-                        `<img src="${h.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="">` :
+                        `<img src="${h.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${h.title}">` :
                         `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500">
                             <i class="fas fa-newspaper text-3xl"></i>
                         </div>`
@@ -329,9 +329,6 @@ function getTimeAgo(dateString) {
 // CANADIAN CORNER - NEWS FIRST
 // ==========================================================
 async function loadCanadianCorner() {
-    const container = document.querySelector('.canadian-corner')?.parentElement?.parentElement;
-    if (!container) return;
-    
     try {
         let corner = null;
         
@@ -441,34 +438,35 @@ function renderCanadianCornerFromNews(featured, sidebar) {
     const container = document.querySelector('.canadian-corner');
     if (!container || !featured) return;
     
-    const featuredHtml = `
-        <div class="md:w-1/2">
-            <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
-                ${featured.imageUrl ? 
-                    `<img src="${featured.imageUrl}" class="w-full h-full object-cover" alt="">` :
-                    `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
-                }
-            </div>
-        </div>
-        <div class="md:w-1/2 flex flex-col justify-center">
-            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">Canadian Corner</span>
-            <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featured.title}</h3>
-            <p class="text-gray-700 mb-4">${featured.excerpt || ''}</p>
-            <a href="/news/article.html?slug=${featured.slug}" class="text-white font-semibold hover:underline">Read Full Story →</a>
-        </div>
-    `;
-    
+    // Update the featured article section
     const featuredContainer = container.querySelector('.flex.flex-col.md\\:flex-row');
     if (featuredContainer) {
-        featuredContainer.innerHTML = featuredHtml;
+        featuredContainer.innerHTML = `
+            <div class="md:w-1/2">
+                <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
+                    ${featured.imageUrl ? 
+                        `<img src="${featured.imageUrl}" class="w-full h-full object-cover" alt="${featured.title}">` :
+                        `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
+                    }
+                </div>
+            </div>
+            <div class="md:w-1/2 flex flex-col justify-center">
+                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">Canadian Corner</span>
+                <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featured.title}</h3>
+                <p class="text-gray-700 mb-4">${featured.excerpt || ''}</p>
+                <a href="/news/article.html?slug=${featured.slug}" class="text-red-600 font-semibold hover:underline">Read Full Story →</a>
+            </div>
+        `;
     }
     
-    const sidebarContainer = container.nextElementSibling;
+    // Update the sidebar section (the div with class "space-y-4" that is next to canadian-corner)
+    const sidebarContainer = container.closest('.grid').querySelector('.space-y-4');
     if (sidebarContainer && sidebar && sidebar.length > 0) {
         sidebarContainer.innerHTML = sidebar.map(article => `
-            <a href="/news/article.html?slug=${article.slug}" class="block bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition border-l-4 border-red-600">
+            <a href="${article.link}" class="block bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition border-l-4 border-red-600">
                 <h4 class="font-bold mb-2 hover:text-red-600">${article.title}</h4>
-                <span class="text-xs text-gray-500">${getTimeAgo(article.publishedAt)}</span>
+                <p class="text-gray-600 text-sm mb-2 line-clamp-2">${article.excerpt || ''}</p>
+                <span class="text-xs text-gray-500">${article.publishedAt || 'Recently'}</span>
             </a>
         `).join('');
     }
@@ -478,38 +476,39 @@ function renderCanadianCorner(featured, sidebar) {
     const container = document.querySelector('.canadian-corner');
     if (!container || !featured) return;
     
-    const featuredHtml = `
-        <div class="md:w-1/2">
-            <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
-                ${featured.imageUrl ? 
-                    `<img src="${featured.imageUrl}" class="w-full h-full object-cover" alt="">` :
-                    `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
-                }
-            </div>
-        </div>
-        <div class="md:w-1/2 flex flex-col justify-center">
-            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">${featured.tag || 'Featured'}</span>
-            <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featured.title}</h3>
-            <p class="text-gray-700 mb-4">${featured.excerpt || ''}</p>
-            <a href="${featured.link || '#'}" class="text-white font-semibold hover:underline">Read Full Story →</a>
-        </div>
-    `;
-    
+    // Update the featured article section
     const featuredContainer = container.querySelector('.flex.flex-col.md\\:flex-row');
     if (featuredContainer) {
-        featuredContainer.innerHTML = featuredHtml;
+        featuredContainer.innerHTML = `
+            <div class="md:w-1/2">
+                <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
+                    ${featured.imageUrl ? 
+                        `<img src="${featured.imageUrl}" class="w-full h-full object-cover" alt="${featured.title}">` :
+                        `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
+                    }
+                </div>
+            </div>
+            <div class="md:w-1/2 flex flex-col justify-center">
+                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">${featured.tag || 'Canadian Corner'}</span>
+                <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featured.title}</h3>
+                <p class="text-gray-700 mb-4">${featured.excerpt || ''}</p>
+                <a href="${featured.link || '#'}" class="text-red-600 font-semibold hover:underline">Read Full Story →</a>
+            </div>
+        `;
     }
     
-    const sidebarContainer = container.nextElementSibling;
+    // Update the sidebar section (the div with class "space-y-4" that is next to canadian-corner)
+    const sidebarContainer = container.closest('.grid').querySelector('.space-y-4');
     if (sidebarContainer && sidebar && sidebar.length > 0) {
         sidebarContainer.innerHTML = sidebar.map(item => {
             const link = item.link || '#';
             const time = item.publishedAt || 'Recently';
+            const excerpt = item.excerpt || '';
             
             return `
             <a href="${link}" class="block bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition border-l-4 border-red-600">
                 <h4 class="font-bold mb-2 hover:text-red-600">${item.title}</h4>
-                <p class="text-gray-600 text-sm mb-2 line-clamp-2">${item.excerpt || ''}</p>
+                ${excerpt ? `<p class="text-gray-600 text-sm mb-2 line-clamp-2">${excerpt}</p>` : ''}
                 <span class="text-xs text-gray-500">${time}</span>
             </a>
             `;

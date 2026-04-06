@@ -321,22 +321,21 @@ function getTimeAgo(dateString) {
 }
 
 // ==========================================================
-// CANADIAN CORNER - FIXED FOR YOUR HTML STRUCTURE
+// CANADIAN CORNER - COMPLETELY REWRITTEN
 // ==========================================================
 async function loadCanadianCorner() {
     try {
-        let featuredArticle = null;
-        let sidebarArticles = [];
+        console.log('🟢 Loading Canadian Corner...');
         
-        // FIRST: Try to get from news with canadianCorner distribution
+        // Get featured article (position "featured")
         const featuredQuery = `*[_type == "news" && distribution.canadianCorner == true && distribution.canadianCornerPosition == "featured"] | order(publishedAt desc) [0] {
             title,
             "imageUrl": mainImage.asset->url,
             excerpt,
-            "slug": slug.current,
-            category
+            "slug": slug.current
         }`;
         
+        // Get sidebar articles (positions sidebar-1, sidebar-2, sidebar-3)
         const sidebarQuery = `*[_type == "news" && distribution.canadianCorner == true && distribution.canadianCornerPosition != "featured"] | order(distribution.canadianCornerPosition asc, publishedAt desc) [0...3] {
             title,
             "slug": slug.current,
@@ -352,153 +351,97 @@ async function loadCanadianCorner() {
         const featuredData = await featuredResponse.json();
         const sidebarData = await sidebarResponse.json();
         
-        featuredArticle = featuredData.result?.[0];
-        sidebarArticles = sidebarData.result || [];
+        const featuredArticle = featuredData.result?.[0];
+        const sidebarArticles = sidebarData.result || [];
         
+        console.log('Featured article found:', featuredArticle ? featuredArticle.title : 'None');
+        console.log('Sidebar articles found:', sidebarArticles.length);
+        
+        // If we have data from Sanity, update the page
         if (featuredArticle || sidebarArticles.length > 0) {
-            console.log('Using news articles for Canadian Corner');
-            renderCanadianCornerNews(featuredArticle, sidebarArticles);
-            return;
+            updateCanadianCornerOnPage(featuredArticle, sidebarArticles);
+        } else {
+            console.log('No Canadian Corner articles found in Sanity, keeping placeholder');
         }
-        
-        // If no news, try manually created Canadian Corner
-        const query = `*[_type == "canadianCorner"][0] {
-            featuredArticle {
-                title,
-                "imageUrl": mainImage.asset->url,
-                excerpt,
-                link,
-                tag
-            },
-            sidebarArticles[] {
-                title,
-                link,
-                publishedAt,
-                excerpt
-            }
-        }`;
-        
-        const response = await fetch(getSanityUrl(query));
-        const data = await response.json();
-        const corner = data.result;
-        
-        if (corner && (corner.featuredArticle || (corner.sidebarArticles && corner.sidebarArticles.length > 0))) {
-            console.log('Using manually created Canadian Corner');
-            renderCanadianCornerManual(corner.featuredArticle, corner.sidebarArticles);
-            return;
-        }
-        
-        // Final fallback: get latest canadian-corner category news
-        const fallbackQuery = `*[_type == "news" && category == "canadian-corner"] | order(publishedAt desc) [0...4] {
-            title,
-            "imageUrl": mainImage.asset->url,
-            excerpt,
-            "slug": slug.current,
-            publishedAt
-        }`;
-        
-        const fallbackResponse = await fetch(getSanityUrl(fallbackQuery));
-        const fallbackData = await fallbackResponse.json();
-        const articles = fallbackData.result;
-        
-        if (articles && articles.length > 0) {
-            featuredArticle = articles[0];
-            sidebarArticles = articles.slice(1, 4);
-            console.log('Using fallback Canadian Corner articles');
-            renderCanadianCornerNews(featuredArticle, sidebarArticles);
-            return;
-        }
-        
-        console.log('No Canadian Corner content found');
         
     } catch (err) {
         console.error('✗ Canadian Corner error:', err);
     }
 }
 
-function renderCanadianCornerNews(featured, sidebar) {
-    // Find the Canadian Corner container
-    const cornerDiv = document.querySelector('.canadian-corner');
-    if (!cornerDiv) {
-        console.log('Canadian Corner div not found');
+function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
+    // Find the Canadian Corner section by looking for the h2 that contains "Canadian Corner"
+    const sections = document.querySelectorAll('section');
+    let canadianCornerSection = null;
+    
+    for (const section of sections) {
+        const h2 = section.querySelector('h2');
+        if (h2 && h2.innerText.includes('Canadian')) {
+            canadianCornerSection = section;
+            break;
+        }
+    }
+    
+    if (!canadianCornerSection) {
+        console.log('Could not find Canadian Corner section on page');
         return;
     }
     
-    // Update featured section
-    const featuredContainer = cornerDiv.querySelector('.flex.flex-col.md\\:flex-row');
-    if (featuredContainer && featured) {
-        featuredContainer.innerHTML = `
-            <div class="md:w-1/2">
-                <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
-                    ${featured.imageUrl ? 
-                        `<img src="${featured.imageUrl}" class="w-full h-full object-cover" alt="${featured.title}">` :
-                        `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
-                    }
-                </div>
-            </div>
-            <div class="md:w-1/2 flex flex-col justify-center">
-                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">Canadian Corner</span>
-                <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featured.title}</h3>
-                <p class="text-gray-700 mb-4">${featured.excerpt || ''}</p>
-                <a href="/news/article.html?slug=${featured.slug}" class="text-red-600 font-semibold hover:underline">Read Full Story →</a>
-            </div>
-        `;
+    // Find the grid inside this section
+    const grid = canadianCornerSection.querySelector('.grid');
+    if (!grid) {
+        console.log('Could not find grid inside Canadian Corner section');
+        return;
     }
     
-    // Update sidebar section (the div with class "space-y-4" that is next to canadian-corner)
-    const sidebarContainer = cornerDiv.closest('.grid')?.querySelector('.space-y-4');
-    if (sidebarContainer && sidebar && sidebar.length > 0) {
-        sidebarContainer.innerHTML = sidebar.map(article => `
+    // Find the canadian-corner div (the featured article container)
+    let cornerDiv = grid.querySelector('.canadian-corner');
+    if (!cornerDiv) {
+        console.log('Could not find .canadian-corner div');
+        return;
+    }
+    
+    // Find the sidebar container (div with class "space-y-4")
+    let sidebarContainer = grid.querySelector('.space-y-4');
+    if (!sidebarContainer) {
+        console.log('Could not find sidebar container (.space-y-4)');
+        return;
+    }
+    
+    // Update featured article if it exists
+    if (featuredArticle) {
+        const featuredInnerDiv = cornerDiv.querySelector('.flex.flex-col.md\\:flex-row');
+        if (featuredInnerDiv) {
+            featuredInnerDiv.innerHTML = `
+                <div class="md:w-1/2">
+                    <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
+                        ${featuredArticle.imageUrl ? 
+                            `<img src="${featuredArticle.imageUrl}" class="w-full h-full object-cover" alt="${featuredArticle.title}">` :
+                            `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
+                        }
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex flex-col justify-center">
+                    <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">Canadian Corner</span>
+                    <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featuredArticle.title}</h3>
+                    <p class="text-gray-700 mb-4">${featuredArticle.excerpt || ''}</p>
+                    <a href="/news/article.html?slug=${featuredArticle.slug}" class="text-red-600 font-semibold hover:underline">Read Full Story →</a>
+                </div>
+            `;
+            console.log('✅ Updated featured article:', featuredArticle.title);
+        }
+    }
+    
+    // Update sidebar if we have articles
+    if (sidebarArticles && sidebarArticles.length > 0) {
+        sidebarContainer.innerHTML = sidebarArticles.map(article => `
             <a href="/news/article.html?slug=${article.slug}" class="block bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition border-l-4 border-red-600">
                 <h4 class="font-bold mb-2 hover:text-red-600">${article.title}</h4>
                 <p class="text-gray-600 text-sm mb-2 line-clamp-2">${article.excerpt || ''}</p>
                 <span class="text-xs text-gray-500">${getTimeAgo(article.publishedAt) || 'Recently'}</span>
             </a>
         `).join('');
-    }
-}
-
-function renderCanadianCornerManual(featured, sidebar) {
-    const cornerDiv = document.querySelector('.canadian-corner');
-    if (!cornerDiv) return;
-    
-    // Update featured section
-    const featuredContainer = cornerDiv.querySelector('.flex.flex-col.md\\:flex-row');
-    if (featuredContainer && featured) {
-        featuredContainer.innerHTML = `
-            <div class="md:w-1/2">
-                <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
-                    ${featured.imageUrl ? 
-                        `<img src="${featured.imageUrl}" class="w-full h-full object-cover" alt="${featured.title}">` :
-                        `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
-                    }
-                </div>
-            </div>
-            <div class="md:w-1/2 flex flex-col justify-center">
-                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">${featured.tag || 'Canadian Corner'}</span>
-                <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featured.title}</h3>
-                <p class="text-gray-700 mb-4">${featured.excerpt || ''}</p>
-                <a href="${featured.link || '#'}" class="text-red-600 font-semibold hover:underline">Read Full Story →</a>
-            </div>
-        `;
-    }
-    
-    // Update sidebar
-    const sidebarContainer = cornerDiv.closest('.grid')?.querySelector('.space-y-4');
-    if (sidebarContainer && sidebar && sidebar.length > 0) {
-        sidebarContainer.innerHTML = sidebar.map(item => {
-            const link = item.link || '#';
-            const time = item.publishedAt || 'Recently';
-            const excerpt = item.excerpt || '';
-            
-            return `
-            <a href="${link}" class="block bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition border-l-4 border-red-600">
-                <h4 class="font-bold mb-2 hover:text-red-600">${item.title}</h4>
-                ${excerpt ? `<p class="text-gray-600 text-sm mb-2 line-clamp-2">${excerpt}</p>` : ''}
-                <span class="text-xs text-gray-500">${time}</span>
-            </a>
-            `;
-        }).join('');
+        console.log('✅ Updated sidebar with', sidebarArticles.length, 'articles');
     }
 }
 

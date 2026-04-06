@@ -35,14 +35,12 @@ export function DistributeArticle(props) {
       // 1. CREATE HERO SLIDE
       if (distribution.heroSlider) {
         try {
-          // Check if a hero slide already exists for this article
           const existingHero = await client.fetch(
             `*[_type == "heroSlide" && sourceArticle._ref == $articleId][0]`,
             {articleId}
           )
           
           if (!existingHero) {
-            // Check if article has an image
             if (!doc.mainImage) {
               console.warn('⚠️ Cannot create hero slide: No image in article')
               errors.push('Hero Slide: No image in article')
@@ -87,7 +85,6 @@ export function DistributeArticle(props) {
       // 2. CREATE QUICK HEADLINE
       if (distribution.quickHeadlines) {
         try {
-          // Check if a headline already exists
           const existingHeadline = await client.fetch(
             `*[_type == "headline" && sourceArticle._ref == $articleId][0]`,
             {articleId}
@@ -136,7 +133,6 @@ export function DistributeArticle(props) {
       // 3. UPDATE CANADIAN CORNER
       if (distribution.canadianCorner) {
         try {
-          // Get or create Canadian Corner document
           let cornerDoc = await client.fetch(`*[_type == "canadianCorner"][0]`)
           
           if (!cornerDoc) {
@@ -150,7 +146,6 @@ export function DistributeArticle(props) {
           const position = distribution.canadianCornerPosition || 'sidebar-1'
           
           if (position === 'featured') {
-            // Set as featured article
             const articleData = {
               title: doc.title,
               slug: {
@@ -176,23 +171,20 @@ export function DistributeArticle(props) {
             created.push('Canadian Corner (Featured)')
             console.log('✓ Set as Canadian Corner featured article')
           } else {
-            // Add to sidebar
             const sidebarIndex = parseInt(position.split('-')[1]) - 1
             let currentSidebar = cornerDoc.sidebarArticles || []
             
-            // Make sure we have exactly 3 positions
             while (currentSidebar.length < 3) {
               currentSidebar.push(null)
             }
             
-            // Add the new article
             currentSidebar[sidebarIndex] = {
               title: doc.title,
               link: `/news/article.html?slug=${doc.slug.current}`,
-              publishedAt: getTimeAgoString(doc.publishedAt)
+              publishedAt: getTimeAgoString(doc.publishedAt),
+              excerpt: doc.excerpt?.substring(0, 100) || ''
             }
             
-            // Filter out nulls and save
             await client
               .patch(cornerDoc._id)
               .set({sidebarArticles: currentSidebar.filter(Boolean)})
@@ -206,7 +198,6 @@ export function DistributeArticle(props) {
         }
       }
 
-      // Show success notification
       let message = ''
       if (created.length > 0) {
         message = `✓ Published & Distributed to: ${created.join(', ')}`
@@ -235,7 +226,6 @@ export function DistributeArticle(props) {
     }
   }
   
-  // Helper function to format time ago string
   function getTimeAgoString(dateString) {
     if (!dateString) return 'Just now'
     const date = new Date(dateString)

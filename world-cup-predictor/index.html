@@ -24,11 +24,14 @@
         .clear-btn:hover { background: #dc2626; }
         @media (max-width: 768px) { .team-btn { font-size: 14px; padding: 10px; } .clear-btn { padding: 8px 16px; font-size: 12px; } }
         button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
+        .nav-link:hover::after { width: 100%; }
     </style>
 </head>
 <body class="bg-gray-50">
 
-    <!-- Full Navigation Bar (matching main site) -->
+    <!-- Full Navigation Bar -->
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <a href="/index.html" class="flex items-center group">
@@ -57,7 +60,7 @@
             <button id="mobile-menu-button" class="md:hidden text-black"><i class="fas fa-bars text-xl"></i></button>
         </div>
         <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pb-3">
-            <a href="/index.html" class="block py-2 text-red-600 font-semibold">Home</a>
+            <a href="/index.html" class="block py-2 hover:text-red-600">Home</a>
             <a href="/news/index.html" class="block py-2 hover:text-red-600">News</a>
             <a href="/article/index.html" class="block py-2 hover:text-red-600">Articles</a>
             <a href="/services/index.html" class="block py-2 hover:text-red-600">Services</a>
@@ -171,7 +174,7 @@
 
     <script>
         // ============================================================
-        // WORLD CUP 2026 PREDICTOR WITH REFRESH WARNING
+        // WORLD CUP 2026 PREDICTOR - WITH REFRESH WARNING & CLEAR BUTTON
         // ============================================================
         
         let hasUnsavedChanges = false;
@@ -265,6 +268,7 @@
         const groupLetters = Object.keys(GROUPS);
 
         function init() {
+            // Only load saved data if not submitted
             const saved = localStorage.getItem('worldCupPredictor_90min');
             if (saved && !submitted) {
                 try { userState = JSON.parse(saved); } catch(e) {}
@@ -355,7 +359,7 @@
                     <span class="text-sm font-bold bg-gray-100 px-3 py-1 rounded">${userState.currentGroupIndex + 1} of 12</span>
                 </div>
                 <div class="grid grid-cols-1 gap-3">
-                    <div class="text-sm text-gray-500 mb-2">Click any team to rank (1st → 2nd → 3rd → 4th). Click a ranked team to unrank it and reorder.</div>`;
+                    <div class="text-sm text-gray-500 mb-2">Click to rank (1st → 4th). Click ranked team to change.</div>`;
 
             data.teams.forEach(team => {
                 let posClass = '';
@@ -553,13 +557,14 @@
         document.getElementById('next-from-semifinals').onclick = () => { userState.currentStep = 6; save(); renderCurrentStep(); };
         document.getElementById('next-from-final').onclick = () => { userState.currentStep = 7; save(); renderCurrentStep(); };
 
-        // Clear button
+        // Clear button handler
         document.getElementById('clear-data-btn').onclick = () => {
             if (confirm('Are you sure? All your prediction data will be erased.')) {
                 clearAllDataAndReset();
             }
         };
 
+        // Submit button - now sends to your backend API
         document.getElementById('submit-prediction').onclick = async () => {
             const email = document.getElementById('user-email').value;
             if (!email) {
@@ -568,8 +573,8 @@
             }
             
             const name = document.getElementById('user-name').value;
+            markDirty();
             
-            // Prepare prediction data
             const predictionData = {
                 groupStage: userState.groupStage,
                 thirdPlaceSelected: userState.thirdPlaceSelected,
@@ -597,10 +602,11 @@
                     
                     // Clear localStorage after successful submission
                     localStorage.removeItem('worldCupPredictor_90min');
+                    localStorage.removeItem('wc_submissions_90min');
                     
-                    // Reset the form after 3 seconds
+                    // Show reset option
                     setTimeout(() => {
-                        if (confirm('Prediction submitted! Start a new prediction?')) {
+                        if (confirm('Prediction submitted! Start a new prediction for someone else?')) {
                             clearAllDataAndReset();
                         }
                     }, 2000);
@@ -615,19 +621,29 @@
         };
 
         document.getElementById('admin-export-link').onclick = async () => {
-            const response = await fetch('/.netlify/functions/leaderboard');
-            const data = await response.json();
-            let csv = 'Name,Email,Champion,Score,Submitted At\n';
-            data.forEach(row => {
-                csv += `"${row.name || ''}","${row.email || ''}","${row.champion || ''}","${row.score || ''}","${row.submitted_at || ''}"\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `predictions-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
+            try {
+                const response = await fetch('/.netlify/functions/leaderboard');
+                const data = await response.json();
+                let csv = "Name,Email,Champion,Score,Submitted At\n";
+                data.forEach(row => {
+                    csv += `"${row.name || ''}","${row.email || ''}","${row.champion || ''}","${row.score || ''}","${row.submitted_at || ''}"\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `predictions-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch(e) {
+                alert('Error loading leaderboard data');
+            }
+        };
+
+        // Cart function placeholder (matches main site)
+        window.toggleCart = function() {
+            const sidebar = document.getElementById('cart-sidebar');
+            if (sidebar) sidebar.classList.toggle('translate-x-full');
         };
 
         document.addEventListener('DOMContentLoaded', init);

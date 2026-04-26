@@ -169,15 +169,28 @@
         </div>
     </div>
 
+    <!-- Step Indicator (hidden but used by JS) -->
+    <span id="step-indicator" style="display: none;"></span>
+
     <!-- Clear & Reset Button -->
     <button id="clear-data-btn" class="clear-btn"><i class="fas fa-trash-alt mr-2"></i>Clear & Reset</button>
 
     <script>
         // ============================================================
-        // WORLD CUP 2026 PREDICTOR - PROPER VERSIONED STORAGE
+        // WORLD CUP 2026 PREDICTOR - ROOT CAUSE FIX
         // ============================================================
         
-        const PREDICTOR_VERSION = "v2";
+        console.log("🚀 Predictor script loaded");
+        
+        // Force reload on bfcache (back/forward cache)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                console.log("🔄 Page restored from bfcache - forcing reload");
+                window.location.reload();
+            }
+        });
+        
+        const PREDICTOR_VERSION = "v3";
         const STORAGE_KEY = "wcPredictor";
         
         let hasUnsavedChanges = false;
@@ -202,8 +215,9 @@
         });
         
         function clearAllDataAndReset() {
+            console.log("🗑️ Clearing all data and resetting");
             localStorage.removeItem(STORAGE_KEY);
-            location.reload();
+            window.location.reload();
         }
         
         // Groups Data
@@ -256,38 +270,57 @@
             { id: 88, homeSlot: 'D2', awaySlot: 'G2', date: 'Friday 3 July', loc: 'Dallas Stadium' }
         ];
 
-        let userState = {
-            groupStage: JSON.parse(JSON.stringify(GROUPS)),
-            thirdPlaceSelected: [],
-            knockoutWinners: { round32: {}, round16: {}, quarterFinals: {}, semiFinals: {}, final: null },
-            userName: '', userEmail: '', currentGroupIndex: 0, currentStep: 0
-        };
-
+        // This will be reset in init()
+        let userState = null;
         const groupLetters = Object.keys(GROUPS);
 
+        function getFreshUserState() {
+            return {
+                groupStage: JSON.parse(JSON.stringify(GROUPS)),
+                thirdPlaceSelected: [],
+                knockoutWinners: { round32: {}, round16: {}, quarterFinals: {}, semiFinals: {}, final: null },
+                userName: '',
+                userEmail: '',
+                currentGroupIndex: 0,
+                currentStep: 0
+            };
+        }
+
         function init() {
-            const saved = localStorage.getItem(STORAGE_KEY);
+            console.log("🚀 init() called");
             
+            // ALWAYS reset to fresh state first
+            userState = getFreshUserState();
+            
+            // Then check if we should load saved data (only if version matches)
+            const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
                     if (parsed.version === PREDICTOR_VERSION) {
+                        console.log("📀 Loading saved data (version match)");
                         userState = parsed.data;
-                        renderCurrentStep();
-                        return;
+                    } else {
+                        console.log("🗑️ Version mismatch, starting fresh");
+                        localStorage.removeItem(STORAGE_KEY);
                     }
                 } catch(e) {
-                    console.error('Failed to parse saved data', e);
+                    console.error("Failed to parse saved data", e);
+                    localStorage.removeItem(STORAGE_KEY);
                 }
+            } else {
+                console.log("✨ No saved data, starting fresh");
             }
             
-            // Version mismatch or no saved data - start fresh
-            localStorage.removeItem(STORAGE_KEY);
+            console.log("📍 Starting at step:", userState.currentStep);
             renderCurrentStep();
         }
 
         function save() {
-            if (submitted) return;
+            if (submitted) {
+                console.log("💾 Skipping save - already submitted");
+                return;
+            }
             
             const toSave = {
                 version: PREDICTOR_VERSION,
@@ -304,8 +337,17 @@
         }
 
         function renderCurrentStep() {
+            console.log("🎨 renderCurrentStep() - step:", userState.currentStep);
+            
+            // Safely update step indicator (handle missing element)
+            const stepEl = document.getElementById('step-indicator');
+            if (stepEl) {
+                stepEl.innerText = `Step ${userState.currentStep + 1}/8`;
+            }
+            
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('steps-container').classList.remove('active');
+            const stepsContainer = document.getElementById('steps-container');
+            if (stepsContainer) stepsContainer.classList.remove('active');
             
             const steps = [
                 renderGroupStep,
@@ -315,22 +357,44 @@
                 () => renderKnockoutStep('quarterFinals', getQF(), 'quarterfinals-matches', 'quarterfinals-step'),
                 () => renderKnockoutStep('semiFinals', getSF(), 'semifinals-matches', 'semifinals-step'),
                 renderFinalStep,
-                () => document.getElementById('email-step').classList.add('active')
+                () => renderEmailStep()
             ];
-            steps[userState.currentStep]();
+            
+            if (userState.currentStep >= 0 && userState.currentStep < steps.length) {
+                steps[userState.currentStep]();
+            } else {
+                console.error("Invalid step:", userState.currentStep);
+                userState.currentStep = 0;
+                steps[0]();
+            }
+            
             updateUI();
+        }
+        
+        function renderEmailStep() {
+            document.getElementById('email-step').classList.add('active');
+            // Pre-fill if exists
+            if (userState.userName) document.getElementById('user-name').value = userState.userName;
+            if (userState.userEmail) document.getElementById('user-email').value = userState.userEmail;
         }
 
         function updateUI() {
-            document.getElementById('step-indicator').innerText = `Step ${userState.currentStep + 1}/8`;
-            document.getElementById('progress-bar').style.width = `${(userState.currentStep / 7) * 100}%`;
+            const stepEl = document.getElementById('step-indicator');
+            if (stepEl) {
+                stepEl.innerText = `Step ${userState.currentStep + 1}/8`;
+            }
+            const progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+                progressBar.style.width = `${(userState.currentStep / 7) * 100}%`;
+            }
         }
 
         function goToPrevStep() {
             if (userState.currentStep > 0) {
                 userState.currentStep--;
                 if (userState.currentStep === 0) userState.currentGroupIndex = 11;
-                save(); renderCurrentStep();
+                save(); 
+                renderCurrentStep();
             }
         }
 
@@ -364,6 +428,7 @@
 
         function renderGroupStep() {
             const container = document.getElementById('steps-container');
+            if (!container) return;
             container.innerHTML = '';
             container.classList.add('step', 'active');
             const letter = groupLetters[userState.currentGroupIndex];
@@ -402,21 +467,34 @@
             markDirty();
             userState.groupStage[letter].positions = { '1st': null, '2nd': null, '3rd': null, '4th': null };
             userState.groupStage[letter].completed = false;
-            save(); renderGroupStep();
+            save(); 
+            renderGroupStep();
         };
 
         window.nextGroup = () => {
-            if (userState.currentGroupIndex < 11) { userState.currentGroupIndex++; save(); renderGroupStep(); }
-            else { userState.currentStep = 1; save(); renderCurrentStep(); }
+            if (userState.currentGroupIndex < 11) { 
+                userState.currentGroupIndex++; 
+                save(); 
+                renderGroupStep(); 
+            } else { 
+                userState.currentStep = 1; 
+                save(); 
+                renderCurrentStep(); 
+            }
         };
 
         window.prevGroup = () => {
-            if (userState.currentGroupIndex > 0) { userState.currentGroupIndex--; save(); renderGroupStep(); }
+            if (userState.currentGroupIndex > 0) { 
+                userState.currentGroupIndex--; 
+                save(); 
+                renderGroupStep(); 
+            }
         };
 
         function renderThirdPlaceStep() {
             document.getElementById('third-place-step').classList.add('active');
             const list = document.getElementById('third-place-list');
+            if (!list) return;
             list.innerHTML = '';
             groupLetters.forEach(letter => {
                 const team = userState.groupStage[letter].positions['3rd'];
@@ -427,8 +505,10 @@
                     <div class="text-xs uppercase opacity-60">Group ${letter}</div>
                 </div>`;
             });
-            document.getElementById('third-place-count').innerText = `Selected: ${userState.thirdPlaceSelected.length}/8`;
-            document.getElementById('next-from-third').disabled = userState.thirdPlaceSelected.length !== 8;
+            const countSpan = document.getElementById('third-place-count');
+            if (countSpan) countSpan.innerText = `Selected: ${userState.thirdPlaceSelected.length}/8`;
+            const nextBtn = document.getElementById('next-from-third');
+            if (nextBtn) nextBtn.disabled = userState.thirdPlaceSelected.length !== 8;
         }
 
         window.toggle3rd = (letter) => {
@@ -436,7 +516,8 @@
             const idx = userState.thirdPlaceSelected.indexOf(letter);
             if (idx > -1) userState.thirdPlaceSelected.splice(idx, 1);
             else if (userState.thirdPlaceSelected.length < 8) userState.thirdPlaceSelected.push(letter);
-            save(); renderThirdPlaceStep();
+            save(); 
+            renderThirdPlaceStep();
         };
 
         function getTeamFromSlot(slot) {
@@ -449,19 +530,24 @@
         }
 
         function renderKnockoutStep(stageKey, fixtures, containerId, stepId) {
-            document.getElementById(stepId).classList.add('active');
+            const stepContainer = document.getElementById(stepId);
+            if (!stepContainer) return;
+            stepContainer.classList.add('active');
             const container = document.getElementById(containerId);
+            if (!container) return;
             container.innerHTML = '';
             
             fixtures.forEach(f => {
                 let home, away;
                 if (stageKey === 'round32') {
-                    home = getTeamFromSlot(f.homeSlot); away = getTeamFromSlot(f.awaySlot);
+                    home = getTeamFromSlot(f.homeSlot); 
+                    away = getTeamFromSlot(f.awaySlot);
                 } else {
                     const prev = stageKey === 'round16' ? 'round32' : stageKey === 'quarterFinals' ? 'round16' : 'quarterFinals';
-                    home = userState.knockoutWinners[prev][f.homeMatch]; away = userState.knockoutWinners[prev][f.awayMatch];
+                    home = userState.knockoutWinners[prev] ? userState.knockoutWinners[prev][f.homeMatch] : null;
+                    away = userState.knockoutWinners[prev] ? userState.knockoutWinners[prev][f.awayMatch] : null;
                 }
-                const winner = userState.knockoutWinners[stageKey][f.id];
+                const winner = userState.knockoutWinners[stageKey] ? userState.knockoutWinners[stageKey][f.id] : null;
                 container.innerHTML += `<div class="bg-gray-50 border p-4 rounded-lg">
                     <div class="text-[10px] font-bold text-red-600 mb-1 uppercase">Match ${f.id} · ${f.loc}</div>
                     <div class="text-[9px] text-gray-400 mb-2">${f.date || ''}</div>
@@ -476,15 +562,18 @@
                 </div>`;
             });
 
-            const winCount = Object.keys(userState.knockoutWinners[stageKey]).length;
-            document.getElementById(`next-from-${stageKey}`).disabled = winCount < fixtures.length;
+            const winCount = userState.knockoutWinners[stageKey] ? Object.keys(userState.knockoutWinners[stageKey]).length : 0;
+            const nextBtn = document.getElementById(`next-from-${stageKey}`);
+            if (nextBtn) nextBtn.disabled = winCount < fixtures.length;
         }
 
         window.pickWinner = (stage, matchId, team) => {
             if (!team || team === 'TBD') return;
             markDirty();
+            if (!userState.knockoutWinners[stage]) userState.knockoutWinners[stage] = {};
             userState.knockoutWinners[stage][matchId] = team;
-            save(); renderCurrentStep();
+            save(); 
+            renderCurrentStep();
         };
 
         function getR16Fixtures() { 
@@ -518,8 +607,8 @@
 
         function renderFinalStep() {
             document.getElementById('final-step').classList.add('active');
-            const f1 = userState.knockoutWinners.semiFinals[101];
-            const f2 = userState.knockoutWinners.semiFinals[102];
+            const f1 = userState.knockoutWinners.semiFinals ? userState.knockoutWinners.semiFinals[101] : null;
+            const f2 = userState.knockoutWinners.semiFinals ? userState.knockoutWinners.semiFinals[102] : null;
             const win = userState.knockoutWinners.final;
             
             document.getElementById('final-matches').innerHTML = `
@@ -566,12 +655,53 @@
             if (nextBtn) nextBtn.disabled = !userState.knockoutWinners.final;
         }
 
-        document.getElementById('next-from-third').onclick = () => { userState.currentStep = 2; save(); renderCurrentStep(); };
-        document.getElementById('next-from-round32').onclick = () => { userState.currentStep = 3; save(); renderCurrentStep(); };
-        document.getElementById('next-from-round16').onclick = () => { userState.currentStep = 4; save(); renderCurrentStep(); };
-        document.getElementById('next-from-quarterfinals').onclick = () => { userState.currentStep = 5; save(); renderCurrentStep(); };
-        document.getElementById('next-from-semifinals').onclick = () => { userState.currentStep = 6; save(); renderCurrentStep(); };
-        document.getElementById('next-from-final').onclick = () => { userState.currentStep = 7; save(); renderCurrentStep(); };
+        // Navigation button handlers
+        document.getElementById('next-from-third').onclick = () => { 
+            if (userState.thirdPlaceSelected.length === 8) {
+                userState.currentStep = 2; 
+                save(); 
+                renderCurrentStep(); 
+            }
+        };
+        document.getElementById('next-from-round32').onclick = () => { 
+            const winCount = Object.keys(userState.knockoutWinners.round32 || {}).length;
+            if (winCount === 16) {
+                userState.currentStep = 3; 
+                save(); 
+                renderCurrentStep(); 
+            }
+        };
+        document.getElementById('next-from-round16').onclick = () => { 
+            const winCount = Object.keys(userState.knockoutWinners.round16 || {}).length;
+            if (winCount === 8) {
+                userState.currentStep = 4; 
+                save(); 
+                renderCurrentStep(); 
+            }
+        };
+        document.getElementById('next-from-quarterfinals').onclick = () => { 
+            const winCount = Object.keys(userState.knockoutWinners.quarterFinals || {}).length;
+            if (winCount === 4) {
+                userState.currentStep = 5; 
+                save(); 
+                renderCurrentStep(); 
+            }
+        };
+        document.getElementById('next-from-semifinals').onclick = () => { 
+            const winCount = Object.keys(userState.knockoutWinners.semiFinals || {}).length;
+            if (winCount === 2) {
+                userState.currentStep = 6; 
+                save(); 
+                renderCurrentStep(); 
+            }
+        };
+        document.getElementById('next-from-final').onclick = () => { 
+            if (userState.knockoutWinners.final) {
+                userState.currentStep = 7; 
+                save(); 
+                renderCurrentStep(); 
+            }
+        };
 
         // Clear button handler
         document.getElementById('clear-data-btn').onclick = () => {
@@ -589,6 +719,8 @@
             }
             
             const name = document.getElementById('user-name').value;
+            userState.userName = name;
+            userState.userEmail = email;
             markDirty();
             
             const predictionData = {

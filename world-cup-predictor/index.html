@@ -20,61 +20,32 @@
         .step.active { display: block; }
         .progress-bar { transition: width 0.3s ease; }
         .third-place-btn.selected { background-color: #22c55e; color: white; border-color: #16a34a; }
-        .clear-btn { position: fixed; bottom: 20px; right: 20px; background: #ef4444; color: white; padding: 10px 20px; border-radius: 50px; font-size: 14px; z-index: 999; cursor: pointer; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .clear-btn:hover { background: #dc2626; }
-        @media (max-width: 768px) { .team-btn { font-size: 14px; padding: 10px; } .clear-btn { padding: 8px 16px; font-size: 12px; } }
+        @media (max-width: 768px) { .team-btn { font-size: 14px; padding: 10px; } }
         button:disabled { opacity: 0.4; cursor: not-allowed; }
-        .nav-link { position: relative; }
-        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
-        .nav-link:hover::after { width: 100%; }
     </style>
 </head>
 <body class="bg-gray-50">
 
-    <!-- Full Navigation Bar -->
+    <!-- Navigation Bar -->
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="/index.html" class="flex items-center group">
-                <img src="/images/logo.jpeg" alt="90 Minutes or More" class="h-10 mr-2">
-                <div class="hidden sm:block">
-                    <span class="font-anton text-xl">
-                        <span class="text-red-600">90</span><span class="text-black">MINUTES</span>
-                    </span>
-                    <span class="text-xs ml-1">or More</span>
-                </div>
+            <a href="/index.html" class="flex items-center">
+                <span class="font-anton text-xl">
+                    <span class="text-red-600">90</span><span class="text-black">MINUTES</span>
+                </span>
+                <span class="text-xs ml-1">or More</span>
             </a>
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="/index.html" class="nav-link text-sm text-black hover:text-red-600">Home</a>
-                <a href="/news/index.html" class="nav-link text-sm text-black hover:text-red-600">News</a>
-                <a href="/article/index.html" class="nav-link text-sm text-black hover:text-red-600">Articles</a>
-                <a href="/services/index.html" class="nav-link text-sm text-black hover:text-red-600">Services</a>
-                <a href="/shop/index.html" class="nav-link text-sm text-black hover:text-red-600">Shop</a>
-                <a href="/podcast/index.html" class="nav-link text-sm text-black hover:text-red-600">Podcast</a>
-                <a href="/about/index.html" class="nav-link text-sm text-black hover:text-red-600">About</a>
-                <a href="/world-cup-predictor/index.html" class="nav-link text-sm text-red-600 font-semibold">Predictor</a>
-                <button onclick="toggleCart()" class="relative bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md text-sm transition">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
-                </button>
+            <div class="flex items-center space-x-4">
+                <span id="step-indicator" class="text-sm text-gray-600 font-bold">Step 1/7</span>
+                <span id="save-status" class="text-xs text-green-600 hidden font-bold"><i class="fas fa-check"></i> Progress Saved</span>
             </div>
-            <button id="mobile-menu-button" class="md:hidden text-black"><i class="fas fa-bars text-xl"></i></button>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pb-3">
-            <a href="/index.html" class="block py-2 hover:text-red-600">Home</a>
-            <a href="/news/index.html" class="block py-2 hover:text-red-600">News</a>
-            <a href="/article/index.html" class="block py-2 hover:text-red-600">Articles</a>
-            <a href="/services/index.html" class="block py-2 hover:text-red-600">Services</a>
-            <a href="/shop/index.html" class="block py-2 hover:text-red-600">Shop</a>
-            <a href="/podcast/index.html" class="block py-2 hover:text-red-600">Podcast</a>
-            <a href="/about/index.html" class="block py-2 hover:text-red-600">About</a>
-            <a href="/world-cup-predictor/index.html" class="block py-2 text-red-600 font-semibold">Predictor</a>
         </div>
     </nav>
 
     <div class="container mx-auto px-4 py-8 max-w-6xl">
         <div class="text-center mb-8">
             <h1 class="font-anton text-4xl md:text-5xl uppercase mb-2">World Cup <span class="text-red-600">2026</span> Predictor</h1>
-            <p class="text-gray-600">Rank the groups, pick the best 3rd place teams, and forecast the full bracket.</p>
+            <p class="text-gray-600">Complete your bracket to join the leaderboard. (Refreshing the page will reset your progress)</p>
         </div>
 
         <div class="mb-8 bg-gray-200 rounded-full h-3 overflow-hidden border border-gray-300">
@@ -83,83 +54,83 @@
 
         <div id="steps-container"></div>
 
+        <!-- 3rd Place Step -->
         <div id="third-place-step" class="step">
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6 border-t-4 border-red-600">
-                <h2 class="font-anton text-2xl uppercase mb-2">Best Third‑Place Teams</h2>
+                <h2 class="font-anton text-2xl uppercase mb-2 text-red-600">Best Third-Place Teams</h2>
                 <p class="text-gray-600 mb-4">Pick exactly 8 teams to advance to the Round of 32.</p>
                 <div id="third-place-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-4"></div>
                 <div class="flex justify-between items-center mt-6 pt-4 border-t">
-                    <button onclick="goToPrevStep()" class="bg-gray-200 px-6 py-2 rounded font-bold">← Back to Groups</button>
+                    <button onclick="goToPrevStep()" class="bg-gray-200 px-6 py-2 rounded font-bold">← Back</button>
                     <span id="third-place-count" class="text-lg font-bold text-red-600">Selected: 0/8</span>
-                    <button id="next-from-third" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-8 rounded-md transition">Next Round →</button>
+                    <button id="next-from-third" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-8 rounded-md transition" disabled>Next Round →</button>
                 </div>
             </div>
         </div>
 
+        <!-- Knockout Steps -->
         <div id="round32-step" class="step">
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <h2 class="font-anton text-2xl uppercase mb-4">Round of 32</h2>
+                <h2 class="font-anton text-2xl uppercase mb-4 text-red-600">Round of 32</h2>
                 <div id="round32-matches" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 <div class="flex gap-4 mt-8">
                     <button onclick="goToPrevStep()" class="w-1/3 bg-gray-200 font-bold py-3 rounded-md">← Back</button>
-                    <button id="next-from-round32" class="w-2/3 bg-red-600 text-white font-bold py-3 rounded-md">Proceed to Round of 16 →</button>
+                    <button id="next-from-round32" class="w-2/3 bg-red-600 text-white font-bold py-3 rounded-md" disabled>Round of 16 →</button>
                 </div>
             </div>
         </div>
 
         <div id="round16-step" class="step">
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <h2 class="font-anton text-2xl uppercase mb-4">Round of 16</h2>
+                <h2 class="font-anton text-2xl uppercase mb-4 text-red-600">Round of 16</h2>
                 <div id="round16-matches" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 <div class="flex gap-4 mt-8">
                     <button onclick="goToPrevStep()" class="w-1/3 bg-gray-200 font-bold py-3 rounded-md">← Back</button>
-                    <button id="next-from-round16" class="w-2/3 bg-red-600 text-white font-bold py-3 rounded-md">Proceed to Quarter‑finals →</button>
+                    <button id="next-from-round16" class="w-2/3 bg-red-600 text-white font-bold py-3 rounded-md" disabled>Quarter-finals →</button>
                 </div>
             </div>
         </div>
 
         <div id="quarterfinals-step" class="step">
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <h2 class="font-anton text-2xl uppercase mb-4">Quarter‑finals</h2>
+                <h2 class="font-anton text-2xl uppercase mb-4 text-red-600">Quarter-finals</h2>
                 <div id="quarterfinals-matches" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 <div class="flex gap-4 mt-8">
                     <button onclick="goToPrevStep()" class="w-1/3 bg-gray-200 font-bold py-3 rounded-md">← Back</button>
-                    <button id="next-from-quarterfinals" class="w-2/3 bg-red-600 text-white font-bold py-3 rounded-md">Proceed to Semi‑finals →</button>
+                    <button id="next-from-quarterfinals" class="w-2/3 bg-red-600 text-white font-bold py-3 rounded-md" disabled>Semi-finals →</button>
                 </div>
             </div>
         </div>
 
         <div id="semifinals-step" class="step">
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <h2 class="font-anton text-2xl uppercase mb-4">Semi‑finals</h2>
+                <h2 class="font-anton text-2xl uppercase mb-4 text-red-600">Semi-finals</h2>
                 <div id="semifinals-matches" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 <div class="flex gap-4 mt-8">
                     <button onclick="goToPrevStep()" class="w-1/3 bg-gray-200 font-bold py-3 rounded-md">← Back</button>
-                    <button id="next-from-semifinals" class="w-2/3 bg-red-600 text-white font-bold py-3 rounded-md">Proceed to the Final →</button>
+                    <button id="next-from-semifinals" class="w-2/3 bg-red-600 text-white font-bold py-3 rounded-md" disabled>The Final →</button>
                 </div>
             </div>
         </div>
 
         <div id="final-step" class="step">
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-6 text-center">
-                <h2 class="font-anton text-3xl uppercase mb-6">The Grand Final</h2>
-                <div id="final-matches" class="max-w-2xl mx-auto space-y-8"></div>
-                <div class="flex gap-4 mt-8 justify-center">
-                    <button onclick="goToPrevStep()" class="bg-gray-200 px-12 py-3 rounded-md font-bold">← Back</button>
-                    <button id="next-from-final" class="bg-black text-white font-bold py-3 px-12 rounded-md">Final Step: Submit →</button>
-                </div>
-            </div>
-        </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="font-anton text-3xl uppercase mb-6 text-center text-red-600">World Cup Final</h2>
+                
+                <div id="final-match-container" class="max-w-2xl mx-auto mb-10"></div>
 
-        <div id="email-step" class="step">
-            <div class="bg-white rounded-xl shadow-lg p-8 mb-6 border-2 border-red-600">
-                <h2 class="font-anton text-3xl uppercase mb-4 text-center">Submit Your Prediction</h2>
-                <div class="max-w-md mx-auto space-y-4 text-center">
-                    <input type="text" id="user-name" placeholder="Your Name (for leaderboard)" class="w-full border p-3 rounded">
-                    <input type="email" id="user-email" placeholder="Email Address *" class="w-full border p-3 rounded" required>
-                    <button id="submit-prediction" class="w-full bg-red-600 text-white font-bold py-4 rounded uppercase text-lg">Save & Finish</button>
-                    <button onclick="goToPrevStep()" class="text-gray-500 text-sm hover:underline mt-2">← Back to Bracket</button>
-                    <div id="submission-message" class="hidden mt-4 p-4 bg-green-100 text-green-800 rounded"></div>
+                <div class="max-w-md mx-auto p-6 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl">
+                    <h3 class="font-anton text-xl mb-4 text-center">Join the Leaderboard</h3>
+                    <div class="space-y-4">
+                        <input type="text" id="user-name" placeholder="Name for Leaderboard" class="w-full border p-3 rounded">
+                        <input type="email" id="user-email" placeholder="Email Address *" class="w-full border p-3 rounded" required>
+                        <button id="submit-prediction" class="w-full bg-red-600 text-white font-anton py-4 rounded uppercase text-xl shadow-lg" disabled>Submit Prediction</button>
+                        <div id="submission-message" class="hidden mt-4 p-4 bg-green-100 text-green-800 rounded text-center"></div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center mt-8">
+                    <button onclick="goToPrevStep()" class="text-gray-400 font-bold hover:underline">← Go Back and Edit Bracket</button>
                 </div>
             </div>
         </div>
@@ -169,46 +140,11 @@
         </div>
     </div>
 
-    <!-- Clear & Reset Button -->
-    <button id="clear-data-btn" class="clear-btn"><i class="fas fa-trash-alt mr-2"></i>Clear & Reset</button>
-
     <script>
-        // ============================================================
-        // WORLD CUP 2026 PREDICTOR - WITH REFRESH WARNING & CLEAR BUTTON
-        // ============================================================
-        
-        let hasUnsavedChanges = false;
-        let submitted = false;
-        
-        function markDirty() {
-            hasUnsavedChanges = true;
-        }
-        
-        function markClean() {
-            hasUnsavedChanges = false;
-            submitted = true;
-        }
-        
-        // Warn before leaving/refreshing
-        window.addEventListener('beforeunload', (event) => {
-            if (hasUnsavedChanges && !submitted) {
-                event.preventDefault();
-                event.returnValue = 'You have unsaved changes. Are you sure you want to leave? Your prediction will be lost.';
-                return event.returnValue;
-            }
-        });
-        
-        function clearAllDataAndReset() {
-            localStorage.removeItem('worldCupPredictor_90min');
-            localStorage.removeItem('wc2026');
-            localStorage.removeItem('worldCupPredictor');
-            localStorage.removeItem('wc_submissions_90min');
-            hasUnsavedChanges = false;
-            submitted = false;
-            window.location.reload();
-        }
-        
-        // Groups Data
+        // FORCED RESET ON REFRESH
+        // We clear the specific storage key immediately so every page load is fresh
+        localStorage.removeItem('worldCupPredictor_90min');
+
         const GROUPS = {
             'A': { teams: ['Mexico', 'South Africa', 'Korea Republic', 'Czechia'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'B': { teams: ['Canada', 'Bosnia and Herzegovina', 'Qatar', 'Switzerland'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
@@ -239,47 +175,41 @@
             'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Croatia': '🇭🇷', 'Ghana': '🇬🇭', 'Panama': '🇵🇦'
         };
 
-        const ROUND_32_FIXTURES = [
-            { id: 73, homeSlot: 'A2', awaySlot: 'B2', date: 'Sunday 28 June', loc: 'Los Angeles Stadium' },
-            { id: 74, homeSlot: 'E1', awaySlot: '3rd(ABCD F)', date: 'Monday 29 June', loc: 'Boston Stadium' },
-            { id: 75, homeSlot: 'F1', awaySlot: 'C2', date: 'Monday 29 June', loc: 'Estadio Monterrey' },
-            { id: 76, homeSlot: 'C1', awaySlot: 'F2', date: 'Monday 29 June', loc: 'Houston Stadium' },
-            { id: 77, homeSlot: 'I1', awaySlot: '3rd(CDFGH)', date: 'Tuesday 30 June', loc: 'NY/NJ Stadium' },
-            { id: 78, homeSlot: 'E2', awaySlot: 'I2', date: 'Tuesday 30 June', loc: 'Dallas Stadium' },
-            { id: 79, homeSlot: 'A1', awaySlot: '3rd(CEFHI)', date: 'Tuesday 30 June', loc: 'Mexico City Stadium' },
-            { id: 80, homeSlot: 'L1', awaySlot: '3rd(EHIJK)', date: 'Wed 1 July', loc: 'Atlanta Stadium' },
-            { id: 81, homeSlot: 'D1', awaySlot: '3rd(BEFIJ)', date: 'Wed 1 July', loc: 'San Francisco Bay Area Stadium' },
-            { id: 82, homeSlot: 'G1', awaySlot: '3rd(AEHIJ)', date: 'Wed 1 July', loc: 'Seattle Stadium' },
-            { id: 83, homeSlot: 'K2', awaySlot: 'L2', date: 'Thurs 2 July', loc: 'Toronto Stadium' },
-            { id: 84, homeSlot: 'H1', awaySlot: 'J2', date: 'Thurs 2 July', loc: 'Los Angeles Stadium' },
-            { id: 85, homeSlot: 'B1', awaySlot: '3rd(EFGIJ)', date: 'Thurs 2 July', loc: 'BC Place Vancouver' },
-            { id: 86, homeSlot: 'J1', awaySlot: 'H2', date: 'Friday 3 July', loc: 'Miami Stadium' },
-            { id: 87, homeSlot: 'K1', awaySlot: '3rd(DEIJL)', date: 'Friday 3 July', loc: 'Kansas City Stadium' },
-            { id: 88, homeSlot: 'D2', awaySlot: 'G2', date: 'Friday 3 July', loc: 'Dallas Stadium' }
+        const R32_BASE = [
+            { id: 73, h: 'A2', a: 'B2', loc: 'Los Angeles Stadium' },
+            { id: 74, h: 'E1', a: '3rd(ABCD F)', loc: 'Boston Stadium' },
+            { id: 75, h: 'F1', a: 'C2', loc: 'Estadio Monterrey' },
+            { id: 76, h: 'C1', a: 'F2', loc: 'Houston Stadium' },
+            { id: 77, h: 'I1', a: '3rd(CDFGH)', loc: 'NY/NJ Stadium' },
+            { id: 78, h: 'E2', a: 'I2', loc: 'Dallas Stadium' },
+            { id: 79, h: 'A1', a: '3rd(CEFHI)', loc: 'Mexico City Stadium' },
+            { id: 80, h: 'L1', a: '3rd(EHIJK)', loc: 'Atlanta Stadium' },
+            { id: 81, h: 'D1', a: '3rd(BEFIJ)', loc: 'San Fran Stadium' },
+            { id: 82, h: 'G1', a: '3rd(AEHIJ)', loc: 'Seattle Stadium' },
+            { id: 83, h: 'K2', a: 'L2', loc: 'Toronto Stadium' },
+            { id: 84, h: 'H1', a: 'J2', loc: 'Los Angeles Stadium' },
+            { id: 85, h: 'B1', a: '3rd(EFGIJ)', loc: 'Vancouver Stadium' },
+            { id: 86, h: 'J1', a: 'H2', loc: 'Miami Stadium' },
+            { id: 87, h: 'K1', a: '3rd(DEIJL)', loc: 'Kansas City Stadium' },
+            { id: 88, h: 'D2', a: 'G2', loc: 'Dallas Stadium' }
         ];
 
+        // State is built fresh every time
         let userState = {
             groupStage: JSON.parse(JSON.stringify(GROUPS)),
             thirdPlaceSelected: [],
-            knockoutWinners: { round32: {}, round16: {}, quarterFinals: {}, semiFinals: {}, final: null },
-            userName: '', userEmail: '', currentGroupIndex: 0, currentStep: 0
+            knockout: { round32: {}, round16: {}, quarterFinals: {}, semiFinals: {}, final: null },
+            currentGroupIndex: 0, currentStep: 0
         };
 
-        const groupLetters = Object.keys(GROUPS);
-
         function init() {
-            // Only load saved data if not submitted
-            const saved = localStorage.getItem('worldCupPredictor_90min');
-            if (saved && !submitted) {
-                try { userState = JSON.parse(saved); } catch(e) {}
-            }
+            // We NO LONGER load from localStorage here to ensure refresh = reset
             renderCurrentStep();
         }
 
         function save() {
-            if (!submitted) {
-                localStorage.setItem('worldCupPredictor_90min', JSON.stringify(userState));
-            }
+            // We NO LONGER save userState to localStorage to ensure refresh = reset
+            // We just show the UI "Saved" message for the current session
             const status = document.getElementById('save-status');
             if (status) {
                 status.classList.remove('hidden');
@@ -289,68 +219,41 @@
 
         function renderCurrentStep() {
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('steps-container').classList.remove('active');
-            
+            const container = document.getElementById('steps-container');
+            container.innerHTML = '';
+            container.classList.remove('active');
+
             const steps = [
                 renderGroupStep,
                 renderThirdPlaceStep,
-                () => renderKnockoutStep('round32', ROUND_32_FIXTURES, 'round32-matches', 'round32-step'),
-                () => renderKnockoutStep('round16', getR16Fixtures(), 'round16-matches', 'round16-step'),
-                () => renderKnockoutStep('quarterFinals', getQF(), 'quarterfinals-matches', 'quarterfinals-step'),
-                () => renderKnockoutStep('semiFinals', getSF(), 'semifinals-matches', 'semifinals-step'),
-                renderFinalStep,
-                () => document.getElementById('email-step').classList.add('active')
+                () => renderKnockout('round32', getR32Data(), 'round32-matches', 'round32-step'),
+                () => renderKnockout('round16', getR16Data(), 'round16-matches', 'round16-step'),
+                () => renderKnockout('quarterFinals', getQFData(), 'quarterfinals-matches', 'quarterfinals-step'),
+                () => renderKnockout('semiFinals', getSFData(), 'semifinals-matches', 'semifinals-step'),
+                renderFinalStep
             ];
             steps[userState.currentStep]();
             updateUI();
         }
 
         function updateUI() {
-            document.getElementById('step-indicator').innerText = `Step ${userState.currentStep + 1}/8`;
-            document.getElementById('progress-bar').style.width = `${(userState.currentStep / 7) * 100}%`;
+            document.getElementById('step-indicator').innerText = `Step ${userState.currentStep + 1}/7`;
+            document.getElementById('progress-bar').style.width = `${(userState.currentStep / 6) * 100}%`;
         }
 
         function goToPrevStep() {
             if (userState.currentStep > 0) {
                 userState.currentStep--;
                 if (userState.currentStep === 0) userState.currentGroupIndex = 11;
-                save(); renderCurrentStep();
+                renderCurrentStep();
             }
         }
 
-        window.handleTeamClick = (letter, team) => {
-            markDirty();
-            const data = userState.groupStage[letter];
-            const positions = data.positions;
-            const currentRank = Object.keys(positions).find(key => positions[key] === team);
-            
-            if (currentRank) {
-                positions[currentRank] = null;
-                data.completed = false;
-                save();
-                renderGroupStep();
-                return;
-            }
-            
-            if (!positions['1st']) positions['1st'] = team;
-            else if (!positions['2nd']) positions['2nd'] = team;
-            else if (!positions['3rd']) {
-                positions['3rd'] = team;
-                const allTeams = [...data.teams];
-                const taken = Object.values(positions);
-                const remaining = allTeams.find(t => !taken.includes(t));
-                if (remaining) positions['4th'] = remaining;
-                data.completed = true;
-            }
-            save();
-            renderGroupStep();
-        };
-
         function renderGroupStep() {
             const container = document.getElementById('steps-container');
-            container.innerHTML = '';
-            container.classList.add('step', 'active');
-            const letter = groupLetters[userState.currentGroupIndex];
+            container.classList.add('active');
+            const letters = Object.keys(userState.groupStage);
+            const letter = letters[userState.currentGroupIndex];
             const data = userState.groupStage[letter];
 
             let html = `<div class="bg-white rounded-xl shadow-lg p-6 border-t-4 border-black">
@@ -358,8 +261,7 @@
                     <h2 class="font-anton text-4xl uppercase">Group ${letter}</h2>
                     <span class="text-sm font-bold bg-gray-100 px-3 py-1 rounded">${userState.currentGroupIndex + 1} of 12</span>
                 </div>
-                <div class="grid grid-cols-1 gap-3">
-                    <div class="text-sm text-gray-500 mb-2">Click to rank (1st → 4th). Click ranked team to change.</div>`;
+                <div class="grid grid-cols-1 gap-3">`;
 
             data.teams.forEach(team => {
                 let posClass = '';
@@ -368,7 +270,7 @@
                 for (const [key, val] of posEntries) {
                     if (val === team) { posClass = `selected-${key}`; label = key; }
                 }
-                html += `<div class="team-btn ${posClass} border rounded-lg p-4 flex justify-between items-center font-bold text-lg cursor-pointer" onclick="handleTeamClick('${letter}', '${team}')">
+                html += `<div class="team-btn ${posClass} border-2 rounded-lg p-4 flex justify-between items-center font-bold text-lg" onclick="handleGroupClick('${letter}', '${team.replace("'", "\\'")}')">
                     <div class="flex items-center gap-4"><span>${FLAG_MAP[team]}</span><span>${team}</span></div>
                     <span class="font-anton text-sm uppercase opacity-70">${label}</span>
                 </div>`;
@@ -376,33 +278,48 @@
 
             html += `</div><div class="flex justify-between mt-8 pt-4 border-t">
                 <button onclick="prevGroup()" class="bg-gray-200 px-6 py-2 rounded font-bold ${userState.currentGroupIndex === 0 ? 'invisible' : ''}">← Back</button>
-                <button onclick="resetGroup('${letter}')" class="text-red-600 font-bold hover:underline">Clear Group</button>
-                <button id="group-next" onclick="nextGroup()" class="bg-red-600 text-white px-8 py-2 rounded font-bold ${!data.completed ? 'opacity-50' : ''}" ${!data.completed ? 'disabled' : ''}>Next Group →</button>
+                <button id="group-next" onclick="nextGroup()" class="bg-red-600 text-white px-8 py-2 rounded font-bold" ${!data.completed ? 'disabled' : ''}>Next Group →</button>
             </div></div>`;
             container.innerHTML = html;
         }
 
-        window.resetGroup = (letter) => {
-            markDirty();
-            userState.groupStage[letter].positions = { '1st': null, '2nd': null, '3rd': null, '4th': null };
-            userState.groupStage[letter].completed = false;
-            save(); renderGroupStep();
+        window.handleGroupClick = (letter, team) => {
+            const data = userState.groupStage[letter];
+            const currentRanks = Object.entries(data.positions);
+            let found = false;
+            for (const [key, val] of currentRanks) {
+                if (val === team) found = true;
+                if (found) data.positions[key] = null;
+            }
+            if (!found) {
+                if (!data.positions['1st']) data.positions['1st'] = team;
+                else if (!data.positions['2nd']) data.positions['2nd'] = team;
+                else if (!data.positions['3rd']) data.positions['3rd'] = team;
+                else if (!data.positions['4th']) data.positions['4th'] = team;
+            }
+            data.completed = (data.positions['1st'] && data.positions['2nd'] && data.positions['3rd'] && data.positions['4th']);
+            save(); 
+            renderGroupStep();
         };
 
         window.nextGroup = () => {
-            if (userState.currentGroupIndex < 11) { userState.currentGroupIndex++; save(); renderGroupStep(); }
-            else { userState.currentStep = 1; save(); renderCurrentStep(); }
+            if (userState.currentGroupIndex < 11) { userState.currentGroupIndex++; renderGroupStep(); }
+            else { userState.currentStep = 1; renderCurrentStep(); }
+            save();
         };
 
         window.prevGroup = () => {
-            if (userState.currentGroupIndex > 0) { userState.currentGroupIndex--; save(); renderGroupStep(); }
+            if (userState.currentGroupIndex > 0) userState.currentGroupIndex--;
+            renderGroupStep();
+            save();
         };
 
         function renderThirdPlaceStep() {
             document.getElementById('third-place-step').classList.add('active');
             const list = document.getElementById('third-place-list');
             list.innerHTML = '';
-            groupLetters.forEach(letter => {
+            const letters = Object.keys(userState.groupStage);
+            letters.forEach(letter => {
                 const team = userState.groupStage[letter].positions['3rd'];
                 const active = userState.thirdPlaceSelected.includes(letter);
                 list.innerHTML += `<div onclick="toggle3rd('${letter}')" class="third-place-btn border-2 p-4 rounded-lg cursor-pointer text-center ${active ? 'selected' : 'bg-white'}">
@@ -416,138 +333,107 @@
         }
 
         window.toggle3rd = (letter) => {
-            markDirty();
             const idx = userState.thirdPlaceSelected.indexOf(letter);
             if (idx > -1) userState.thirdPlaceSelected.splice(idx, 1);
             else if (userState.thirdPlaceSelected.length < 8) userState.thirdPlaceSelected.push(letter);
             save(); renderThirdPlaceStep();
         };
 
-        function getTeamFromSlot(slot) {
-            if (slot.length === 2) return userState.groupStage[slot[0]].positions[slot[1] === '1' ? '1st' : '2nd'];
-            const allowed = slot.match(/\(([^)]+)\)/)?.[1] || "";
-            for(let letter of userState.thirdPlaceSelected) {
-                if (allowed.includes(letter)) return userState.groupStage[letter].positions['3rd'];
-            }
-            return "TBD";
+        function getR32Data() {
+            let available3rd = [...userState.thirdPlaceSelected];
+            return R32_BASE.map(match => {
+                let home, away;
+                if (match.h.length === 2) home = userState.groupStage[match.h[0]].positions[match.h[1] === '1' ? '1st' : '2nd'];
+                else {
+                    const allowed = match.h.match(/\(([^)]+)\)/)[1];
+                    const letter = available3rd.find(l => allowed.includes(l));
+                    home = userState.groupStage[letter].positions['3rd'];
+                    available3rd = available3rd.filter(l => l !== letter);
+                }
+                if (match.a.length === 2) away = userState.groupStage[match.a[0]].positions[match.a[1] === '1' ? '1st' : '2nd'];
+                else {
+                    const allowed = match.a.match(/\(([^)]+)\)/)[1];
+                    const letter = available3rd.find(l => allowed.includes(l));
+                    away = userState.groupStage[letter].positions['3rd'];
+                    available3rd = available3rd.filter(l => l !== letter);
+                }
+                return { id: match.id, home, away, loc: match.loc };
+            });
         }
 
-        function renderKnockoutStep(stageKey, fixtures, containerId, stepId) {
+        function renderKnockout(stageKey, fixtures, containerId, stepId) {
             document.getElementById(stepId).classList.add('active');
             const container = document.getElementById(containerId);
             container.innerHTML = '';
             
             fixtures.forEach(f => {
-                let home, away;
-                if (stageKey === 'round32') {
-                    home = getTeamFromSlot(f.homeSlot); away = getTeamFromSlot(f.awaySlot);
-                } else {
-                    const prev = stageKey === 'round16' ? 'round32' : stageKey === 'quarterFinals' ? 'round16' : 'quarterFinals';
-                    home = userState.knockoutWinners[prev][f.homeMatch]; away = userState.knockoutWinners[prev][f.awayMatch];
-                }
-                const winner = userState.knockoutWinners[stageKey][f.id];
+                const winner = userState.knockout[stageKey][f.id];
                 container.innerHTML += `<div class="bg-gray-50 border p-4 rounded-lg">
-                    <div class="text-[10px] font-bold text-red-600 mb-1 uppercase">Match ${f.id} · ${f.loc}</div>
-                    <div class="text-[9px] text-gray-400 mb-2">${f.date || ''}</div>
+                    <div class="text-[10px] font-bold text-red-600 mb-2 uppercase">Match ${f.id} · ${f.loc}</div>
                     <div class="space-y-2">
-                        <div onclick="pickWinner('${stageKey}', ${f.id}, '${home}')" class="flex justify-between items-center p-3 rounded border-2 cursor-pointer ${winner === home && home !== 'TBD' ? 'bg-green-600 border-green-700 text-white' : 'bg-white'}">
-                            <span>${home !== 'TBD' ? FLAG_MAP[home] + ' ' + home : 'TBD'}</span>
+                        <div data-match="${f.id}" data-team="${f.home}" onclick="pickWinner('${stageKey}', ${f.id}, this)" class="pick-btn flex justify-between items-center p-3 rounded border-2 cursor-pointer ${winner === f.home && f.home ? 'bg-green-600 border-green-700 text-white' : 'bg-white border-gray-200'}">
+                            <span>${f.home ? FLAG_MAP[f.home] + ' ' + f.home : 'TBD'}</span>
                         </div>
-                        <div onclick="pickWinner('${stageKey}', ${f.id}, '${away}')" class="flex justify-between items-center p-3 rounded border-2 cursor-pointer ${winner === away && away !== 'TBD' ? 'bg-green-600 border-green-700 text-white' : 'bg-white'}">
-                            <span>${away !== 'TBD' ? FLAG_MAP[away] + ' ' + away : 'TBD'}</span>
+                        <div data-match="${f.id}" data-team="${f.away}" onclick="pickWinner('${stageKey}', ${f.id}, this)" class="pick-btn flex justify-between items-center p-3 rounded border-2 cursor-pointer ${winner === f.away && f.away ? 'bg-green-600 border-green-700 text-white' : 'bg-white border-gray-200'}">
+                            <span>${f.away ? FLAG_MAP[f.away] + ' ' + f.away : 'TBD'}</span>
                         </div>
                     </div>
                 </div>`;
             });
-
-            const winCount = Object.keys(userState.knockoutWinners[stageKey]).length;
-            document.getElementById(`next-from-${stageKey}`).disabled = winCount < fixtures.length;
+            const complete = Object.keys(userState.knockout[stageKey]).length === fixtures.length;
+            document.getElementById(`next-from-${stageKey}`).disabled = !complete;
         }
 
-        window.pickWinner = (stage, matchId, team) => {
-            if (!team || team === 'TBD') return;
-            markDirty();
-            userState.knockoutWinners[stage][matchId] = team;
+        window.pickWinner = (stage, matchId, element) => {
+            const team = element.getAttribute('data-team');
+            if (!team || team === 'null' || team === 'TBD') return;
+            userState.knockout[stage][matchId] = team;
             save(); renderCurrentStep();
         };
 
-        function getR16Fixtures() { 
-            return [
-                {id:89, homeMatch:74, awayMatch:77, date: 'Saturday 4 July', loc: 'Philadelphia Stadium'},
-                {id:90, homeMatch:73, awayMatch:75, date: 'Saturday 4 July', loc: 'Houston Stadium'},
-                {id:91, homeMatch:76, awayMatch:78, date: 'Sunday 5 July', loc: 'NY/NJ Stadium'},
-                {id:92, homeMatch:79, awayMatch:80, date: 'Sunday 5 July', loc: 'Mexico City Stadium'},
-                {id:93, homeMatch:83, awayMatch:84, date: 'Monday 6 July', loc: 'Dallas Stadium'},
-                {id:94, homeMatch:81, awayMatch:82, date: 'Monday 6 July', loc: 'Seattle Stadium'},
-                {id:95, homeMatch:86, awayMatch:88, date: 'Tuesday 7 July', loc: 'Atlanta Stadium'},
-                {id:96, homeMatch:85, awayMatch:87, date: 'Tuesday 7 July', loc: 'BC Place Vancouver'}
-            ]; 
-        }
-        
-        function getQF() { 
-            return [
-                {id:97, homeMatch:89, awayMatch:90, date: 'Thursday 9 July', loc: 'Boston Stadium'},
-                {id:98, homeMatch:93, awayMatch:94, date: 'Friday 10 July', loc: 'Los Angeles Stadium'},
-                {id:99, homeMatch:91, awayMatch:92, date: 'Saturday 11 July', loc: 'Miami Stadium'},
-                {id:100, homeMatch:95, awayMatch:96, date: 'Saturday 11 July', loc: 'Kansas City Stadium'}
-            ]; 
-        }
-        
-        function getSF() { 
-            return [
-                {id:101, homeMatch:97, awayMatch:98, date: 'Tuesday 14 July', loc: 'Dallas Stadium'},
-                {id:102, homeMatch:99, awayMatch:100, date: 'Wednesday 15 July', loc: 'Atlanta Stadium'}
-            ]; 
-        }
-
         function renderFinalStep() {
             document.getElementById('final-step').classList.add('active');
-            const f1 = userState.knockoutWinners.semiFinals[101];
-            const f2 = userState.knockoutWinners.semiFinals[102];
-            const win = userState.knockoutWinners.final;
+            const f1 = userState.knockout.semiFinals[101];
+            const f2 = userState.knockout.semiFinals[102];
+            const win = userState.knockout.final;
             
-            document.getElementById('final-matches').innerHTML = `
-                <div class="border-4 border-red-600 p-8 rounded-2xl bg-white shadow-2xl">
-                    <div class="text-[12px] font-bold text-red-600 mb-4 uppercase text-center">Match 104 · NY/NJ Stadium · Sunday 19 July</div>
+            document.getElementById('final-match-container').innerHTML = `
+                <div class="border-4 border-red-600 p-8 rounded-2xl bg-white shadow-2xl text-center">
+                    <div class="text-[12px] font-bold text-red-600 mb-4 uppercase">Match 104 · NY/NJ Stadium · Sunday 19 July</div>
                     <div class="flex flex-col md:flex-row justify-center items-center gap-8">
-                        <div id="final-team-1" class="p-6 rounded-xl border-4 cursor-pointer w-full max-w-[200px] text-center transition ${win === f1 && f1 ? 'bg-red-600 border-red-800 text-white' : 'bg-gray-50 hover:bg-gray-100'}" data-team="${f1 || ''}">
+                        <div data-team="${f1}" onclick="pickWinner('final', 104, this)" class="p-6 rounded-xl border-4 cursor-pointer w-full max-w-[200px] ${win === f1 && f1 ? 'bg-red-600 border-red-800 text-white' : 'bg-gray-50 border-gray-200'}">
                             <div class="text-6xl mb-2">${f1 ? FLAG_MAP[f1] : '🏁'}</div>
-                            <div class="font-bold text-lg">${f1 || 'TBD'}</div>
+                            <div class="font-bold">${f1 || 'TBD'}</div>
                         </div>
-                        <div class="font-anton text-4xl">VS</div>
-                        <div id="final-team-2" class="p-6 rounded-xl border-4 cursor-pointer w-full max-w-[200px] text-center transition ${win === f2 && f2 ? 'bg-red-600 border-red-800 text-white' : 'bg-gray-50 hover:bg-gray-100'}" data-team="${f2 || ''}">
+                        <div class="font-anton text-4xl italic">VS</div>
+                        <div data-team="${f2}" onclick="pickWinner('final', 104, this)" class="p-6 rounded-xl border-4 cursor-pointer w-full max-w-[200px] ${win === f2 && f2 ? 'bg-red-600 border-red-800 text-white' : 'bg-gray-50 border-gray-200'}">
                             <div class="text-6xl mb-2">${f2 ? FLAG_MAP[f2] : '🏁'}</div>
-                            <div class="font-bold text-lg">${f2 || 'TBD'}</div>
+                            <div class="font-bold">${f2 || 'TBD'}</div>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
             
-            const team1El = document.getElementById('final-team-1');
-            const team2El = document.getElementById('final-team-2');
-            
-            if (team1El && f1) {
-                team1El.onclick = () => {
-                    if (f1 && f1 !== 'TBD') {
-                        markDirty();
-                        userState.knockoutWinners.final = f1;
-                        save();
-                        renderFinalStep();
-                    }
-                };
-            }
-            if (team2El && f2) {
-                team2El.onclick = () => {
-                    if (f2 && f2 !== 'TBD') {
-                        markDirty();
-                        userState.knockoutWinners.final = f2;
-                        save();
-                        renderFinalStep();
-                    }
-                };
-            }
-            const nextBtn = document.getElementById('next-from-final');
-            if (nextBtn) nextBtn.disabled = !userState.knockoutWinners.final;
+            document.getElementById('submit-prediction').disabled = !win;
+        }
+
+        function getR16Data() {
+            return [
+                {id:89, hMatch:74, aMatch:77, loc:'Philadelphia'}, {id:90, hMatch:73, aMatch:75, loc:'Houston'},
+                {id:91, hMatch:76, aMatch:78, loc:'NY/NJ'}, {id:92, hMatch:79, aMatch:80, loc:'Mexico City'},
+                {id:93, hMatch:83, aMatch:84, loc:'Dallas'}, {id:94, hMatch:81, aMatch:82, loc:'Seattle'},
+                {id:95, hMatch:86, aMatch:88, loc:'Atlanta'}, {id:96, hMatch:85, aMatch:87, loc:'Vancouver'}
+            ].map(m => ({id: m.id, home: userState.knockout.round32[m.hMatch], away: userState.knockout.round32[m.aMatch], loc: m.loc}));
+        }
+        function getQFData() {
+            return [
+                {id:97, hMatch:89, aMatch:90, loc:'Boston'}, {id:98, hMatch:93, aMatch:94, loc:'Los Angeles'},
+                {id:99, hMatch:91, aMatch:92, loc:'Miami'}, {id:100, hMatch:95, aMatch:96, loc:'Kansas City'}
+            ].map(m => ({id: m.id, home: userState.knockout.round16[m.hMatch], away: userState.knockout.round16[m.aMatch], loc: m.loc}));
+        }
+        function getSFData() {
+            return [
+                {id:101, hMatch:97, aMatch:98, loc:'Dallas'}, {id:102, hMatch:99, aMatch:100, loc:'Atlanta'}
+            ].map(m => ({id: m.id, home: userState.knockout.quarterFinals[m.hMatch], away: userState.knockout.quarterFinals[m.aMatch], loc: m.loc}));
         }
 
         document.getElementById('next-from-third').onclick = () => { userState.currentStep = 2; save(); renderCurrentStep(); };
@@ -555,98 +441,36 @@
         document.getElementById('next-from-round16').onclick = () => { userState.currentStep = 4; save(); renderCurrentStep(); };
         document.getElementById('next-from-quarterfinals').onclick = () => { userState.currentStep = 5; save(); renderCurrentStep(); };
         document.getElementById('next-from-semifinals').onclick = () => { userState.currentStep = 6; save(); renderCurrentStep(); };
-        document.getElementById('next-from-final').onclick = () => { userState.currentStep = 7; save(); renderCurrentStep(); };
 
-        // Clear button handler
-        document.getElementById('clear-data-btn').onclick = () => {
-            if (confirm('Are you sure? All your prediction data will be erased.')) {
-                clearAllDataAndReset();
-            }
-        };
-
-        // Submit button - now sends to your backend API
-        document.getElementById('submit-prediction').onclick = async () => {
+        document.getElementById('submit-prediction').onclick = () => {
             const email = document.getElementById('user-email').value;
-            if (!email) {
-                alert('Email required');
-                return;
-            }
+            if(!email) return alert("Email required to join leaderboard.");
+            userState.userName = document.getElementById('user-name').value;
+            userState.userEmail = email;
             
-            const name = document.getElementById('user-name').value;
-            markDirty();
+            // This still saves the SUBMISSION to localStorage for CSV export, 
+            // but the progressive state is not loaded on refresh.
+            const subs = JSON.parse(localStorage.getItem('wc_submissions_90min') || '[]');
+            subs.push({ name: userState.userName, email: userState.userEmail, winner: userState.knockout.final, date: new Date().toISOString() });
+            localStorage.setItem('wc_submissions_90min', JSON.stringify(subs));
             
-            const predictionData = {
-                groupStage: userState.groupStage,
-                thirdPlaceSelected: userState.thirdPlaceSelected,
-                knockoutWinners: userState.knockoutWinners
-            };
-            
-            try {
-                const response = await fetch('/.netlify/functions/submit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: email,
-                        name: name,
-                        prediction: predictionData
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    markClean();
-                    document.getElementById('submission-message').innerHTML = '<div class="bg-green-100 text-green-800 p-4 rounded">✓ Prediction submitted! Check your email to confirm.</div>';
-                    document.getElementById('submission-message').classList.remove('hidden');
-                    document.getElementById('submit-prediction').disabled = true;
-                    
-                    // Clear localStorage after successful submission
-                    localStorage.removeItem('worldCupPredictor_90min');
-                    localStorage.removeItem('wc_submissions_90min');
-                    
-                    // Show reset option
-                    setTimeout(() => {
-                        if (confirm('Prediction submitted! Start a new prediction for someone else?')) {
-                            clearAllDataAndReset();
-                        }
-                    }, 2000);
-                } else {
-                    document.getElementById('submission-message').innerHTML = `<div class="bg-red-100 text-red-800 p-4 rounded">Error: ${result.error || 'Submission failed'}</div>`;
-                    document.getElementById('submission-message').classList.remove('hidden');
-                }
-            } catch (error) {
-                document.getElementById('submission-message').innerHTML = '<div class="bg-red-100 text-red-800 p-4 rounded">Network error. Please try again.</div>';
-                document.getElementById('submission-message').classList.remove('hidden');
-            }
+            document.getElementById('submission-message').classList.remove('hidden');
+            document.getElementById('submission-message').innerText = "✓ Prediction submitted to the leaderboard!";
+            document.getElementById('submit-prediction').disabled = true;
         };
 
-        document.getElementById('admin-export-link').onclick = async () => {
-            try {
-                const response = await fetch('/.netlify/functions/leaderboard');
-                const data = await response.json();
-                let csv = "Name,Email,Champion,Score,Submitted At\n";
-                data.forEach(row => {
-                    csv += `"${row.name || ''}","${row.email || ''}","${row.champion || ''}","${row.score || ''}","${row.submitted_at || ''}"\n`;
-                });
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `predictions-${new Date().toISOString().split('T')[0]}.csv`;
-                a.click();
-                URL.revokeObjectURL(url);
-            } catch(e) {
-                alert('Error loading leaderboard data');
-            }
+        document.getElementById('admin-export-link').onclick = () => {
+            const data = JSON.parse(localStorage.getItem('wc_submissions_90min') || '[]');
+            let csv = "Name,Email,Winner,Date\n";
+            data.forEach(s => csv += `"${s.name}","${s.email}","${s.winner}","${s.date}"\n`);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url); a.setAttribute('download', 'predictions.csv'); a.click();
         };
 
-        // Cart function placeholder (matches main site)
-        window.toggleCart = function() {
-            const sidebar = document.getElementById('cart-sidebar');
-            if (sidebar) sidebar.classList.toggle('translate-x-full');
-        };
-
-        document.addEventListener('DOMContentLoaded', init);
+        // Initialize script
+        init();
     </script>
 </body>
 </html>

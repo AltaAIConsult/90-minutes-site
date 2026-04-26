@@ -174,14 +174,11 @@
 
     <script>
         // ============================================================
-        // FORCE CLEAR ON EVERY PAGE LOAD
+        // WORLD CUP 2026 PREDICTOR - PROPER VERSIONED STORAGE
         // ============================================================
-        localStorage.clear();
-        sessionStorage.clear();
         
-        // ============================================================
-        // WORLD CUP 2026 PREDICTOR - FRESH START ONLY
-        // ============================================================
+        const PREDICTOR_VERSION = "v2";
+        const STORAGE_KEY = "wcPredictor";
         
         let hasUnsavedChanges = false;
         let submitted = false;
@@ -205,8 +202,7 @@
         });
         
         function clearAllDataAndReset() {
-            localStorage.clear();
-            sessionStorage.clear();
+            localStorage.removeItem(STORAGE_KEY);
             location.reload();
         }
         
@@ -270,12 +266,36 @@
         const groupLetters = Object.keys(GROUPS);
 
         function init() {
-            // Always start fresh - never load from localStorage
+            const saved = localStorage.getItem(STORAGE_KEY);
+            
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.version === PREDICTOR_VERSION) {
+                        userState = parsed.data;
+                        renderCurrentStep();
+                        return;
+                    }
+                } catch(e) {
+                    console.error('Failed to parse saved data', e);
+                }
+            }
+            
+            // Version mismatch or no saved data - start fresh
+            localStorage.removeItem(STORAGE_KEY);
             renderCurrentStep();
         }
 
         function save() {
-            // Do nothing - no localStorage saving
+            if (submitted) return;
+            
+            const toSave = {
+                version: PREDICTOR_VERSION,
+                data: userState,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+            
             const status = document.getElementById('save-status');
             if (status) {
                 status.classList.remove('hidden');
@@ -560,7 +580,7 @@
             }
         };
 
-        // Submit button - sends to backend API
+        // Submit button
         document.getElementById('submit-prediction').onclick = async () => {
             const email = document.getElementById('user-email').value;
             if (!email) {
@@ -596,7 +616,6 @@
                     document.getElementById('submission-message').classList.remove('hidden');
                     document.getElementById('submit-prediction').disabled = true;
                     
-                    // Clear after successful submission
                     setTimeout(() => {
                         if (confirm('Prediction submitted! Start a new prediction for someone else?')) {
                             clearAllDataAndReset();
@@ -612,6 +631,7 @@
             }
         };
 
+        // Admin export
         document.getElementById('admin-export-link').onclick = async () => {
             try {
                 const response = await fetch('/.netlify/functions/leaderboard');
@@ -632,7 +652,6 @@
             }
         };
 
-        // Cart function placeholder
         window.toggleCart = function() {
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar) sidebar.classList.toggle('translate-x-full');

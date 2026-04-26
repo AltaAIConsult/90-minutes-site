@@ -20,22 +20,51 @@
         .step.active { display: block; }
         .progress-bar { transition: width 0.3s ease; }
         .third-place-btn.selected { background-color: #22c55e; color: white; border-color: #16a34a; }
-        @media (max-width: 768px) { .team-btn { font-size: 14px; padding: 10px; } }
+        .clear-btn { position: fixed; bottom: 20px; right: 20px; background: #ef4444; color: white; padding: 10px 20px; border-radius: 50px; font-size: 14px; z-index: 999; cursor: pointer; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .clear-btn:hover { background: #dc2626; }
+        @media (max-width: 768px) { .team-btn { font-size: 14px; padding: 10px; } .clear-btn { padding: 8px 16px; font-size: 12px; } }
         button:disabled { opacity: 0.4; cursor: not-allowed; }
     </style>
 </head>
 <body class="bg-gray-50">
 
+    <!-- Full Navigation Bar (matching main site) -->
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="#" class="flex items-center">
-                <span class="font-anton text-xl"><span class="text-red-600">90</span>MINUTES</span>
-                <span class="text-sm ml-1">or More</span>
+            <a href="/index.html" class="flex items-center group">
+                <img src="/images/logo.jpeg" alt="90 Minutes or More" class="h-10 mr-2">
+                <div class="hidden sm:block">
+                    <span class="font-anton text-xl">
+                        <span class="text-red-600">90</span><span class="text-black">MINUTES</span>
+                    </span>
+                    <span class="text-xs ml-1">or More</span>
+                </div>
             </a>
-            <div class="flex items-center space-x-4">
-                <span id="step-indicator" class="text-sm text-gray-600 font-bold">Step 1/8</span>
-                <span id="save-status" class="text-xs text-green-600 hidden font-bold"><i class="fas fa-check"></i> Saved</span>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/index.html" class="nav-link text-sm text-black hover:text-red-600">Home</a>
+                <a href="/news/index.html" class="nav-link text-sm text-black hover:text-red-600">News</a>
+                <a href="/article/index.html" class="nav-link text-sm text-black hover:text-red-600">Articles</a>
+                <a href="/services/index.html" class="nav-link text-sm text-black hover:text-red-600">Services</a>
+                <a href="/shop/index.html" class="nav-link text-sm text-black hover:text-red-600">Shop</a>
+                <a href="/podcast/index.html" class="nav-link text-sm text-black hover:text-red-600">Podcast</a>
+                <a href="/about/index.html" class="nav-link text-sm text-black hover:text-red-600">About</a>
+                <a href="/world-cup-predictor/index.html" class="nav-link text-sm text-red-600 font-semibold">Predictor</a>
+                <button onclick="toggleCart()" class="relative bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md text-sm transition">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                </button>
             </div>
+            <button id="mobile-menu-button" class="md:hidden text-black"><i class="fas fa-bars text-xl"></i></button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pb-3">
+            <a href="/index.html" class="block py-2 text-red-600 font-semibold">Home</a>
+            <a href="/news/index.html" class="block py-2 hover:text-red-600">News</a>
+            <a href="/article/index.html" class="block py-2 hover:text-red-600">Articles</a>
+            <a href="/services/index.html" class="block py-2 hover:text-red-600">Services</a>
+            <a href="/shop/index.html" class="block py-2 hover:text-red-600">Shop</a>
+            <a href="/podcast/index.html" class="block py-2 hover:text-red-600">Podcast</a>
+            <a href="/about/index.html" class="block py-2 hover:text-red-600">About</a>
+            <a href="/world-cup-predictor/index.html" class="block py-2 text-red-600 font-semibold">Predictor</a>
         </div>
     </nav>
 
@@ -137,7 +166,46 @@
         </div>
     </div>
 
+    <!-- Clear & Reset Button -->
+    <button id="clear-data-btn" class="clear-btn"><i class="fas fa-trash-alt mr-2"></i>Clear & Reset</button>
+
     <script>
+        // ============================================================
+        // WORLD CUP 2026 PREDICTOR WITH REFRESH WARNING
+        // ============================================================
+        
+        let hasUnsavedChanges = false;
+        let submitted = false;
+        
+        function markDirty() {
+            hasUnsavedChanges = true;
+        }
+        
+        function markClean() {
+            hasUnsavedChanges = false;
+            submitted = true;
+        }
+        
+        // Warn before leaving/refreshing
+        window.addEventListener('beforeunload', (event) => {
+            if (hasUnsavedChanges && !submitted) {
+                event.preventDefault();
+                event.returnValue = 'You have unsaved changes. Are you sure you want to leave? Your prediction will be lost.';
+                return event.returnValue;
+            }
+        });
+        
+        function clearAllDataAndReset() {
+            localStorage.removeItem('worldCupPredictor_90min');
+            localStorage.removeItem('wc2026');
+            localStorage.removeItem('worldCupPredictor');
+            localStorage.removeItem('wc_submissions_90min');
+            hasUnsavedChanges = false;
+            submitted = false;
+            window.location.reload();
+        }
+        
+        // Groups Data
         const GROUPS = {
             'A': { teams: ['Mexico', 'South Africa', 'Korea Republic', 'Czechia'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'B': { teams: ['Canada', 'Bosnia and Herzegovina', 'Qatar', 'Switzerland'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
@@ -198,15 +266,21 @@
 
         function init() {
             const saved = localStorage.getItem('worldCupPredictor_90min');
-            if (saved) userState = JSON.parse(saved);
+            if (saved && !submitted) {
+                try { userState = JSON.parse(saved); } catch(e) {}
+            }
             renderCurrentStep();
         }
 
         function save() {
-            localStorage.setItem('worldCupPredictor_90min', JSON.stringify(userState));
+            if (!submitted) {
+                localStorage.setItem('worldCupPredictor_90min', JSON.stringify(userState));
+            }
             const status = document.getElementById('save-status');
-            status.classList.remove('hidden');
-            setTimeout(() => status.classList.add('hidden'), 2000);
+            if (status) {
+                status.classList.remove('hidden');
+                setTimeout(() => status.classList.add('hidden'), 2000);
+            }
         }
 
         function renderCurrentStep() {
@@ -241,6 +315,7 @@
         }
 
         window.handleTeamClick = (letter, team) => {
+            markDirty();
             const data = userState.groupStage[letter];
             const positions = data.positions;
             const currentRank = Object.keys(positions).find(key => positions[key] === team);
@@ -280,7 +355,7 @@
                     <span class="text-sm font-bold bg-gray-100 px-3 py-1 rounded">${userState.currentGroupIndex + 1} of 12</span>
                 </div>
                 <div class="grid grid-cols-1 gap-3">
-                    <div class="text-sm text-gray-500 mb-2">Click to rank (1st → 4th). Click ranked team to change.</div>`;
+                    <div class="text-sm text-gray-500 mb-2">Click any team to rank (1st → 2nd → 3rd → 4th). Click a ranked team to unrank it and reorder.</div>`;
 
             data.teams.forEach(team => {
                 let posClass = '';
@@ -304,6 +379,7 @@
         }
 
         window.resetGroup = (letter) => {
+            markDirty();
             userState.groupStage[letter].positions = { '1st': null, '2nd': null, '3rd': null, '4th': null };
             userState.groupStage[letter].completed = false;
             save(); renderGroupStep();
@@ -336,6 +412,7 @@
         }
 
         window.toggle3rd = (letter) => {
+            markDirty();
             const idx = userState.thirdPlaceSelected.indexOf(letter);
             if (idx > -1) userState.thirdPlaceSelected.splice(idx, 1);
             else if (userState.thirdPlaceSelected.length < 8) userState.thirdPlaceSelected.push(letter);
@@ -385,6 +462,7 @@
 
         window.pickWinner = (stage, matchId, team) => {
             if (!team || team === 'TBD') return;
+            markDirty();
             userState.knockoutWinners[stage][matchId] = team;
             save(); renderCurrentStep();
         };
@@ -447,6 +525,7 @@
             if (team1El && f1) {
                 team1El.onclick = () => {
                     if (f1 && f1 !== 'TBD') {
+                        markDirty();
                         userState.knockoutWinners.final = f1;
                         save();
                         renderFinalStep();
@@ -456,6 +535,7 @@
             if (team2El && f2) {
                 team2El.onclick = () => {
                     if (f2 && f2 !== 'TBD') {
+                        markDirty();
                         userState.knockoutWinners.final = f2;
                         save();
                         renderFinalStep();
@@ -473,27 +553,81 @@
         document.getElementById('next-from-semifinals').onclick = () => { userState.currentStep = 6; save(); renderCurrentStep(); };
         document.getElementById('next-from-final').onclick = () => { userState.currentStep = 7; save(); renderCurrentStep(); };
 
-        document.getElementById('submit-prediction').onclick = () => {
-            const email = document.getElementById('user-email').value;
-            if(!email) return alert("Email required");
-            userState.userName = document.getElementById('user-name').value;
-            userState.userEmail = email;
-            const subs = JSON.parse(localStorage.getItem('wc_submissions_90min') || '[]');
-            subs.push({ name: userState.userName, email: userState.userEmail, winner: userState.knockoutWinners.final, date: new Date().toISOString() });
-            localStorage.setItem('wc_submissions_90min', JSON.stringify(subs));
-            document.getElementById('submission-message').classList.remove('hidden');
-            document.getElementById('submission-message').innerText = "Prediction submitted successfully!";
-            document.getElementById('submit-prediction').disabled = true;
+        // Clear button
+        document.getElementById('clear-data-btn').onclick = () => {
+            if (confirm('Are you sure? All your prediction data will be erased.')) {
+                clearAllDataAndReset();
+            }
         };
 
-        document.getElementById('admin-export-link').onclick = () => {
-            const data = JSON.parse(localStorage.getItem('wc_submissions_90min') || '[]');
-            let csv = "Name,Email,Winner,Date\n";
-            data.forEach(s => csv += `"${s.name}","${s.email}","${s.winner}","${s.date}"\n`);
+        document.getElementById('submit-prediction').onclick = async () => {
+            const email = document.getElementById('user-email').value;
+            if (!email) {
+                alert('Email required');
+                return;
+            }
+            
+            const name = document.getElementById('user-name').value;
+            
+            // Prepare prediction data
+            const predictionData = {
+                groupStage: userState.groupStage,
+                thirdPlaceSelected: userState.thirdPlaceSelected,
+                knockoutWinners: userState.knockoutWinners
+            };
+            
+            try {
+                const response = await fetch('/.netlify/functions/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        name: name,
+                        prediction: predictionData
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    markClean();
+                    document.getElementById('submission-message').innerHTML = '<div class="bg-green-100 text-green-800 p-4 rounded">✓ Prediction submitted! Check your email to confirm.</div>';
+                    document.getElementById('submission-message').classList.remove('hidden');
+                    document.getElementById('submit-prediction').disabled = true;
+                    
+                    // Clear localStorage after successful submission
+                    localStorage.removeItem('worldCupPredictor_90min');
+                    
+                    // Reset the form after 3 seconds
+                    setTimeout(() => {
+                        if (confirm('Prediction submitted! Start a new prediction?')) {
+                            clearAllDataAndReset();
+                        }
+                    }, 2000);
+                } else {
+                    document.getElementById('submission-message').innerHTML = `<div class="bg-red-100 text-red-800 p-4 rounded">Error: ${result.error || 'Submission failed'}</div>`;
+                    document.getElementById('submission-message').classList.remove('hidden');
+                }
+            } catch (error) {
+                document.getElementById('submission-message').innerHTML = '<div class="bg-red-100 text-red-800 p-4 rounded">Network error. Please try again.</div>';
+                document.getElementById('submission-message').classList.remove('hidden');
+            }
+        };
+
+        document.getElementById('admin-export-link').onclick = async () => {
+            const response = await fetch('/.netlify/functions/leaderboard');
+            const data = await response.json();
+            let csv = 'Name,Email,Champion,Score,Submitted At\n';
+            data.forEach(row => {
+                csv += `"${row.name || ''}","${row.email || ''}","${row.champion || ''}","${row.score || ''}","${row.submitted_at || ''}"\n`;
+            });
             const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.setAttribute('href', url); a.setAttribute('download', 'predictions.csv'); a.click();
+            a.href = url;
+            a.download = `predictions-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
         };
 
         document.addEventListener('DOMContentLoaded', init);

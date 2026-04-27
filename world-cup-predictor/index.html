@@ -22,6 +22,8 @@
         .third-place-btn.selected { background-color: #22c55e; color: white; border-color: #16a34a; }
         .clear-btn { position: fixed; bottom: 20px; right: 20px; background: #ef4444; color: white; padding: 10px 20px; border-radius: 50px; font-size: 14px; z-index: 999; cursor: pointer; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .clear-btn:hover { background: #dc2626; }
+        .hard-reset-btn { position: fixed; top: 80px; right: 20px; background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; z-index: 9999; cursor: pointer; border: none; font-weight: bold; }
+        .hard-reset-btn:hover { background: #dc2626; }
         @media (max-width: 768px) { .team-btn { font-size: 14px; padding: 10px; } .clear-btn { padding: 8px 16px; font-size: 12px; } }
         button:disabled { opacity: 0.4; cursor: not-allowed; }
         .nav-link { position: relative; }
@@ -71,10 +73,16 @@
         </div>
     </nav>
 
+    <!-- Hard Reset Button (top right) -->
+    <button class="hard-reset-btn" onclick="localStorage.clear(); sessionStorage.clear(); location.reload();">
+        🗑️ HARD RESET
+    </button>
+
     <div class="container mx-auto px-4 py-8 max-w-6xl">
         <div class="text-center mb-8">
             <h1 class="font-anton text-4xl md:text-5xl uppercase mb-2">World Cup <span class="text-red-600">2026</span> Predictor</h1>
             <p class="text-gray-600">Rank the groups, pick the best 3rd place teams, and forecast the full bracket.</p>
+            <div class="text-xs text-green-600 mt-2">✅ Fresh Start - No Data Saved Between Sessions</div>
         </div>
 
         <div class="mb-8 bg-gray-200 rounded-full h-3 overflow-hidden border border-gray-300">
@@ -169,20 +177,15 @@
         </div>
     </div>
 
-    <!-- Step Indicator (hidden but used by JS) -->
-    <span id="step-indicator" style="display: none;"></span>
-
-    <!-- Clear & Reset Button -->
+    <!-- Clear & Reset Button (bottom right) -->
     <button id="clear-data-btn" class="clear-btn"><i class="fas fa-trash-alt mr-2"></i>Clear & Reset</button>
 
+    <span id="step-indicator" style="display: none;"></span>
+
     <script>
-        // ============================================================
-        // WORLD CUP 2026 PREDICTOR - ROOT CAUSE FIX
-        // ============================================================
+        console.log("🚀 PREDICTOR - FRESH START VERSION (No persistence)");
         
-        console.log("🚀 Predictor script loaded");
-        
-        // Force reload on bfcache (back/forward cache)
+        // Force reload on page restore (bfcache)
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
                 console.log("🔄 Page restored from bfcache - forcing reload");
@@ -190,22 +193,12 @@
             }
         });
         
-        const PREDICTOR_VERSION = "v3";
-        const STORAGE_KEY = "wcPredictor";
-        
         let hasUnsavedChanges = false;
         let submitted = false;
         
-        function markDirty() {
-            hasUnsavedChanges = true;
-        }
+        function markDirty() { hasUnsavedChanges = true; }
+        function markClean() { hasUnsavedChanges = false; submitted = true; }
         
-        function markClean() {
-            hasUnsavedChanges = false;
-            submitted = true;
-        }
-        
-        // Warn before leaving/refreshing
         window.addEventListener('beforeunload', (event) => {
             if (hasUnsavedChanges && !submitted) {
                 event.preventDefault();
@@ -215,8 +208,8 @@
         });
         
         function clearAllDataAndReset() {
-            console.log("🗑️ Clearing all data and resetting");
-            localStorage.removeItem(STORAGE_KEY);
+            localStorage.clear();
+            sessionStorage.clear();
             window.location.reload();
         }
         
@@ -270,7 +263,6 @@
             { id: 88, homeSlot: 'D2', awaySlot: 'G2', date: 'Friday 3 July', loc: 'Dallas Stadium' }
         ];
 
-        // This will be reset in init()
         let userState = null;
         const groupLetters = Object.keys(GROUPS);
 
@@ -279,56 +271,22 @@
                 groupStage: JSON.parse(JSON.stringify(GROUPS)),
                 thirdPlaceSelected: [],
                 knockoutWinners: { round32: {}, round16: {}, quarterFinals: {}, semiFinals: {}, final: null },
-                userName: '',
-                userEmail: '',
-                currentGroupIndex: 0,
-                currentStep: 0
+                userName: '', userEmail: '', currentGroupIndex: 0, currentStep: 0
             };
         }
 
         function init() {
-            console.log("🚀 init() called");
-            
-            // ALWAYS reset to fresh state first
+            console.log("🚀 init() - Starting FRESH, no loading");
+            // ALWAYS start fresh - never load from localStorage
             userState = getFreshUserState();
-            
-            // Then check if we should load saved data (only if version matches)
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    if (parsed.version === PREDICTOR_VERSION) {
-                        console.log("📀 Loading saved data (version match)");
-                        userState = parsed.data;
-                    } else {
-                        console.log("🗑️ Version mismatch, starting fresh");
-                        localStorage.removeItem(STORAGE_KEY);
-                    }
-                } catch(e) {
-                    console.error("Failed to parse saved data", e);
-                    localStorage.removeItem(STORAGE_KEY);
-                }
-            } else {
-                console.log("✨ No saved data, starting fresh");
-            }
-            
-            console.log("📍 Starting at step:", userState.currentStep);
+            // Clear any existing storage to be safe
+            localStorage.clear();
             renderCurrentStep();
         }
 
         function save() {
-            if (submitted) {
-                console.log("💾 Skipping save - already submitted");
-                return;
-            }
-            
-            const toSave = {
-                version: PREDICTOR_VERSION,
-                data: userState,
-                timestamp: Date.now()
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-            
+            // NO SAVING - this function does nothing
+            // Just show the saved indicator for UX
             const status = document.getElementById('save-status');
             if (status) {
                 status.classList.remove('hidden');
@@ -339,11 +297,8 @@
         function renderCurrentStep() {
             console.log("🎨 renderCurrentStep() - step:", userState.currentStep);
             
-            // Safely update step indicator (handle missing element)
             const stepEl = document.getElementById('step-indicator');
-            if (stepEl) {
-                stepEl.innerText = `Step ${userState.currentStep + 1}/8`;
-            }
+            if (stepEl) stepEl.innerText = `Step ${userState.currentStep + 1}/8`;
             
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             const stepsContainer = document.getElementById('steps-container');
@@ -357,36 +312,23 @@
                 () => renderKnockoutStep('quarterFinals', getQF(), 'quarterfinals-matches', 'quarterfinals-step'),
                 () => renderKnockoutStep('semiFinals', getSF(), 'semifinals-matches', 'semifinals-step'),
                 renderFinalStep,
-                () => renderEmailStep()
+                () => document.getElementById('email-step').classList.add('active')
             ];
             
             if (userState.currentStep >= 0 && userState.currentStep < steps.length) {
                 steps[userState.currentStep]();
             } else {
-                console.error("Invalid step:", userState.currentStep);
                 userState.currentStep = 0;
                 steps[0]();
             }
-            
             updateUI();
         }
         
-        function renderEmailStep() {
-            document.getElementById('email-step').classList.add('active');
-            // Pre-fill if exists
-            if (userState.userName) document.getElementById('user-name').value = userState.userName;
-            if (userState.userEmail) document.getElementById('user-email').value = userState.userEmail;
-        }
-
         function updateUI() {
             const stepEl = document.getElementById('step-indicator');
-            if (stepEl) {
-                stepEl.innerText = `Step ${userState.currentStep + 1}/8`;
-            }
+            if (stepEl) stepEl.innerText = `Step ${userState.currentStep + 1}/8`;
             const progressBar = document.getElementById('progress-bar');
-            if (progressBar) {
-                progressBar.style.width = `${(userState.currentStep / 7) * 100}%`;
-            }
+            if (progressBar) progressBar.style.width = `${(userState.currentStep / 7) * 100}%`;
         }
 
         function goToPrevStep() {
@@ -522,17 +464,19 @@
 
         function getTeamFromSlot(slot) {
             if (slot.length === 2) return userState.groupStage[slot[0]].positions[slot[1] === '1' ? '1st' : '2nd'];
-            const allowed = slot.match(/\(([^)]+)\)/)?.[1] || "";
-            for(let letter of userState.thirdPlaceSelected) {
-                if (allowed.includes(letter)) return userState.groupStage[letter].positions['3rd'];
+            const match = slot.match(/3rd\(([^)]+)\)/);
+            if (match) {
+                const allowed = match[1].split('/');
+                for (let letter of userState.thirdPlaceSelected) {
+                    if (allowed.includes(letter)) return userState.groupStage[letter].positions['3rd'];
+                }
             }
             return "TBD";
         }
 
         function renderKnockoutStep(stageKey, fixtures, containerId, stepId) {
             const stepContainer = document.getElementById(stepId);
-            if (!stepContainer) return;
-            stepContainer.classList.add('active');
+            if (stepContainer) stepContainer.classList.add('active');
             const container = document.getElementById(containerId);
             if (!container) return;
             container.innerHTML = '';
@@ -631,76 +575,31 @@
             const team1El = document.getElementById('final-team-1');
             const team2El = document.getElementById('final-team-2');
             
-            if (team1El && f1) {
-                team1El.onclick = () => {
-                    if (f1 && f1 !== 'TBD') {
-                        markDirty();
-                        userState.knockoutWinners.final = f1;
-                        save();
-                        renderFinalStep();
-                    }
-                };
-            }
-            if (team2El && f2) {
-                team2El.onclick = () => {
-                    if (f2 && f2 !== 'TBD') {
-                        markDirty();
-                        userState.knockoutWinners.final = f2;
-                        save();
-                        renderFinalStep();
-                    }
-                };
-            }
+            if (team1El && f1) team1El.onclick = () => { if (f1 && f1 !== 'TBD') { markDirty(); userState.knockoutWinners.final = f1; save(); renderFinalStep(); } };
+            if (team2El && f2) team2El.onclick = () => { if (f2 && f2 !== 'TBD') { markDirty(); userState.knockoutWinners.final = f2; save(); renderFinalStep(); } };
+            
             const nextBtn = document.getElementById('next-from-final');
             if (nextBtn) nextBtn.disabled = !userState.knockoutWinners.final;
         }
 
         // Navigation button handlers
         document.getElementById('next-from-third').onclick = () => { 
-            if (userState.thirdPlaceSelected.length === 8) {
-                userState.currentStep = 2; 
-                save(); 
-                renderCurrentStep(); 
-            }
+            if (userState.thirdPlaceSelected.length === 8) { userState.currentStep = 2; save(); renderCurrentStep(); }
         };
         document.getElementById('next-from-round32').onclick = () => { 
-            const winCount = Object.keys(userState.knockoutWinners.round32 || {}).length;
-            if (winCount === 16) {
-                userState.currentStep = 3; 
-                save(); 
-                renderCurrentStep(); 
-            }
+            if (Object.keys(userState.knockoutWinners.round32 || {}).length === 16) { userState.currentStep = 3; save(); renderCurrentStep(); }
         };
         document.getElementById('next-from-round16').onclick = () => { 
-            const winCount = Object.keys(userState.knockoutWinners.round16 || {}).length;
-            if (winCount === 8) {
-                userState.currentStep = 4; 
-                save(); 
-                renderCurrentStep(); 
-            }
+            if (Object.keys(userState.knockoutWinners.round16 || {}).length === 8) { userState.currentStep = 4; save(); renderCurrentStep(); }
         };
         document.getElementById('next-from-quarterfinals').onclick = () => { 
-            const winCount = Object.keys(userState.knockoutWinners.quarterFinals || {}).length;
-            if (winCount === 4) {
-                userState.currentStep = 5; 
-                save(); 
-                renderCurrentStep(); 
-            }
+            if (Object.keys(userState.knockoutWinners.quarterFinals || {}).length === 4) { userState.currentStep = 5; save(); renderCurrentStep(); }
         };
         document.getElementById('next-from-semifinals').onclick = () => { 
-            const winCount = Object.keys(userState.knockoutWinners.semiFinals || {}).length;
-            if (winCount === 2) {
-                userState.currentStep = 6; 
-                save(); 
-                renderCurrentStep(); 
-            }
+            if (Object.keys(userState.knockoutWinners.semiFinals || {}).length === 2) { userState.currentStep = 6; save(); renderCurrentStep(); }
         };
         document.getElementById('next-from-final').onclick = () => { 
-            if (userState.knockoutWinners.final) {
-                userState.currentStep = 7; 
-                save(); 
-                renderCurrentStep(); 
-            }
+            if (userState.knockoutWinners.final) { userState.currentStep = 7; save(); renderCurrentStep(); }
         };
 
         // Clear button handler
@@ -713,10 +612,7 @@
         // Submit button
         document.getElementById('submit-prediction').onclick = async () => {
             const email = document.getElementById('user-email').value;
-            if (!email) {
-                alert('Email required');
-                return;
-            }
+            if (!email) { alert('Email required'); return; }
             
             const name = document.getElementById('user-name').value;
             userState.userName = name;
@@ -733,13 +629,8 @@
                 const response = await fetch('/.netlify/functions/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: email,
-                        name: name,
-                        prediction: predictionData
-                    })
+                    body: JSON.stringify({ email, name, prediction: predictionData })
                 });
-                
                 const result = await response.json();
                 
                 if (response.ok) {
@@ -747,12 +638,7 @@
                     document.getElementById('submission-message').innerHTML = '<div class="bg-green-100 text-green-800 p-4 rounded">✓ Prediction submitted! Check your email to confirm.</div>';
                     document.getElementById('submission-message').classList.remove('hidden');
                     document.getElementById('submit-prediction').disabled = true;
-                    
-                    setTimeout(() => {
-                        if (confirm('Prediction submitted! Start a new prediction for someone else?')) {
-                            clearAllDataAndReset();
-                        }
-                    }, 2000);
+                    setTimeout(() => { if (confirm('Prediction submitted! Start a new prediction?')) { clearAllDataAndReset(); } }, 2000);
                 } else {
                     document.getElementById('submission-message').innerHTML = `<div class="bg-red-100 text-red-800 p-4 rounded">Error: ${result.error || 'Submission failed'}</div>`;
                     document.getElementById('submission-message').classList.remove('hidden');
@@ -763,15 +649,12 @@
             }
         };
 
-        // Admin export
         document.getElementById('admin-export-link').onclick = async () => {
             try {
                 const response = await fetch('/.netlify/functions/leaderboard');
                 const data = await response.json();
                 let csv = "Name,Email,Champion,Score,Submitted At\n";
-                data.forEach(row => {
-                    csv += `"${row.name || ''}","${row.email || ''}","${row.champion || ''}","${row.score || ''}","${row.submitted_at || ''}"\n`;
-                });
+                data.forEach(row => { csv += `"${row.name || ''}","${row.email || ''}","${row.champion || ''}","${row.score || ''}","${row.submitted_at || ''}"\n`; });
                 const blob = new Blob([csv], { type: 'text/csv' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -779,9 +662,7 @@
                 a.download = `predictions-${new Date().toISOString().split('T')[0]}.csv`;
                 a.click();
                 URL.revokeObjectURL(url);
-            } catch(e) {
-                alert('Error loading leaderboard data');
-            }
+            } catch(e) { alert('Error loading leaderboard data'); }
         };
 
         window.toggleCart = function() {

@@ -176,10 +176,10 @@
 
     <script>
         // ============================================================
-        // WORLD CUP 2026 PREDICTOR - FIXED VERSION
+        // WORLD CUP 2026 PREDICTOR - FIXED VERSION WITH DUPLICATE PREVENTION
         // ============================================================
         
-        console.log("🚀 PREDICTOR LOADED - Fixed Version");
+        console.log("🚀 PREDICTOR LOADED - Fixed Version with Duplicate Prevention");
         
         // Force reload on page restore (bfcache)
         window.addEventListener('pageshow', function(event) {
@@ -262,6 +262,7 @@
         ];
 
         let userState = null;
+        let usedThirdPlaceTeams = [];  // Track which third-place teams have been assigned
         const groupLetters = Object.keys(GROUPS);
 
         function getFreshUserState() {
@@ -276,6 +277,7 @@
         function init() {
             console.log("🚀 init() - Starting fresh");
             userState = getFreshUserState();
+            usedThirdPlaceTeams = [];
             localStorage.clear();
             renderCurrentStep();
         }
@@ -456,19 +458,30 @@
             renderThirdPlaceStep();
         };
 
+        // FIXED: getTeamFromSlot with duplicate prevention using usedThirdPlaceTeams
         function getTeamFromSlot(slot) {
-            if (slot.length === 2) return userState.groupStage[slot[0]].positions[slot[1] === '1' ? '1st' : '2nd'];
+            if (slot.length === 2) {
+                return userState.groupStage[slot[0]].positions[slot[1] === '1' ? '1st' : '2nd'];
+            }
             const match = slot.match(/3rd\(([^)]+)\)/);
             if (match) {
                 const allowed = match[1].split('/');
                 for (let letter of userState.thirdPlaceSelected) {
-                    if (allowed.includes(letter)) return userState.groupStage[letter].positions['3rd'];
+                    if (allowed.includes(letter) && !usedThirdPlaceTeams.includes(letter)) {
+                        usedThirdPlaceTeams.push(letter);
+                        return userState.groupStage[letter].positions['3rd'];
+                    }
                 }
             }
             return "TBD";
         }
 
         function renderKnockoutStep(stageKey, fixtures, containerId, stepId) {
+            // Reset usedThirdPlaceTeams when rendering Round of 32
+            if (stageKey === 'round32') {
+                usedThirdPlaceTeams = [];
+            }
+            
             const stepContainer = document.getElementById(stepId);
             if (stepContainer) stepContainer.classList.add('active');
             const container = document.getElementById(containerId);

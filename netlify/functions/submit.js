@@ -12,7 +12,6 @@ exports.handler = async (event) => {
   try {
     const { email, name, prediction } = JSON.parse(event.body);
 
-    // Validate email
     if (!email) {
       return {
         statusCode: 400,
@@ -20,11 +19,10 @@ exports.handler = async (event) => {
       };
     }
 
-    // Generate confirmation token
     const token = Math.random().toString(36).substring(2, 15) + 
                   Math.random().toString(36).substring(2, 15);
 
-    // Check if email already exists in verified_submissions
+    // Check if already verified
     const { data: existingVerified } = await supabase
       .from('verified_submissions')
       .select('email')
@@ -38,8 +36,8 @@ exports.handler = async (event) => {
       };
     }
 
-    // Insert into pending_submissions
-    const { data, error } = await supabase
+    // Insert into pending
+    const { error } = await supabase
       .from('pending_submissions')
       .insert([
         {
@@ -58,8 +56,8 @@ exports.handler = async (event) => {
       };
     }
 
-    // Send confirmation email
-    const confirmUrl = `https://90minutesormore.com/api/confirm?token=${token}`;
+    // ✅ CORRECTED CONFIRMATION URL
+    const confirmUrl = `https://90minutesormore.com/.netlify/functions/confirm?token=${token}`;
     
     const msg = {
       to: email,

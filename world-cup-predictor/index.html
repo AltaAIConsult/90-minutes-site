@@ -22,8 +22,6 @@
         .third-place-btn.selected { background-color: #22c55e; color: white; border-color: #16a34a; }
         .clear-btn { position: fixed; bottom: 20px; right: 20px; background: #ef4444; color: white; padding: 10px 20px; border-radius: 50px; font-size: 14px; z-index: 999; cursor: pointer; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .clear-btn:hover { background: #dc2626; }
-        .hard-reset-btn { position: fixed; top: 80px; right: 20px; background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; z-index: 9999; cursor: pointer; border: none; font-weight: bold; }
-        .hard-reset-btn:hover { background: #dc2626; }
         @media (max-width: 768px) { .team-btn { font-size: 14px; padding: 10px; } .clear-btn { padding: 8px 16px; font-size: 12px; } }
         button:disabled { opacity: 0.4; cursor: not-allowed; }
         .nav-link { position: relative; }
@@ -73,16 +71,10 @@
         </div>
     </nav>
 
-    <!-- Hard Reset Button (top right) -->
-    <button class="hard-reset-btn" onclick="localStorage.clear(); sessionStorage.clear(); location.reload();">
-        🗑️ HARD RESET
-    </button>
-
     <div class="container mx-auto px-4 py-8 max-w-6xl">
         <div class="text-center mb-8">
             <h1 class="font-anton text-4xl md:text-5xl uppercase mb-2">World Cup <span class="text-red-600">2026</span> Predictor</h1>
             <p class="text-gray-600">Rank the groups, pick the best 3rd place teams, and forecast the full bracket.</p>
-            <div class="text-xs text-green-600 mt-2">✅ Fresh Start - No Data Saved Between Sessions</div>
         </div>
 
         <div class="mb-8 bg-gray-200 rounded-full h-3 overflow-hidden border border-gray-300">
@@ -177,13 +169,17 @@
         </div>
     </div>
 
-    <!-- Clear & Reset Button (bottom right) -->
+    <!-- Clear & Reset Button -->
     <button id="clear-data-btn" class="clear-btn"><i class="fas fa-trash-alt mr-2"></i>Clear & Reset</button>
 
     <span id="step-indicator" style="display: none;"></span>
 
     <script>
-        console.log("🚀 PREDICTOR - FRESH START VERSION (No persistence)");
+        // ============================================================
+        // WORLD CUP 2026 PREDICTOR - FIXED VERSION
+        // ============================================================
+        
+        console.log("🚀 PREDICTOR LOADED - Fixed Version");
         
         // Force reload on page restore (bfcache)
         window.addEventListener('pageshow', function(event) {
@@ -213,13 +209,13 @@
             window.location.reload();
         }
         
-        // Groups Data
+        // GROUPS - Fixed Cote d'Ivoire (no accent for clickability)
         const GROUPS = {
             'A': { teams: ['Mexico', 'South Africa', 'Korea Republic', 'Czechia'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'B': { teams: ['Canada', 'Bosnia and Herzegovina', 'Qatar', 'Switzerland'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'C': { teams: ['Brazil', 'Morocco', 'Haiti', 'Scotland'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'D': { teams: ['USA', 'Paraguay', 'Australia', 'Türkiye'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
-            'E': { teams: ['Germany', 'Curaçao', 'Côte d\'Ivoire', 'Ecuador'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
+            'E': { teams: ['Germany', 'Curaçao', 'Cote d\'Ivoire', 'Ecuador'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'F': { teams: ['Netherlands', 'Japan', 'Sweden', 'Tunisia'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'G': { teams: ['Belgium', 'Egypt', 'IR Iran', 'New Zealand'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'H': { teams: ['Spain', 'Cabo Verde', 'Saudi Arabia', 'Uruguay'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
@@ -229,12 +225,13 @@
             'L': { teams: ['England', 'Croatia', 'Ghana', 'Panama'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false }
         };
 
+        // FLAG_MAP - Includes both versions of Cote d'Ivoire
         const FLAG_MAP = {
             'Mexico': '🇲🇽', 'Korea Republic': '🇰🇷', 'South Africa': '🇿🇦', 'Czechia': '🇨🇿',
             'Canada': '🇨🇦', 'Bosnia and Herzegovina': '🇧🇦', 'Qatar': '🇶🇦', 'Switzerland': '🇨🇭',
             'Brazil': '🇧🇷', 'Morocco': '🇲🇦', 'Haiti': '🇭🇹', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
             'USA': '🇺🇸', 'Paraguay': '🇵🇾', 'Australia': '🇦🇺', 'Türkiye': '🇹🇷',
-            'Germany': '🇩🇪', 'Curaçao': '🇨🇼', 'Côte d\'Ivoire': '🇨🇮', 'Ecuador': '🇪🇨',
+            'Germany': '🇩🇪', 'Curaçao': '🇨🇼', 'Cote d\'Ivoire': '🇨🇮', 'Côte d\'Ivoire': '🇨🇮', 'Ecuador': '🇪🇨',
             'Netherlands': '🇳🇱', 'Japan': '🇯🇵', 'Sweden': '🇸🇪', 'Tunisia': '🇹🇳',
             'Belgium': '🇧🇪', 'Egypt': '🇪🇬', 'IR Iran': '🇮🇷', 'New Zealand': '🇳🇿',
             'Spain': '🇪🇸', 'Cabo Verde': '🇨🇻', 'Saudi Arabia': '🇸🇦', 'Uruguay': '🇺🇾',
@@ -244,22 +241,23 @@
             'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Croatia': '🇭🇷', 'Ghana': '🇬🇭', 'Panama': '🇵🇦'
         };
 
+        // ROUND_32_FIXTURES - Fixed with slashes in 3rd() patterns
         const ROUND_32_FIXTURES = [
             { id: 73, homeSlot: 'A2', awaySlot: 'B2', date: 'Sunday 28 June', loc: 'Los Angeles Stadium' },
-            { id: 74, homeSlot: 'E1', awaySlot: '3rd(ABCD F)', date: 'Monday 29 June', loc: 'Boston Stadium' },
+            { id: 74, homeSlot: 'E1', awaySlot: '3rd(A/B/C/D/F)', date: 'Monday 29 June', loc: 'Boston Stadium' },
             { id: 75, homeSlot: 'F1', awaySlot: 'C2', date: 'Monday 29 June', loc: 'Estadio Monterrey' },
             { id: 76, homeSlot: 'C1', awaySlot: 'F2', date: 'Monday 29 June', loc: 'Houston Stadium' },
-            { id: 77, homeSlot: 'I1', awaySlot: '3rd(CDFGH)', date: 'Tuesday 30 June', loc: 'NY/NJ Stadium' },
+            { id: 77, homeSlot: 'I1', awaySlot: '3rd(C/D/F/G/H)', date: 'Tuesday 30 June', loc: 'NY/NJ Stadium' },
             { id: 78, homeSlot: 'E2', awaySlot: 'I2', date: 'Tuesday 30 June', loc: 'Dallas Stadium' },
-            { id: 79, homeSlot: 'A1', awaySlot: '3rd(CEFHI)', date: 'Tuesday 30 June', loc: 'Mexico City Stadium' },
-            { id: 80, homeSlot: 'L1', awaySlot: '3rd(EHIJK)', date: 'Wed 1 July', loc: 'Atlanta Stadium' },
-            { id: 81, homeSlot: 'D1', awaySlot: '3rd(BEFIJ)', date: 'Wed 1 July', loc: 'San Francisco Bay Area Stadium' },
-            { id: 82, homeSlot: 'G1', awaySlot: '3rd(AEHIJ)', date: 'Wed 1 July', loc: 'Seattle Stadium' },
+            { id: 79, homeSlot: 'A1', awaySlot: '3rd(C/E/F/H/I)', date: 'Tuesday 30 June', loc: 'Mexico City Stadium' },
+            { id: 80, homeSlot: 'L1', awaySlot: '3rd(E/H/I/J/K)', date: 'Wed 1 July', loc: 'Atlanta Stadium' },
+            { id: 81, homeSlot: 'D1', awaySlot: '3rd(B/E/F/I/J)', date: 'Wed 1 July', loc: 'San Francisco Bay Area Stadium' },
+            { id: 82, homeSlot: 'G1', awaySlot: '3rd(A/E/H/I/J)', date: 'Wed 1 July', loc: 'Seattle Stadium' },
             { id: 83, homeSlot: 'K2', awaySlot: 'L2', date: 'Thurs 2 July', loc: 'Toronto Stadium' },
             { id: 84, homeSlot: 'H1', awaySlot: 'J2', date: 'Thurs 2 July', loc: 'Los Angeles Stadium' },
-            { id: 85, homeSlot: 'B1', awaySlot: '3rd(EFGIJ)', date: 'Thurs 2 July', loc: 'BC Place Vancouver' },
+            { id: 85, homeSlot: 'B1', awaySlot: '3rd(E/F/G/I/J)', date: 'Thurs 2 July', loc: 'BC Place Vancouver' },
             { id: 86, homeSlot: 'J1', awaySlot: 'H2', date: 'Friday 3 July', loc: 'Miami Stadium' },
-            { id: 87, homeSlot: 'K1', awaySlot: '3rd(DEIJL)', date: 'Friday 3 July', loc: 'Kansas City Stadium' },
+            { id: 87, homeSlot: 'K1', awaySlot: '3rd(D/E/I/J/L)', date: 'Friday 3 July', loc: 'Kansas City Stadium' },
             { id: 88, homeSlot: 'D2', awaySlot: 'G2', date: 'Friday 3 July', loc: 'Dallas Stadium' }
         ];
 
@@ -276,17 +274,13 @@
         }
 
         function init() {
-            console.log("🚀 init() - Starting FRESH, no loading");
-            // ALWAYS start fresh - never load from localStorage
+            console.log("🚀 init() - Starting fresh");
             userState = getFreshUserState();
-            // Clear any existing storage to be safe
             localStorage.clear();
             renderCurrentStep();
         }
 
         function save() {
-            // NO SAVING - this function does nothing
-            // Just show the saved indicator for UX
             const status = document.getElementById('save-status');
             if (status) {
                 status.classList.remove('hidden');
@@ -392,7 +386,7 @@
                     if (val === team) { posClass = `selected-${key}`; label = key; }
                 }
                 html += `<div class="team-btn ${posClass} border rounded-lg p-4 flex justify-between items-center font-bold text-lg cursor-pointer" onclick="handleTeamClick('${letter}', '${team}')">
-                    <div class="flex items-center gap-4"><span>${FLAG_MAP[team]}</span><span>${team}</span></div>
+                    <div class="flex items-center gap-4">${FLAG_MAP[team] || '🏁'} ${team}</div>
                     <span class="font-anton text-sm uppercase opacity-70">${label}</span>
                 </div>`;
             });
@@ -442,7 +436,7 @@
                 const team = userState.groupStage[letter].positions['3rd'];
                 const active = userState.thirdPlaceSelected.includes(letter);
                 list.innerHTML += `<div onclick="toggle3rd('${letter}')" class="third-place-btn border-2 p-4 rounded-lg cursor-pointer text-center ${active ? 'selected' : 'bg-white'}">
-                    <div class="text-4xl mb-2">${FLAG_MAP[team]}</div>
+                    <div class="text-4xl mb-2">${FLAG_MAP[team] || '🏁'}</div>
                     <div class="font-bold">${team}</div>
                     <div class="text-xs uppercase opacity-60">Group ${letter}</div>
                 </div>`;
@@ -497,10 +491,10 @@
                     <div class="text-[9px] text-gray-400 mb-2">${f.date || ''}</div>
                     <div class="space-y-2">
                         <div onclick="pickWinner('${stageKey}', ${f.id}, '${home}')" class="flex justify-between items-center p-3 rounded border-2 cursor-pointer ${winner === home && home !== 'TBD' ? 'bg-green-600 border-green-700 text-white' : 'bg-white'}">
-                            <span>${home !== 'TBD' ? FLAG_MAP[home] + ' ' + home : 'TBD'}</span>
+                            <span>${home !== 'TBD' ? (FLAG_MAP[home] || '🏁') + ' ' + home : 'TBD'}</span>
                         </div>
                         <div onclick="pickWinner('${stageKey}', ${f.id}, '${away}')" class="flex justify-between items-center p-3 rounded border-2 cursor-pointer ${winner === away && away !== 'TBD' ? 'bg-green-600 border-green-700 text-white' : 'bg-white'}">
-                            <span>${away !== 'TBD' ? FLAG_MAP[away] + ' ' + away : 'TBD'}</span>
+                            <span>${away !== 'TBD' ? (FLAG_MAP[away] || '🏁') + ' ' + away : 'TBD'}</span>
                         </div>
                     </div>
                 </div>`;
@@ -560,12 +554,12 @@
                     <div class="text-[12px] font-bold text-red-600 mb-4 uppercase text-center">Match 104 · NY/NJ Stadium · Sunday 19 July</div>
                     <div class="flex flex-col md:flex-row justify-center items-center gap-8">
                         <div id="final-team-1" class="p-6 rounded-xl border-4 cursor-pointer w-full max-w-[200px] text-center transition ${win === f1 && f1 ? 'bg-red-600 border-red-800 text-white' : 'bg-gray-50 hover:bg-gray-100'}" data-team="${f1 || ''}">
-                            <div class="text-6xl mb-2">${f1 ? FLAG_MAP[f1] : '🏁'}</div>
+                            <div class="text-6xl mb-2">${f1 ? (FLAG_MAP[f1] || '🏁') : '🏁'}</div>
                             <div class="font-bold text-lg">${f1 || 'TBD'}</div>
                         </div>
                         <div class="font-anton text-4xl">VS</div>
                         <div id="final-team-2" class="p-6 rounded-xl border-4 cursor-pointer w-full max-w-[200px] text-center transition ${win === f2 && f2 ? 'bg-red-600 border-red-800 text-white' : 'bg-gray-50 hover:bg-gray-100'}" data-team="${f2 || ''}">
-                            <div class="text-6xl mb-2">${f2 ? FLAG_MAP[f2] : '🏁'}</div>
+                            <div class="text-6xl mb-2">${f2 ? (FLAG_MAP[f2] || '🏁') : '🏁'}</div>
                             <div class="font-bold text-lg">${f2 || 'TBD'}</div>
                         </div>
                     </div>

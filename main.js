@@ -327,7 +327,6 @@ async function loadCanadianCorner() {
     try {
         console.log('🟢 Loading Canadian Corner...');
         
-        // Get featured article (position "featured")
         const featuredQuery = `*[_type == "news" && distribution.canadianCorner == true && distribution.canadianCornerPosition == "featured"] | order(publishedAt desc) [0] {
             title,
             "imageUrl": mainImage.asset->url,
@@ -335,7 +334,6 @@ async function loadCanadianCorner() {
             "slug": slug.current
         }`;
         
-        // Get sidebar articles (positions sidebar-1, sidebar-2, sidebar-3)
         const sidebarQuery = `*[_type == "news" && distribution.canadianCorner == true && distribution.canadianCornerPosition != "featured"] | order(distribution.canadianCornerPosition asc, publishedAt desc) [0...3] {
             title,
             "slug": slug.current,
@@ -357,7 +355,6 @@ async function loadCanadianCorner() {
         console.log('Featured article found:', featuredArticle ? featuredArticle.title : 'None');
         console.log('Sidebar articles found:', sidebarArticles.length);
         
-        // If we have data from Sanity, update the page
         if (featuredArticle || sidebarArticles.length > 0) {
             updateCanadianCornerOnPage(featuredArticle, sidebarArticles);
         } else {
@@ -370,7 +367,6 @@ async function loadCanadianCorner() {
 }
 
 function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
-    // Find the Canadian Corner section by looking for the h2 that contains "Canadian Corner"
     const sections = document.querySelectorAll('section');
     let canadianCornerSection = null;
     
@@ -387,28 +383,24 @@ function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
         return;
     }
     
-    // Find the grid inside this section
     const grid = canadianCornerSection.querySelector('.grid');
     if (!grid) {
         console.log('Could not find grid inside Canadian Corner section');
         return;
     }
     
-    // Find the canadian-corner div (the featured article container)
     let cornerDiv = grid.querySelector('.canadian-corner');
     if (!cornerDiv) {
         console.log('Could not find .canadian-corner div');
         return;
     }
     
-    // Find the sidebar container (div with class "space-y-4")
     let sidebarContainer = grid.querySelector('.space-y-4');
     if (!sidebarContainer) {
         console.log('Could not find sidebar container (.space-y-4)');
         return;
     }
     
-    // Update featured article if it exists
     if (featuredArticle) {
         const featuredInnerDiv = cornerDiv.querySelector('.flex.flex-col.md\\:flex-row');
         if (featuredInnerDiv) {
@@ -432,7 +424,6 @@ function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
         }
     }
     
-    // Update sidebar if we have articles
     if (sidebarArticles && sidebarArticles.length > 0) {
         sidebarContainer.innerHTML = sidebarArticles.map(article => `
             <a href="/news/article.html?slug=${article.slug}" class="block bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition border-l-4 border-red-600">
@@ -1001,13 +992,19 @@ function initMobileMenu() {
 }
 
 // ==========================================================
-// INITIALIZE BASED ON PAGE
+// INITIALIZE BASED ON PAGE - WITH PREDICTOR DETECTION
 // ==========================================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Initializing...');
     initMobileMenu();
     
     const path = window.location.pathname;
+    
+    // SKIP main site initialization on predictor page
+    if (path.includes('/world-cup-predictor')) {
+        console.log('Predictor page detected - skipping main site initialization');
+        return;
+    }
     
     if (path.includes('/news/article.html')) {
         loadArticlePage();

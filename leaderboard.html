@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard | 90 Minutes or More</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .font-anton { font-family: 'Anton', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Include your site navigation (same as other pages) -->
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="/index.html" class="flex items-center">
+                <img src="/images/logo.jpeg" alt="90 Minutes or More" class="h-10 mr-2">
+                <span class="font-anton text-xl"><span class="text-red-600">90</span>MINUTES</span>
+                <span class="text-sm ml-1">or More</span>
+            </a>
+            <div class="hidden md:flex space-x-6">
+                <a href="/index.html" class="hover:text-red-600">Home</a>
+                <a href="/news/index.html" class="hover:text-red-600">News</a>
+                <a href="/article/index.html" class="hover:text-red-600">Articles</a>
+                <a href="/shop/index.html" class="hover:text-red-600">Shop</a>
+                <a href="/podcast/index.html" class="hover:text-red-600">Podcast</a>
+                <a href="/about/index.html" class="hover:text-red-600">About</a>
+                <a href="/world-cup-predictor/index.html" class="text-red-600 font-semibold">Predictor</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-12 max-w-5xl">
+        <h1 class="font-anton text-5xl uppercase text-center mb-2">World Cup <span class="text-red-600">Leaderboard</span></h1>
+        <p class="text-center text-gray-600 mb-12">Verified predictions from the 90 Minutes or More community</p>
+
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-red-600 text-white">
+                    <tr><th class="py-3 px-6">Rank</th><th class="py-3 px-6">Name</th><th class="py-3 px-6">Predicted Champion</th><th class="py-3 px-6">Verified On</th></tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr><td colspan="4" class="text-center py-8 text-gray-500">Loading predictions...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center mt-8">
+            <a href="/world-cup-predictor/index.html" class="text-red-600 hover:underline">Make your own prediction →</a>
+        </div>
+    </div>
+
+    <script>
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch('/.netlify/functions/leaderboard');
+                const data = await res.json();
+                const tbody = document.getElementById('leaderboard-body');
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-gray-500">No predictions yet. Be the first!</td></tr>';
+                    return;
+                }
+                const sorted = data.sort((a,b) => (b.score||0) - (a.score||0));
+                tbody.innerHTML = sorted.map((entry, i) => `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-6 font-bold">${i+1}</td>
+                        <td class="py-3 px-6">${entry.name || 'Anonymous'}</td>
+                        <td class="py-3 px-6">${entry.champion || '—'}</td>
+                        <td class="py-3 px-6 text-sm text-gray-500">${new Date(entry.verified_at).toLocaleDateString()}</td>
+                    </tr>
+                `).join('');
+            } catch(e) {
+                console.error(e);
+                document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="4" class="text-center py-8 text-red-500">Error loading leaderboard</td></tr>';
+            }
+        }
+        loadLeaderboard();
+    </script>
+</body>
+</html>

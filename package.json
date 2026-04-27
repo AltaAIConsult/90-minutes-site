@@ -11,6 +11,8 @@
   "description": "",
   "dependencies": {
     "@sanity/client": "^7.11.2",
+    "@sendgrid/mail": "^8.1.6",
+    "@supabase/supabase-js": "^2.104.1",
     "node-fetch": "^2.7.0",
     "stripe": "^18.5.0"
   }

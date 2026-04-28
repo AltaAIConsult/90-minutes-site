@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>World Cup 2026 Predictor | 90 Minutes or More</title>
+    <title>World Cup 2026 Predictor Game | 90 Minutes or More</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -171,16 +171,19 @@
         </div>
     </div>
 
+    <!-- Clear & Reset Button -->
     <button id="clear-data-btn" class="clear-btn"><i class="fas fa-trash-alt mr-2"></i>Clear & Reset</button>
+
     <span id="step-indicator" style="display: none;"></span>
 
     <script>
         // ============================================================
-        // WORLD CUP 2026 PREDICTOR - GAME VERSION (redirects to landing after submit)
+        // WORLD CUP 2026 PREDICTOR - GAME (FIXED BRACKET & IVORY COAST)
         // ============================================================
         
-        console.log("🚀 PREDICTOR LOADED");
+        console.log("🚀 PREDICTOR GAME LOADED (Fixed version)");
         
+        // Force reload on page restore
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
                 console.log("🔄 Page restored from bfcache - forcing reload");
@@ -208,12 +211,13 @@
             window.location.reload();
         }
         
+        // GROUPS - Fixed Ivory Coast (no special chars)
         const GROUPS = {
             'A': { teams: ['Mexico', 'South Africa', 'Korea Republic', 'Czechia'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'B': { teams: ['Canada', 'Bosnia and Herzegovina', 'Qatar', 'Switzerland'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'C': { teams: ['Brazil', 'Morocco', 'Haiti', 'Scotland'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'D': { teams: ['USA', 'Paraguay', 'Australia', 'Türkiye'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
-            'E': { teams: ['Germany', 'Curaçao', 'Cote d\'Ivoire', 'Ecuador'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
+            'E': { teams: ['Germany', 'Curaçao', 'Ivory Coast', 'Ecuador'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'F': { teams: ['Netherlands', 'Japan', 'Sweden', 'Tunisia'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'G': { teams: ['Belgium', 'Egypt', 'IR Iran', 'New Zealand'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'H': { teams: ['Spain', 'Cabo Verde', 'Saudi Arabia', 'Uruguay'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
@@ -223,12 +227,13 @@
             'L': { teams: ['England', 'Croatia', 'Ghana', 'Panama'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false }
         };
 
+        // FLAG_MAP - includes Ivory Coast
         const FLAG_MAP = {
             'Mexico': '🇲🇽', 'Korea Republic': '🇰🇷', 'South Africa': '🇿🇦', 'Czechia': '🇨🇿',
             'Canada': '🇨🇦', 'Bosnia and Herzegovina': '🇧🇦', 'Qatar': '🇶🇦', 'Switzerland': '🇨🇭',
             'Brazil': '🇧🇷', 'Morocco': '🇲🇦', 'Haiti': '🇭🇹', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
             'USA': '🇺🇸', 'Paraguay': '🇵🇾', 'Australia': '🇦🇺', 'Türkiye': '🇹🇷',
-            'Germany': '🇩🇪', 'Curaçao': '🇨🇼', 'Cote d\'Ivoire': '🇨🇮', 'Côte d\'Ivoire': '🇨🇮', 'Ecuador': '🇪🇨',
+            'Germany': '🇩🇪', 'Curaçao': '🇨🇼', 'Ivory Coast': '🇨🇮', 'Ecuador': '🇪🇨',
             'Netherlands': '🇳🇱', 'Japan': '🇯🇵', 'Sweden': '🇸🇪', 'Tunisia': '🇹🇳',
             'Belgium': '🇧🇪', 'Egypt': '🇪🇬', 'IR Iran': '🇮🇷', 'New Zealand': '🇳🇿',
             'Spain': '🇪🇸', 'Cabo Verde': '🇨🇻', 'Saudi Arabia': '🇸🇦', 'Uruguay': '🇺🇾',
@@ -238,31 +243,40 @@
             'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Croatia': '🇭🇷', 'Ghana': '🇬🇭', 'Panama': '🇵🇦'
         };
 
+        // Official third‑place group to match mapping (FIFA 2026 bracket)
+        const THIRD_PLACE_MAPPING = {
+            'A': 82,
+            'B': 81,
+            'C': 74,
+            'D': 87,
+            'E': 80,
+            'F': 77,
+            'G': 85,
+            'H': 79
+        };
+
+        // Round of 32 fixtures – awaySlot now contains the match ID that will receive the third‑place team
         const ROUND_32_FIXTURES = [
             { id: 73, homeSlot: 'A2', awaySlot: 'B2', date: 'Sunday 28 June', loc: 'Los Angeles Stadium' },
-            { id: 74, homeSlot: 'E1', awaySlot: '3rd(C)', date: 'Monday 29 June', loc: 'Boston Stadium' },
+            { id: 74, homeSlot: 'E1', awaySlot: '74', date: 'Monday 29 June', loc: 'Boston Stadium' },
             { id: 75, homeSlot: 'F1', awaySlot: 'C2', date: 'Monday 29 June', loc: 'Estadio Monterrey' },
             { id: 76, homeSlot: 'C1', awaySlot: 'F2', date: 'Monday 29 June', loc: 'Houston Stadium' },
-            { id: 77, homeSlot: 'I1', awaySlot: '3rd(F)', date: 'Tuesday 30 June', loc: 'NY/NJ Stadium' },
+            { id: 77, homeSlot: 'I1', awaySlot: '77', date: 'Tuesday 30 June', loc: 'NY/NJ Stadium' },
             { id: 78, homeSlot: 'E2', awaySlot: 'I2', date: 'Tuesday 30 June', loc: 'Dallas Stadium' },
-            { id: 79, homeSlot: 'A1', awaySlot: '3rd(H)', date: 'Tuesday 30 June', loc: 'Mexico City Stadium' },
-            { id: 80, homeSlot: 'L1', awaySlot: '3rd(E)', date: 'Wed 1 July', loc: 'Atlanta Stadium' },
-            { id: 81, homeSlot: 'D1', awaySlot: '3rd(B)', date: 'Wed 1 July', loc: 'San Francisco Bay Area Stadium' },
-            { id: 82, homeSlot: 'G1', awaySlot: '3rd(A)', date: 'Wed 1 July', loc: 'Seattle Stadium' },
+            { id: 79, homeSlot: 'A1', awaySlot: '79', date: 'Tuesday 30 June', loc: 'Mexico City Stadium' },
+            { id: 80, homeSlot: 'L1', awaySlot: '80', date: 'Wed 1 July', loc: 'Atlanta Stadium' },
+            { id: 81, homeSlot: 'D1', awaySlot: '81', date: 'Wed 1 July', loc: 'San Francisco Bay Area Stadium' },
+            { id: 82, homeSlot: 'G1', awaySlot: '82', date: 'Wed 1 July', loc: 'Seattle Stadium' },
             { id: 83, homeSlot: 'K2', awaySlot: 'L2', date: 'Thurs 2 July', loc: 'Toronto Stadium' },
             { id: 84, homeSlot: 'H1', awaySlot: 'J2', date: 'Thurs 2 July', loc: 'Los Angeles Stadium' },
-            { id: 85, homeSlot: 'B1', awaySlot: '3rd(G)', date: 'Thurs 2 July', loc: 'BC Place Vancouver' },
+            { id: 85, homeSlot: 'B1', awaySlot: '85', date: 'Thurs 2 July', loc: 'BC Place Vancouver' },
             { id: 86, homeSlot: 'J1', awaySlot: 'H2', date: 'Friday 3 July', loc: 'Miami Stadium' },
-            { id: 87, homeSlot: 'K1', awaySlot: '3rd(D)', date: 'Friday 3 July', loc: 'Kansas City Stadium' },
+            { id: 87, homeSlot: 'K1', awaySlot: '87', date: 'Friday 3 July', loc: 'Kansas City Stadium' },
             { id: 88, homeSlot: 'D2', awaySlot: 'G2', date: 'Friday 3 July', loc: 'Dallas Stadium' }
         ];
 
-        const THIRD_PLACE_MAPPING = {
-            'A': 82, 'B': 81, 'C': 74, 'D': 87, 'E': 80, 'F': 77, 'G': 85, 'H': 79
-        };
-
         let userState = null;
-        let thirdPlaceAssignment = {};
+        let thirdPlaceAssignment = {};  // { matchId: teamName }
         const groupLetters = Object.keys(GROUPS);
 
         function getFreshUserState() {
@@ -276,6 +290,7 @@
 
         function buildThirdPlaceAssignment() {
             const assignment = {};
+            // Only groups that have a mapping and are selected
             for (const group of userState.thirdPlaceSelected) {
                 const matchId = THIRD_PLACE_MAPPING[group];
                 if (matchId) {
@@ -283,6 +298,20 @@
                 }
             }
             return assignment;
+        }
+
+        function getTeamFromSlot(slot) {
+            // slot is like 'A2', 'B2', 'E1', etc.
+            if (slot.length === 2 && /^[A-L][12]$/.test(slot)) {
+                const group = slot[0];
+                const pos = slot[1] === '1' ? '1st' : '2nd';
+                return userState.groupStage[group].positions[pos];
+            }
+            // if slot is numeric (match ID for third‑place)
+            if (/^\d+$/.test(slot)) {
+                return thirdPlaceAssignment[parseInt(slot)] || "TBD";
+            }
+            return "TBD";
         }
 
         function init() {
@@ -301,13 +330,18 @@
         }
 
         function renderCurrentStep() {
+            console.log("🎨 renderCurrentStep() - step:", userState.currentStep);
+            
             const stepEl = document.getElementById('step-indicator');
             if (stepEl) stepEl.innerText = `Step ${userState.currentStep + 1}/8`;
+            
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             const stepsContainer = document.getElementById('steps-container');
             if (stepsContainer) stepsContainer.classList.remove('active');
+            
             const steps = [
-                renderGroupStep, renderThirdPlaceStep,
+                renderGroupStep,
+                renderThirdPlaceStep,
                 () => renderKnockoutStep('round32', ROUND_32_FIXTURES, 'round32-matches', 'round32-step'),
                 () => renderKnockoutStep('round16', getR16Fixtures(), 'round16-matches', 'round16-step'),
                 () => renderKnockoutStep('quarterFinals', getQF(), 'quarterfinals-matches', 'quarterfinals-step'),
@@ -315,6 +349,7 @@
                 renderFinalStep,
                 () => document.getElementById('email-step').classList.add('active')
             ];
+            
             if (userState.currentStep >= 0 && userState.currentStep < steps.length) {
                 steps[userState.currentStep]();
             } else {
@@ -345,6 +380,7 @@
             const data = userState.groupStage[letter];
             const positions = data.positions;
             const currentRank = Object.keys(positions).find(key => positions[key] === team);
+            
             if (currentRank) {
                 positions[currentRank] = null;
                 data.completed = false;
@@ -352,6 +388,7 @@
                 renderGroupStep();
                 return;
             }
+            
             if (!positions['1st']) positions['1st'] = team;
             else if (!positions['2nd']) positions['2nd'] = team;
             else if (!positions['3rd']) {
@@ -373,6 +410,7 @@
             container.classList.add('step', 'active');
             const letter = groupLetters[userState.currentGroupIndex];
             const data = userState.groupStage[letter];
+
             let html = `<div class="bg-white rounded-xl shadow-lg p-6 border-t-4 border-black">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="font-anton text-4xl uppercase">Group ${letter}</h2>
@@ -380,9 +418,12 @@
                 </div>
                 <div class="grid grid-cols-1 gap-3">
                     <div class="text-sm text-gray-500 mb-2">Click to rank (1st → 4th). Click ranked team to change.</div>`;
+
             data.teams.forEach(team => {
-                let posClass = '', label = 'Click to rank';
-                for (const [key, val] of Object.entries(data.positions)) {
+                let posClass = '';
+                let label = 'Click to rank';
+                const posEntries = Object.entries(data.positions);
+                for (const [key, val] of posEntries) {
                     if (val === team) { posClass = `selected-${key}`; label = key; }
                 }
                 html += `<div class="team-btn ${posClass} border rounded-lg p-4 flex justify-between items-center font-bold text-lg cursor-pointer" onclick="handleTeamClick('${letter}', '${team}')">
@@ -390,6 +431,7 @@
                     <span class="font-anton text-sm uppercase opacity-70">${label}</span>
                 </div>`;
             });
+
             html += `</div><div class="flex justify-between mt-8 pt-4 border-t">
                 <button onclick="prevGroup()" class="bg-gray-200 px-6 py-2 rounded font-bold ${userState.currentGroupIndex === 0 ? 'invisible' : ''}">← Back</button>
                 <button onclick="resetGroup('${letter}')" class="text-red-600 font-bold hover:underline">Clear Group</button>
@@ -402,7 +444,8 @@
             markDirty();
             userState.groupStage[letter].positions = { '1st': null, '2nd': null, '3rd': null, '4th': null };
             userState.groupStage[letter].completed = false;
-            save(); renderGroupStep();
+            save(); 
+            renderGroupStep();
         };
 
         window.nextGroup = () => {
@@ -450,35 +493,26 @@
             const idx = userState.thirdPlaceSelected.indexOf(letter);
             if (idx > -1) userState.thirdPlaceSelected.splice(idx, 1);
             else if (userState.thirdPlaceSelected.length < 8) userState.thirdPlaceSelected.push(letter);
-            save(); renderThirdPlaceStep();
+            save(); 
+            renderThirdPlaceStep();
         };
-
-        function getTeamFromSlot(slot, isRound32 = false) {
-            if (slot.length === 2) {
-                return userState.groupStage[slot[0]].positions[slot[1] === '1' ? '1st' : '2nd'];
-            }
-            if (isRound32) {
-                const matchId = parseInt(slot);
-                return thirdPlaceAssignment[matchId] || "TBD";
-            }
-            return "TBD";
-        }
 
         function renderKnockoutStep(stageKey, fixtures, containerId, stepId) {
             if (stageKey === 'round32') {
                 thirdPlaceAssignment = buildThirdPlaceAssignment();
             }
+            
             const stepContainer = document.getElementById(stepId);
             if (stepContainer) stepContainer.classList.add('active');
             const container = document.getElementById(containerId);
             if (!container) return;
             container.innerHTML = '';
+            
             fixtures.forEach(f => {
                 let home, away;
                 if (stageKey === 'round32') {
-                    const awaySlotNum = f.awaySlot.match(/\d+/)?.[0];
-                    home = getTeamFromSlot(f.homeSlot, false);
-                    away = getTeamFromSlot(awaySlotNum, true);
+                    home = getTeamFromSlot(f.homeSlot);
+                    away = getTeamFromSlot(f.awaySlot);
                 } else {
                     const prev = stageKey === 'round16' ? 'round32' : stageKey === 'quarterFinals' ? 'round16' : 'quarterFinals';
                     home = userState.knockoutWinners[prev] ? userState.knockoutWinners[prev][f.homeMatch] : null;
@@ -498,6 +532,7 @@
                     </div>
                 </div>`;
             });
+
             const winCount = userState.knockoutWinners[stageKey] ? Object.keys(userState.knockoutWinners[stageKey]).length : 0;
             const nextBtn = document.getElementById(`next-from-${stageKey}`);
             if (nextBtn) nextBtn.disabled = winCount < fixtures.length;
@@ -508,7 +543,8 @@
             markDirty();
             if (!userState.knockoutWinners[stage]) userState.knockoutWinners[stage] = {};
             userState.knockoutWinners[stage][matchId] = team;
-            save(); renderCurrentStep();
+            save(); 
+            renderCurrentStep();
         };
 
         function getR16Fixtures() { 
@@ -545,6 +581,7 @@
             const f1 = userState.knockoutWinners.semiFinals ? userState.knockoutWinners.semiFinals[101] : null;
             const f2 = userState.knockoutWinners.semiFinals ? userState.knockoutWinners.semiFinals[102] : null;
             const win = userState.knockoutWinners.final;
+            
             document.getElementById('final-matches').innerHTML = `
                 <div class="border-4 border-red-600 p-8 rounded-2xl bg-white shadow-2xl">
                     <div class="text-[12px] font-bold text-red-600 mb-4 uppercase text-center">Match 104 · NY/NJ Stadium · Sunday 19 July</div>
@@ -561,14 +598,18 @@
                     </div>
                 </div>
             `;
+            
             const team1El = document.getElementById('final-team-1');
             const team2El = document.getElementById('final-team-2');
+            
             if (team1El && f1) team1El.onclick = () => { if (f1 && f1 !== 'TBD') { markDirty(); userState.knockoutWinners.final = f1; save(); renderFinalStep(); } };
             if (team2El && f2) team2El.onclick = () => { if (f2 && f2 !== 'TBD') { markDirty(); userState.knockoutWinners.final = f2; save(); renderFinalStep(); } };
+            
             const nextBtn = document.getElementById('next-from-final');
             if (nextBtn) nextBtn.disabled = !userState.knockoutWinners.final;
         }
 
+        // Navigation button handlers
         document.getElementById('next-from-third').onclick = () => { 
             if (userState.thirdPlaceSelected.length === 8) { userState.currentStep = 2; save(); renderCurrentStep(); }
         };
@@ -588,24 +629,29 @@
             if (userState.knockoutWinners.final) { userState.currentStep = 7; save(); renderCurrentStep(); }
         };
 
+        // Clear button handler
         document.getElementById('clear-data-btn').onclick = () => {
             if (confirm('Are you sure? All your prediction data will be erased.')) {
                 clearAllDataAndReset();
             }
         };
 
+        // Submit button
         document.getElementById('submit-prediction').onclick = async () => {
             const email = document.getElementById('user-email').value;
             if (!email) { alert('Email required'); return; }
+            
             const name = document.getElementById('user-name').value;
             userState.userName = name;
             userState.userEmail = email;
             markDirty();
+            
             const predictionData = {
                 groupStage: userState.groupStage,
                 thirdPlaceSelected: userState.thirdPlaceSelected,
                 knockoutWinners: userState.knockoutWinners
             };
+            
             try {
                 const response = await fetch('/.netlify/functions/submit', {
                     method: 'POST',
@@ -613,17 +659,13 @@
                     body: JSON.stringify({ email, name, prediction: predictionData })
                 });
                 const result = await response.json();
+                
                 if (response.ok) {
                     markClean();
                     document.getElementById('submission-message').innerHTML = '<div class="bg-green-100 text-green-800 p-4 rounded">✓ Prediction submitted! Check your email to confirm.</div>';
                     document.getElementById('submission-message').classList.remove('hidden');
                     document.getElementById('submit-prediction').disabled = true;
-                    // ✅ CHANGED: Redirect to landing page instead of reloading game
-                    setTimeout(() => { 
-                        if (confirm('Prediction submitted! Start a new prediction?')) { 
-                            window.location.href = '/world-cup-predictor/index.html'; 
-                        } 
-                    }, 2000);
+                    setTimeout(() => { if (confirm('Prediction submitted! Start a new prediction?')) { clearAllDataAndReset(); } }, 2000);
                 } else {
                     document.getElementById('submission-message').innerHTML = `<div class="bg-red-100 text-red-800 p-4 rounded">Error: ${result.error || 'Submission failed'}</div>`;
                     document.getElementById('submission-message').classList.remove('hidden');

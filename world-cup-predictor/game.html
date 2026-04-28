@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>World Cup 2026 Predictor Game | 90 Minutes or More</title>
+    <title>World Cup 2026 Predictor | 90 Minutes or More</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@
 </head>
 <body class="bg-gray-50">
 
-    <!-- Full Navigation Bar -->
+    <!-- Navigation -->
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <a href="/index.html" class="flex items-center group">
@@ -178,10 +178,10 @@
 
     <script>
         // ============================================================
-        // WORLD CUP 2026 PREDICTOR - GAME (FIXED BRACKET & IVORY COAST)
+        // WORLD CUP 2026 PREDICTOR - RESTORED ORIGINAL LOGIC + IVORY COAST FIX
         // ============================================================
         
-        console.log("🚀 PREDICTOR GAME LOADED (Fixed version)");
+        console.log("🚀 PREDICTOR LOADED (Original bracket logic)");
         
         // Force reload on page restore
         window.addEventListener('pageshow', function(event) {
@@ -211,7 +211,7 @@
             window.location.reload();
         }
         
-        // GROUPS - Fixed Ivory Coast (no special chars)
+        // GROUPS - FIXED: Ivory Coast (no accent)
         const GROUPS = {
             'A': { teams: ['Mexico', 'South Africa', 'Korea Republic', 'Czechia'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
             'B': { teams: ['Canada', 'Bosnia and Herzegovina', 'Qatar', 'Switzerland'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false },
@@ -227,7 +227,7 @@
             'L': { teams: ['England', 'Croatia', 'Ghana', 'Panama'], positions: { '1st': null, '2nd': null, '3rd': null, '4th': null }, completed: false }
         };
 
-        // FLAG_MAP - includes Ivory Coast
+        // FLAG_MAP - including Ivory Coast
         const FLAG_MAP = {
             'Mexico': '🇲🇽', 'Korea Republic': '🇰🇷', 'South Africa': '🇿🇦', 'Czechia': '🇨🇿',
             'Canada': '🇨🇦', 'Bosnia and Herzegovina': '🇧🇦', 'Qatar': '🇶🇦', 'Switzerland': '🇨🇭',
@@ -243,80 +243,38 @@
             'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Croatia': '🇭🇷', 'Ghana': '🇬🇭', 'Panama': '🇵🇦'
         };
 
-        // Official third‑place group to match mapping (FIFA 2026 bracket)
-        const THIRD_PLACE_MAPPING = {
-            'A': 82,
-            'B': 81,
-            'C': 74,
-            'D': 87,
-            'E': 80,
-            'F': 77,
-            'G': 85,
-            'H': 79
-        };
-
-        // Round of 32 fixtures – awaySlot now contains the match ID that will receive the third‑place team
+        // ROUND_32_FIXTURES - keep the original format (without slashes)
         const ROUND_32_FIXTURES = [
             { id: 73, homeSlot: 'A2', awaySlot: 'B2', date: 'Sunday 28 June', loc: 'Los Angeles Stadium' },
-            { id: 74, homeSlot: 'E1', awaySlot: '74', date: 'Monday 29 June', loc: 'Boston Stadium' },
+            { id: 74, homeSlot: 'E1', awaySlot: '3rd(ABCD F)', date: 'Monday 29 June', loc: 'Boston Stadium' },
             { id: 75, homeSlot: 'F1', awaySlot: 'C2', date: 'Monday 29 June', loc: 'Estadio Monterrey' },
             { id: 76, homeSlot: 'C1', awaySlot: 'F2', date: 'Monday 29 June', loc: 'Houston Stadium' },
-            { id: 77, homeSlot: 'I1', awaySlot: '77', date: 'Tuesday 30 June', loc: 'NY/NJ Stadium' },
+            { id: 77, homeSlot: 'I1', awaySlot: '3rd(CDFGH)', date: 'Tuesday 30 June', loc: 'NY/NJ Stadium' },
             { id: 78, homeSlot: 'E2', awaySlot: 'I2', date: 'Tuesday 30 June', loc: 'Dallas Stadium' },
-            { id: 79, homeSlot: 'A1', awaySlot: '79', date: 'Tuesday 30 June', loc: 'Mexico City Stadium' },
-            { id: 80, homeSlot: 'L1', awaySlot: '80', date: 'Wed 1 July', loc: 'Atlanta Stadium' },
-            { id: 81, homeSlot: 'D1', awaySlot: '81', date: 'Wed 1 July', loc: 'San Francisco Bay Area Stadium' },
-            { id: 82, homeSlot: 'G1', awaySlot: '82', date: 'Wed 1 July', loc: 'Seattle Stadium' },
+            { id: 79, homeSlot: 'A1', awaySlot: '3rd(CEFHI)', date: 'Tuesday 30 June', loc: 'Mexico City Stadium' },
+            { id: 80, homeSlot: 'L1', awaySlot: '3rd(EHIJK)', date: 'Wed 1 July', loc: 'Atlanta Stadium' },
+            { id: 81, homeSlot: 'D1', awaySlot: '3rd(BEFIJ)', date: 'Wed 1 July', loc: 'San Francisco Bay Area Stadium' },
+            { id: 82, homeSlot: 'G1', awaySlot: '3rd(AEHIJ)', date: 'Wed 1 July', loc: 'Seattle Stadium' },
             { id: 83, homeSlot: 'K2', awaySlot: 'L2', date: 'Thurs 2 July', loc: 'Toronto Stadium' },
             { id: 84, homeSlot: 'H1', awaySlot: 'J2', date: 'Thurs 2 July', loc: 'Los Angeles Stadium' },
-            { id: 85, homeSlot: 'B1', awaySlot: '85', date: 'Thurs 2 July', loc: 'BC Place Vancouver' },
+            { id: 85, homeSlot: 'B1', awaySlot: '3rd(EFGIJ)', date: 'Thurs 2 July', loc: 'BC Place Vancouver' },
             { id: 86, homeSlot: 'J1', awaySlot: 'H2', date: 'Friday 3 July', loc: 'Miami Stadium' },
-            { id: 87, homeSlot: 'K1', awaySlot: '87', date: 'Friday 3 July', loc: 'Kansas City Stadium' },
+            { id: 87, homeSlot: 'K1', awaySlot: '3rd(DEIJL)', date: 'Friday 3 July', loc: 'Kansas City Stadium' },
             { id: 88, homeSlot: 'D2', awaySlot: 'G2', date: 'Friday 3 July', loc: 'Dallas Stadium' }
         ];
 
-        let userState = null;
-        let thirdPlaceAssignment = {};  // { matchId: teamName }
+        let userState = {
+            groupStage: JSON.parse(JSON.stringify(GROUPS)),
+            thirdPlaceSelected: [],
+            knockoutWinners: { round32: {}, round16: {}, quarterFinals: {}, semiFinals: {}, final: null },
+            userName: '', userEmail: '', currentGroupIndex: 0, currentStep: 0
+        };
+
         const groupLetters = Object.keys(GROUPS);
-
-        function getFreshUserState() {
-            return {
-                groupStage: JSON.parse(JSON.stringify(GROUPS)),
-                thirdPlaceSelected: [],
-                knockoutWinners: { round32: {}, round16: {}, quarterFinals: {}, semiFinals: {}, final: null },
-                userName: '', userEmail: '', currentGroupIndex: 0, currentStep: 0
-            };
-        }
-
-        function buildThirdPlaceAssignment() {
-            const assignment = {};
-            // Only groups that have a mapping and are selected
-            for (const group of userState.thirdPlaceSelected) {
-                const matchId = THIRD_PLACE_MAPPING[group];
-                if (matchId) {
-                    assignment[matchId] = userState.groupStage[group].positions['3rd'];
-                }
-            }
-            return assignment;
-        }
-
-        function getTeamFromSlot(slot) {
-            // slot is like 'A2', 'B2', 'E1', etc.
-            if (slot.length === 2 && /^[A-L][12]$/.test(slot)) {
-                const group = slot[0];
-                const pos = slot[1] === '1' ? '1st' : '2nd';
-                return userState.groupStage[group].positions[pos];
-            }
-            // if slot is numeric (match ID for third‑place)
-            if (/^\d+$/.test(slot)) {
-                return thirdPlaceAssignment[parseInt(slot)] || "TBD";
-            }
-            return "TBD";
-        }
 
         function init() {
             console.log("🚀 init() - Starting fresh");
-            userState = getFreshUserState();
+            userState = JSON.parse(JSON.stringify({ groupStage: GROUPS, thirdPlaceSelected: [], knockoutWinners: { round32: {}, round16: {}, quarterFinals: {}, semiFinals: {}, final: null }, userName: '', userEmail: '', currentGroupIndex: 0, currentStep: 0 }));
             localStorage.clear();
             renderCurrentStep();
         }
@@ -497,11 +455,21 @@
             renderThirdPlaceStep();
         };
 
-        function renderKnockoutStep(stageKey, fixtures, containerId, stepId) {
-            if (stageKey === 'round32') {
-                thirdPlaceAssignment = buildThirdPlaceAssignment();
+        // ORIGINAL getTeamFromSlot logic (works without slashes)
+        function getTeamFromSlot(slot) {
+            if (slot.length === 2) {
+                return userState.groupStage[slot[0]].positions[slot[1] === '1' ? '1st' : '2nd'];
             }
-            
+            const allowed = slot.match(/\(([^)]+)\)/)?.[1] || "";
+            for(let letter of userState.thirdPlaceSelected) {
+                if (allowed.includes(letter)) {
+                    return userState.groupStage[letter].positions['3rd'];
+                }
+            }
+            return "TBD";
+        }
+
+        function renderKnockoutStep(stageKey, fixtures, containerId, stepId) {
             const stepContainer = document.getElementById(stepId);
             if (stepContainer) stepContainer.classList.add('active');
             const container = document.getElementById(containerId);

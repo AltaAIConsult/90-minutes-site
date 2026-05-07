@@ -12,7 +12,7 @@
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Include your site navigation (same as other pages) -->
+    <!-- Navigation -->
     <nav class="bg-white shadow-md">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center">
             <a href="/index.html" class="flex items-center">
@@ -39,10 +39,16 @@
         <div class="bg-white rounded-xl shadow-lg overflow-hidden">
             <table class="w-full text-left">
                 <thead class="bg-red-600 text-white">
-                    <tr><th class="py-3 px-6">Rank</th><th class="py-3 px-6">Name</th><th class="py-3 px-6">Predicted Champion</th><th class="py-3 px-6">Verified On</th></tr>
+                    <tr>
+                        <th class="py-3 px-6">Rank</th>
+                        <th class="py-3 px-6">Name</th>
+                        <th class="py-3 px-6">Predicted Champion</th>
+                        <th class="py-3 px-6">Points</th>
+                        <th class="py-3 px-6">Verified On</th>
+                    </tr>
                 </thead>
                 <tbody id="leaderboard-body">
-                    <tr><td colspan="4" class="text-center py-8 text-gray-500">Loading predictions...</td></tr>
+                    <tr><td colspan="5" class="text-center py-8 text-gray-500">Loading predictions...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -58,23 +64,34 @@
                 const data = await res.json();
                 const tbody = document.getElementById('leaderboard-body');
                 if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-gray-500">No predictions yet. Be the first!</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">No predictions yet. Be the first!</td></tr>';
                     return;
                 }
-                const sorted = data.sort((a,b) => (b.score||0) - (a.score||0));
-                tbody.innerHTML = sorted.map((entry, i) => `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="py-3 px-6 font-bold">${i+1}</td>
-                        <td class="py-3 px-6">${entry.name || 'Anonymous'}</td>
-                        <td class="py-3 px-6">${entry.champion || '—'}</td>
-                        <td class="py-3 px-6 text-sm text-gray-500">${new Date(entry.verified_at).toLocaleDateString()}</td>
-                    </tr>
-                `).join('');
+                // Sort by score (descending), then by submission date (ascending)
+                const sorted = data.sort((a,b) => (b.score || 0) - (a.score || 0));
+                tbody.innerHTML = sorted.map((entry, i) => {
+                    let verifiedDate = '—';
+                    if (entry.verified_at) {
+                        try {
+                            verifiedDate = new Date(entry.verified_at).toLocaleDateString();
+                        } catch(e) { verifiedDate = '—'; }
+                    }
+                    return `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-6 font-bold">${i+1}</td>
+                            <td class="py-3 px-6">${escapeHtml(entry.name) || 'Anonymous'}</td>
+                            <td class="py-3 px-6">${escapeHtml(entry.champion) || '—'}</td>
+                            <td class="py-3 px-6">${entry.score !== null ? entry.score : '—'}</td>
+                            <td class="py-3 px-6 text-sm text-gray-500">${verifiedDate}</td>
+                        </tr>
+                    `;
+                }).join('');
             } catch(e) {
                 console.error(e);
-                document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="4" class="text-center py-8 text-red-500">Error loading leaderboard</td></tr>';
+                document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-500">Error loading leaderboard</td></tr>';
             }
         }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
         loadLeaderboard();
     </script>
 </body>

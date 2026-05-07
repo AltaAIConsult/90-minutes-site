@@ -19,11 +19,9 @@ exports.handler = async (event) => {
       };
     }
 
-    // Generate unique confirmation token
     const token = Math.random().toString(36).substring(2, 15) + 
                   Math.random().toString(36).substring(2, 15);
 
-    // Check if email already verified
     const { data: existingVerified } = await supabase
       .from('verified_submissions')
       .select('email')
@@ -37,7 +35,6 @@ exports.handler = async (event) => {
       };
     }
 
-    // Insert into pending submissions
     const { error } = await supabase
       .from('pending_submissions')
       .insert([
@@ -57,7 +54,6 @@ exports.handler = async (event) => {
       };
     }
 
-    // ✅ CORRECTED CONFIRMATION URL
     const confirmUrl = `https://90minutesormore.com/.netlify/functions/confirm?token=${token}`;
     
     const msg = {
@@ -67,7 +63,7 @@ exports.handler = async (event) => {
       html: `
         <div style="font-family: 'Poppins', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9fafb; border-radius: 16px; padding: 32px;">
           <div style="text-align: center; margin-bottom: 24px;">
-            <img src="https://90minutesormore.com/images/logo.jpeg" alt="90 Minutes or More" style="height: 60px; margin-bottom: 16px;">
+            <img src="https://90minutesormore.com/images/logo.jpeg" alt="90 Minutes or More" style="width: 60px; height: auto; margin-bottom: 16px;">
             <h1 style="color: #dc2626; font-size: 28px; margin: 0;">World Cup 2026 Predictor</h1>
           </div>
           

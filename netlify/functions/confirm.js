@@ -19,7 +19,6 @@ exports.handler = async (event) => {
   }
 
   try {
-    // 1. Find the pending submission
     const { data: pending, error: findError } = await supabase
       .from('pending_submissions')
       .select('*')
@@ -38,7 +37,6 @@ exports.handler = async (event) => {
     const champion = prediction?.knockoutWinners?.final || null;
     const verifiedAt = new Date().toISOString();
 
-    // 2. Move to verified_submissions
     const { error: insertError } = await supabase
       .from('verified_submissions')
       .insert([{
@@ -48,7 +46,7 @@ exports.handler = async (event) => {
         submitted_at: pending.submitted_at,
         verified_at: verifiedAt,
         champion: champion,
-        score: null
+        score: 0
       }]);
 
     if (insertError) {
@@ -60,10 +58,9 @@ exports.handler = async (event) => {
       };
     }
 
-    // 3. Delete from pending
     await supabase.from('pending_submissions').delete().eq('token', token);
 
-    // 4. Send summary email (with error logging – non‑blocking)
+    // Send summary email (only champion, not full knockout)
     try {
       const emailHtml = buildSummaryEmail(pending.name, prediction);
       const msg = {
@@ -77,10 +74,8 @@ exports.handler = async (event) => {
       console.log('✅ Summary email sent to:', pending.email);
     } catch (emailErr) {
       console.error('❌ SendGrid summary email error:', emailErr.response?.body || emailErr);
-      // Do not fail the whole process – the user is already verified
     }
 
-    // 5. Clean HTML response (no stray characters)
     const displayName = pending.name ? pending.name.trim() : 'football fan';
 
     return {
@@ -127,9 +122,6 @@ exports.handler = async (event) => {
   }
 };
 
-// --------------------------------------------------------------
-// Helper: Build summary email HTML
-// --------------------------------------------------------------
 function buildSummaryEmail(name, prediction) {
   const groupStage = prediction.groupStage || {};
   const thirdPlaceSelected = prediction.thirdPlaceSelected || [];
@@ -177,43 +169,31 @@ function buildSummaryEmail(name, prediction) {
   }
   thirdHtml += '</ul>';
 
-  let knockoutHtml = '';
-  const stages = [
-    { key: 'round32', label: 'Round of 32' },
-    { key: 'round16', label: 'Round of 16' },
-    { key: 'quarterfinals', label: 'Quarter-finals' },
-    { key: 'semifinals', label: 'Semi-finals' }
-  ];
-  for (const stage of stages) {
-    const winners = knockoutWinners[stage.key] || {};
-    const matchIds = Object.keys(winners).sort((a, b) => a - b);
-    if (matchIds.length) {
-      knockoutHtml += `<h3 style="margin-top: 24px; margin-bottom: 8px; font-weight: bold;">${stage.label}</h3><ul style="list-style: none; padding-left: 0;">`;
-      for (const id of matchIds) {
-        knockoutHtml += `<li>Match ${id}: ${flag(winners[id])} ${winners[id]}</li>`;
-      }
-      knockoutHtml += `</ul>`;
-    }
-  }
-  if (knockoutWinners.thirdPlace) {
-    knockoutHtml += `<h3 style="margin-top: 24px; font-weight: bold;">Third-Place Match</h3><ul style="list-style: none; padding-left: 0;"><li>${flag(knockoutWinners.thirdPlace)} ${knockoutWinners.thirdPlace}</li></ul>`;
-  }
+  // SIMPLIFIED: Only show champion, not full knockout bracket
+  let championHtml = '';
   if (knockoutWinners.final) {
-    knockoutHtml += `<h3 style="margin-top: 24px; font-weight: bold; color: #dc2626;">🏆 Champion</h3><ul style="list-style: none; padding-left: 0;"><li>${flag(knockoutWinners.final)} ${knockoutWinners.final}</li></ul>`;
+    championHtml = `
+      <h3 style="margin-top: 24px; font-weight: bold; color: #dc2626;">🏆 Your Predicted Champion</h3>
+      <ul style="list-style: none; padding-left: 0;">
+        <li style="font-size: 28px; margin-top: 10px;">${flag(knockoutWinners.final)} ${knockoutWinners.final}</li>
+      </ul>
+    `;
   }
 
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f9fafb; border-radius: 16px;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <img src="https://90minutesormore.com/images/logo.jpeg" alt="90 Minutes or More" style="width: 50px; height: auto;">
+      </div>
       <h2 style="color: #dc2626; border-bottom: 2px solid #dc2626; padding-bottom: 8px;">Your World Cup 2026 Prediction</h2>
       <p>Hello ${escapeHtml(name || 'football fan')},</p>
       <p>Thank you for confirming your prediction. Here is the summary of your picks:</p>
       ${groupsHtml}
       <h3 style="font-weight: bold; margin-top: 20px;">Third-Place Qualifiers (8 best)</h3>
       ${thirdHtml}
-      <h3 style="font-weight: bold; margin-top: 20px;">Knockout Stage Winners</h3>
-      ${knockoutHtml}
+      ${championHtml}
       <hr style="margin: 30px 0;">
-      <p>You can view the live leaderboard at <a href="https://90minutesormore.com/leaderboard.html">90minutesormore.com/leaderboard.html</a></p>
+      <p>View the live leaderboard: <a href="https://90minutesormore.com/leaderboard.html">90minutesormore.com/leaderboard.html</a></p>
       <p>— 90 Minutes or More Team</p>
     </div>
   `;

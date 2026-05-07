@@ -6,45 +6,70 @@
     <title>Leaderboard | 90 Minutes or More</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .font-anton { font-family: 'Anton', sans-serif; }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
+        .nav-link:hover::after { width: 100%; }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
-    <nav class="bg-white shadow-md">
-        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <a href="/index.html" class="flex items-center">
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/index.html" class="flex items-center group">
                 <img src="/images/logo.jpeg" alt="90 Minutes or More" class="h-10 mr-2">
-                <span class="font-anton text-xl"><span class="text-red-600">90</span>MINUTES</span>
-                <span class="text-sm ml-1">or More</span>
+                <div class="hidden sm:block">
+                    <span class="font-anton text-xl">
+                        <span class="text-red-600">90</span><span class="text-black">MINUTES</span>
+                    </span>
+                    <span class="text-xs ml-1">or More</span>
+                </div>
             </a>
-            <div class="hidden md:flex space-x-6">
-                <a href="/index.html" class="hover:text-red-600">Home</a>
-                <a href="/news/index.html" class="hover:text-red-600">News</a>
-                <a href="/article/index.html" class="hover:text-red-600">Articles</a>
-                <a href="/shop/index.html" class="hover:text-red-600">Shop</a>
-                <a href="/podcast/index.html" class="hover:text-red-600">Podcast</a>
-                <a href="/about/index.html" class="hover:text-red-600">About</a>
-                <a href="/world-cup-predictor/index.html" class="text-red-600 font-semibold">Predictor</a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/index.html" class="nav-link text-sm text-black hover:text-red-600">Home</a>
+                <a href="/news/index.html" class="nav-link text-sm text-black hover:text-red-600">News</a>
+                <a href="/article/index.html" class="nav-link text-sm text-black hover:text-red-600">Articles</a>
+                <a href="/services/index.html" class="nav-link text-sm text-black hover:text-red-600">Services</a>
+                <a href="/shop/index.html" class="nav-link text-sm text-black hover:text-red-600">Shop</a>
+                <a href="/podcast/index.html" class="nav-link text-sm text-black hover:text-red-600">Podcast</a>
+                <a href="/about/index.html" class="nav-link text-sm text-black hover:text-red-600">About</a>
+                <a href="/world-cup-predictor/index.html" class="nav-link text-sm text-red-600 font-semibold">Predictor</a>
+                <button onclick="toggleCart()" class="relative bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md text-sm transition">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                </button>
             </div>
+            <button id="mobile-menu-button" class="md:hidden text-black"><i class="fas fa-bars text-xl"></i></button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pb-3">
+            <a href="/index.html" class="block py-2 hover:text-red-600">Home</a>
+            <a href="/news/index.html" class="block py-2 hover:text-red-600">News</a>
+            <a href="/article/index.html" class="block py-2 hover:text-red-600">Articles</a>
+            <a href="/services/index.html" class="block py-2 hover:text-red-600">Services</a>
+            <a href="/shop/index.html" class="block py-2 hover:text-red-600">Shop</a>
+            <a href="/podcast/index.html" class="block py-2 hover:text-red-600">Podcast</a>
+            <a href="/about/index.html" class="block py-2 hover:text-red-600">About</a>
+            <a href="/world-cup-predictor/index.html" class="block py-2 text-red-600 font-semibold">Predictor</a>
         </div>
     </nav>
 
-    <div class="container mx-auto px-4 py-12 max-w-5xl">
+    <div class="container mx-auto px-4 py-12 max-w-6xl">
         <h1 class="font-anton text-5xl uppercase text-center mb-2">World Cup <span class="text-red-600">Leaderboard</span></h1>
         <p class="text-center text-gray-600 mb-12">Verified predictions from the 90 Minutes or More community</p>
 
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <table class="w-full text-left">
+        <!-- Responsive table wrapper -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden overflow-x-auto">
+            <table class="w-full min-w-[600px]">
                 <thead class="bg-red-600 text-white">
                     <tr>
-                        <th class="py-3 px-6">Rank</th>
-                        <th class="py-3 px-6">Name</th>
-                        <th class="py-3 px-6">Predicted Champion</th>
-                        <th class="py-3 px-6">Points</th>
-                        <th class="py-3 px-6">Verified On</th>
+                        <th class="py-3 px-4 text-center">Rank</th>
+                        <th class="py-3 px-4 text-left">Name</th>
+                        <th class="py-3 px-4 text-left">Predicted Champion</th>
+                        <th class="py-3 px-4 text-center">Points</th>
+                        <th class="py-3 px-4 text-left hidden sm:table-cell">Verified On</th>
                     </tr>
                 </thead>
                 <tbody id="leaderboard-body">
@@ -67,7 +92,7 @@
                     tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">No predictions yet. Be the first!</td></tr>';
                     return;
                 }
-                // Sort by score (descending), then by submission date (ascending)
+                // Sort by score descending, then by submission date
                 const sorted = data.sort((a,b) => (b.score || 0) - (a.score || 0));
                 tbody.innerHTML = sorted.map((entry, i) => {
                     let verifiedDate = '—';
@@ -78,11 +103,11 @@
                     }
                     return `
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-6 font-bold">${i+1}</td>
-                            <td class="py-3 px-6">${escapeHtml(entry.name) || 'Anonymous'}</td>
-                            <td class="py-3 px-6">${escapeHtml(entry.champion) || '—'}</td>
-                            <td class="py-3 px-6">${entry.score !== null ? entry.score : '—'}</td>
-                            <td class="py-3 px-6 text-sm text-gray-500">${verifiedDate}</td>
+                            <td class="py-3 px-4 text-center font-bold">${i+1}</td>
+                            <td class="py-3 px-4">${escapeHtml(entry.name) || 'Anonymous'}</td>
+                            <td class="py-3 px-4">${escapeHtml(entry.champion) || '—'}</td>
+                            <td class="py-3 px-4 text-center font-bold">${entry.score !== null && entry.score !== undefined ? entry.score : 0}</td>
+                            <td class="py-3 px-4 text-sm text-gray-500 hidden sm:table-cell">${verifiedDate}</td>
                         </tr>
                     `;
                 }).join('');
@@ -91,8 +116,23 @@
                 document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-500">Error loading leaderboard</td></tr>';
             }
         }
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
-        loadLeaderboard();
+        
+        function escapeHtml(str) { 
+            if (!str) return ''; 
+            return str.replace(/[&<>]/g, function(m) { 
+                if (m === '&') return '&amp;'; 
+                if (m === '<') return '&lt;'; 
+                if (m === '>') return '&gt;'; 
+                return m; 
+            }); 
+        }
+        
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            if (sidebar) sidebar.classList.toggle('translate-x-full');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadLeaderboard);
     </script>
 </body>
 </html>

@@ -9,7 +9,7 @@ exports.handler = async () => {
   try {
     const { data, error } = await supabase
       .from('verified_submissions')
-      .select('name, champion, score, submitted_at')
+      .select('name, champion, score, submitted_at, verified_at')
       .order('score', { ascending: false, nullsFirst: false })
       .order('submitted_at', { ascending: true });
 

@@ -21,15 +21,7 @@
         .progress-bar { transition: width 0.3s ease; }
         .third-place-btn.selected { background-color: #22c55e; color: white; border-color: #16a34a; }
         button:disabled { opacity: 0.3 !important; cursor: not-allowed !important; }
-        
-        /* Specific selection highlight for the Final cards */
-        .final-card.selected { 
-            background-color: #dc2626 !important; 
-            border-color: #991b1b !important; 
-            color: white !important; 
-            transform: scale(1.05); 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); 
-        }
+        .final-card.selected { background-color: #dc2626 !important; border-color: #991b1b !important; color: white !important; transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -126,7 +118,7 @@
                         <input type="text" id="user-name" placeholder="Display Name" class="w-full border p-3 rounded">
                         <input type="email" id="user-email" placeholder="Email Address *" class="w-full border p-3 rounded" required>
                         <button id="submit-prediction" class="w-full bg-red-600 text-white font-anton py-4 rounded uppercase text-xl shadow-lg" disabled>Submit Prediction</button>
-                        <div id="submission-message" class="hidden mt-4 p-4 rounded text-center"></div>
+                        <div id="submission-message" class="hidden mt-4 rounded text-center"></div>
                     </div>
                 </div>
                 <div class="flex justify-center mt-8">
@@ -228,7 +220,6 @@
             }
         }
 
-        // --- GROUP STEP ---
         function renderGroupStep() {
             const container = document.getElementById('steps-container');
             const letter = Object.keys(userState.groupStage)[userState.currentGroupIdx];
@@ -289,7 +280,6 @@
         };
         window.prevGroup = () => { if (userState.currentGroupIdx > 0) userState.currentGroupIdx--; renderGroupStep(); };
 
-        // --- 3rd PLACE STEP ---
         function renderThirdPlaceStep() {
             document.getElementById('third-place-step').classList.add('active');
             const list = document.getElementById('third-place-list');
@@ -312,7 +302,6 @@
             renderThirdPlaceStep();
         };
 
-        // --- ROUND OF 32 MATCHUP ALGORITHM ---
         function getR32Data() {
             let used3rd = [];
             let available3rd = [...userState.thirdPlaceSelected];
@@ -330,7 +319,6 @@
                     const letter = available3rd.find(l => allowedStr.includes(l) && !used3rd.includes(l));
                     if (letter) { away = userState.groupStage[letter].positions['3rd']; used3rd.push(letter); }
                 }
-                // Safety fill for 3rd place slots
                 if (m.h.includes('3rd') && home === "TBD") { 
                     const backup = available3rd.find(l => !used3rd.includes(l));
                     if (backup) { home = userState.groupStage[backup].positions['3rd']; used3rd.push(backup); }
@@ -343,7 +331,6 @@
             });
         }
 
-        // --- GENERAL KNOCKOUT RENDERER ---
         function renderKnockout(stageKey, fixtures, containerId, stepId) {
             document.getElementById(stepId).classList.add('active');
             const container = document.getElementById(containerId);
@@ -372,11 +359,8 @@
             renderCurrentStep();
         };
 
-        // --- THE FIXED FINAL STEP ---
         function renderFinalStep() {
             document.getElementById('final-step').classList.add('active');
-            const f1 = userState.knockout.semiffinals ? userState.knockout.semifinals[101] : (userState.knockout.semifinals?.[101] || 'TBD');
-            // Safely get semifinalists
             const finalist1 = userState.knockout.semifinals?.[101] || 'TBD';
             const finalist2 = userState.knockout.semifinals?.[102] || 'TBD';
             const winner = userState.knockout.final;
@@ -398,20 +382,17 @@
                     ${winner && winner !== 'TBD' ? `<div class="mt-8 text-2xl font-anton text-green-600 uppercase animate-bounce">2026 Champion: ${winner}!</div>` : ''}
                 </div>`;
 
-            // Visual Update
             const c1 = document.getElementById('final-card-1');
             const c2 = document.getElementById('final-card-2');
             if (winner && winner === finalist1) c1.classList.add('selected');
             if (winner && winner === finalist2) c2.classList.add('selected');
 
-            // Attach Click Handlers
             if (c1 && finalist1 !== 'TBD') c1.onclick = () => { userState.knockout.final = finalist1; renderFinalStep(); };
             if (c2 && finalist2 !== 'TBD') c2.onclick = () => { userState.knockout.final = finalist2; renderFinalStep(); };
             
             document.getElementById('submit-prediction').disabled = !userState.knockout.final || userState.knockout.final === 'TBD';
         }
 
-        // --- DATA MAPPING ---
         function getR16Data() { return [{id:89,hM:74,aM:77,loc:'Philadelphia'},{id:90,hM:73,aM:75,loc:'Houston'},{id:91,hM:76,aM:78,loc:'NY/NJ'},{id:92,hM:79,aM:80,loc:'Mexico City'},{id:93,hM:83,aM:84,loc:'Dallas'},{id:94,hM:81,aM:82,loc:'Seattle'},{id:95,hM:86,aM:88,loc:'Atlanta'},{id:96,hM:85,aM:87,loc:'Vancouver'}].map(m => ({id:m.id, home:userState.knockout.round32[m.hM], away:userState.knockout.round32[m.aM], loc:m.loc})); }
         function getQFData() { return [{id:97,hM:89,aM:90,loc:'Boston'},{id:98,hM:93,aM:94,loc:'Los Angeles'},{id:99,hM:91,aM:92,loc:'Miami'},{id:100,hM:95,aM:96,loc:'Kansas City'}].map(m => ({id:m.id, home:userState.knockout.round16[m.hM], away:userState.knockout.round16[m.aM], loc:m.loc})); }
         function getSFData() { return [{id:101,hM:97,aM:98,loc:'Dallas'},{id:102,hM:99,aM:100,loc:'Atlanta'}].map(m => ({id:m.id, home:userState.knockout.quarterfinals[m.hM], away:userState.knockout.quarterfinals[m.aM], loc:m.loc})); }
@@ -423,22 +404,46 @@
         document.getElementById('next-from-semifinals').onclick = () => { userState.currentStep = 6; renderCurrentStep(); };
 
         document.getElementById('submit-prediction').onclick = async () => {
-            const e = document.getElementById('user-email').value;
-            const n = document.getElementById('user-name').value;
-            if(!e) return alert("Email required.");
+            const email = document.getElementById('user-email').value;
+            const name = document.getElementById('user-name').value;
+            if(!email) return alert("Email required.");
             const btn = document.getElementById('submit-prediction');
+            const msgDiv = document.getElementById('submission-message');
             btn.disabled = true; btn.innerText = "Submitting...";
+            
             try {
                 const response = await fetch('/.netlify/functions/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: e, name: n, prediction: userState })
+                    body: JSON.stringify({ email, name, prediction: userState })
                 });
+                const result = await response.json();
+                
                 if (response.ok) {
-                    document.getElementById('submission-message').innerHTML = `<div class="bg-green-100 text-green-800 p-6 rounded-xl border-2">✅ Success! Check email (${e}) to verify.</div>`;
-                    document.getElementById('submission-message').classList.remove('hidden'); btn.classList.add('hidden');
+                    msgDiv.innerHTML = `<div class="bg-green-100 text-green-800 p-4 rounded-xl border-2 border-green-300">
+                        <p class="font-bold text-lg mb-2">✅ Prediction Submitted!</p>
+                        <p class="mb-3">Confirmation email sent to <strong>${email}</strong>.</p>
+                        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 mb-3 rounded">
+                            <p class="font-bold">📧 Check your spam/junk folder!</p>
+                            <p class="text-sm">Confirmation emails sometimes land in spam. Please check there if you don't see it in your inbox.</p>
+                        </div>
+                        <p class="text-sm mb-4">Click the link in the email to verify and appear on the leaderboard.</p>
+                        <a href="/leaderboard.html" class="inline-block bg-red-600 text-white px-6 py-2 rounded-lg font-bold">View Leaderboard</a>
+                    </div>`;
+                    msgDiv.classList.remove('hidden');
+                    btn.classList.add('hidden');
+                } else {
+                    msgDiv.innerHTML = `<div class="bg-red-100 text-red-800 p-4 rounded">${result.error || 'Submission failed'}</div>`;
+                    msgDiv.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerText = "Submit Prediction";
                 }
-            } catch (err) { btn.disabled = false; alert("Server error."); }
+            } catch (err) {
+                msgDiv.innerHTML = `<div class="bg-red-100 text-red-800 p-4 rounded">Network error. Please try again.</div>`;
+                msgDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerText = "Submit Prediction";
+            }
         };
 
         renderCurrentStep();

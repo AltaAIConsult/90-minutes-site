@@ -34,7 +34,9 @@ exports.handler = async (event) => {
     }
 
     const prediction = pending.prediction;
-    const champion = prediction?.knockoutWinners?.final || null;
+    
+    // FIXED: Use correct path - knockout.final (not knockoutWinners)
+    const champion = prediction?.knockout?.final || null;
     const verifiedAt = new Date().toISOString();
 
     const { error: insertError } = await supabase
@@ -60,7 +62,7 @@ exports.handler = async (event) => {
 
     await supabase.from('pending_submissions').delete().eq('token', token);
 
-    // Send summary email (only champion, not full knockout)
+    // Send summary email
     try {
       const emailHtml = buildSummaryEmail(pending.name, prediction);
       const msg = {
@@ -125,7 +127,8 @@ exports.handler = async (event) => {
 function buildSummaryEmail(name, prediction) {
   const groupStage = prediction.groupStage || {};
   const thirdPlaceSelected = prediction.thirdPlaceSelected || [];
-  const knockoutWinners = prediction.knockoutWinners || {};
+  // FIXED: Use knockout (not knockoutWinners)
+  const knockout = prediction.knockout || {};
   const groups = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
 
   const flagMap = {
@@ -169,13 +172,13 @@ function buildSummaryEmail(name, prediction) {
   }
   thirdHtml += '</ul>';
 
-  // SIMPLIFIED: Only show champion, not full knockout bracket
+  // FIXED: Use knockout.final for champion
   let championHtml = '';
-  if (knockoutWinners.final) {
+  if (knockout.final) {
     championHtml = `
       <h3 style="margin-top: 24px; font-weight: bold; color: #dc2626;">🏆 Your Predicted Champion</h3>
       <ul style="list-style: none; padding-left: 0;">
-        <li style="font-size: 28px; margin-top: 10px;">${flag(knockoutWinners.final)} ${knockoutWinners.final}</li>
+        <li style="font-size: 28px; margin-top: 10px;">${flag(knockout.final)} ${knockout.final}</li>
       </ul>
     `;
   }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>World Cup 2026 Predictor | 90 Minutes or More</title>
-    <meta name="description" content="Predict the entire World Cup 2026 tournament – group stage, knockout bracket, and champion. Compete on the leaderboard.">
+    <meta name="description" content="Predict the entire World Cup 2026 tournament – group stage, knockout bracket, and champion. Compete on the leaderboard and win prizes!">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,11 +16,10 @@
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
         .nav-link:hover::after { width: 100%; }
         .hero-image {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background-image: url('/images/WorldCup.PNG');
+            background-size: cover;
+            background-position: center;
             min-height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         @media (max-width: 768px) {
             .hero-image { min-height: 250px; }
@@ -73,13 +72,17 @@
     <section class="bg-gray-50">
         <div class="container mx-auto px-6 py-16 md:py-24">
             <div class="flex flex-col md:flex-row items-center gap-12">
+                <!-- Left: Image -->
                 <div class="md:w-1/2">
-                    <div class="hero-image rounded-2xl shadow-xl w-full h-80 md:h-96 flex items-center justify-center">
-                        <i class="fas fa-trophy text-white text-7xl opacity-50"></i>
+                    <div class="hero-image rounded-2xl shadow-xl w-full h-80 md:h-96 bg-gray-300 flex items-center justify-center text-gray-500">
+                        <!-- Fallback if image missing -->
+                        <i class="fas fa-futbol text-6xl opacity-30"></i>
                     </div>
                 </div>
+                <!-- Right: Text -->
                 <div class="md:w-1/2 text-center md:text-left">
-                    <h1 class="font-anton text-5xl md:text-6xl uppercase mb-4">Predict the <span class="text-red-600">World Cup</span></h1>
+                    <h1 class="font-anton text-5xl md:text-6xl uppercase mb-2">Predict the <span class="text-red-600">World Cup</span></h1>
+                    <h2 class="font-anton text-2xl md:text-3xl uppercase mb-4 text-gray-700">Presented by <span class="text-red-600">90 Minutes or More</span></h2>
                     <p class="text-gray-600 text-lg mb-6">Think you know football? Forecast the entire 2026 tournament – from group stage rankings to the champion – and compete on the leaderboard.</p>
                     <div class="space-y-3 text-gray-700">
                         <p><i class="fas fa-check-circle text-green-600 mr-2"></i> Rank all 12 groups (1st → 4th)</p>
@@ -87,6 +90,11 @@
                         <p><i class="fas fa-check-circle text-green-600 mr-2"></i> Pick winners for every knockout match</p>
                         <p><i class="fas fa-check-circle text-green-600 mr-2"></i> Submit & get a personalised summary</p>
                         <p><i class="fas fa-check-circle text-green-600 mr-2"></i> Appear on the leaderboard after email confirmation</p>
+                        <p class="mt-2 pt-2 border-t border-gray-200">
+                            <i class="fas fa-trophy text-yellow-600 mr-2"></i> 
+                            <span class="font-bold text-red-600">🎁 After confirmation, you're entered to win 1 of 5 prizes!</span><br>
+                            <span class="text-sm text-gray-500 ml-6">🏆 Toronto FC tickets • ⚽ Soccer merchandise • 🎫 Gift cards & more</span>
+                        </p>
                     </div>
                     <div class="mt-8">
                         <a href="game.html" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-10 rounded-lg text-lg transition shadow-lg hover:shadow-xl">🎯 Start Predicting →</a>
@@ -96,7 +104,7 @@
         </div>
     </section>
 
-    <!-- How It Works -->
+    <!-- How It Works Section -->
     <section class="py-12 bg-white border-t">
         <div class="container mx-auto px-6 text-center">
             <h2 class="font-anton text-3xl uppercase mb-4">How It <span class="text-red-600">Works</span></h2>
@@ -113,8 +121,8 @@
                 </div>
                 <div>
                     <div class="text-4xl text-red-600 mb-3">📧</div>
-                    <h3 class="font-bold text-xl mb-2">Leaderboard</h3>
-                    <p class="text-gray-600">Confirm your email to get on the leaderboard and receive your prediction summary.</p>
+                    <h3 class="font-bold text-xl mb-2">Confirmation & Prizes</h3>
+                    <p class="text-gray-600">Confirm your email to get on the leaderboard and be entered to win prizes!</p>
                 </div>
             </div>
         </div>
@@ -167,6 +175,7 @@
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar) sidebar.classList.toggle('translate-x-full');
         }
+
         const menuBtn = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
         if (menuBtn && mobileMenu) {

@@ -19,13 +19,11 @@
             background-image: url('../images/EF5B7B50-FE4E-4607-B457-16FFA2279890.PNG');
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             background-color: #1e3c72;
-            height: 400px;
             width: 100%;
+            aspect-ratio: 16 / 9;
             border-radius: 1rem;
-        }
-        @media (max-width: 768px) {
-            .hero-image { height: 250px; }
         }
     </style>
 </head>
@@ -77,17 +75,15 @@
             <div class="flex flex-col md:flex-row items-center gap-12">
                 <!-- Left: Image -->
                 <div class="md:w-1/2">
-                    <div class="hero-image rounded-2xl shadow-xl w-full">&nbsp;</div>
+                    <div class="hero-image rounded-2xl shadow-xl"></div>
                 </div>
                 <!-- Right: Text -->
                 <div class="md:w-1/2 text-center md:text-left">
                     <h1 class="font-anton text-5xl md:text-6xl uppercase mb-2">Predict the <span class="text-red-600">World Cup</span></h1>
                     <h2 class="font-anton text-2xl md:text-3xl uppercase mb-2 text-gray-700">Presented by <span class="text-red-600">90 Minutes or More</span></h2>
                     
-                    <!-- Prize Headline (Red) -->
                     <h3 class="font-anton text-xl md:text-2xl uppercase mb-2 text-red-600">Win 1 of 5 Prizes Including a pair of Toronto FC tickets, Gift Cards and Merch!</h3>
                     
-                    <!-- Prize Subtext (Black) -->
                     <p class="text-gray-800 font-semibold mb-4">Rank top 5 on the leaderboard to win!</p>
                     
                     <p class="text-gray-600 text-lg mb-6">Think you know football? Forecast the entire 2026 tournament – from group stage rankings to the champion – and compete on the leaderboard.</p>

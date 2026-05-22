@@ -16,11 +16,10 @@
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
         .nav-link:hover::after { width: 100%; }
         .hero-image {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background-image: url('/images/worldcup.png');
+            background-size: cover;
+            background-position: center;
             min-height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             border-radius: 1rem;
         }
         @media (max-width: 768px) {
@@ -76,9 +75,7 @@
             <div class="flex flex-col md:flex-row items-center gap-12">
                 <!-- Left: Image -->
                 <div class="md:w-1/2">
-                    <div class="hero-image rounded-2xl shadow-xl w-full text-white">
-                        <i class="fas fa-futbol text-7xl md:text-9xl opacity-50"></i>
-                    </div>
+                    <div class="hero-image rounded-2xl shadow-xl w-full"></div>
                 </div>
                 <!-- Right: Text -->
                 <div class="md:w-1/2 text-center md:text-left">

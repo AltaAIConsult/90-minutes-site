@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>World Cup 2026 Predictor | 90 Minutes or More</title>
-    <meta name="description" content="Predict the entire World Cup 2026 tournament – group stage, knockout bracket, and champion. Compete on the leaderboard and win prizes!">
+    <meta name="description" content="Predict the entire World Cup 2026 tournament – group stage, knockout bracket, and champion. Win Toronto FC tickets, gift cards, and more!">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,10 +16,12 @@
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
         .nav-link:hover::after { width: 100%; }
         .hero-image {
-            background-image: url('/images/WorldCup.PNG');
-            background-size: cover;
-            background-position: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1rem;
         }
         @media (max-width: 768px) {
             .hero-image { min-height: 250px; }
@@ -72,32 +74,30 @@
     <section class="bg-gray-50">
         <div class="container mx-auto px-6 py-16 md:py-24">
             <div class="flex flex-col md:flex-row items-center gap-12">
-                <!-- Left: Image -->
+                <!-- Left: Image Placeholder -->
                 <div class="md:w-1/2">
-                    <div class="hero-image rounded-2xl shadow-xl w-full h-80 md:h-96 bg-gray-300 flex items-center justify-center text-gray-500">
-                        <!-- Fallback if image missing -->
-                        <i class="fas fa-futbol text-6xl opacity-30"></i>
+                    <div class="hero-image rounded-2xl shadow-xl w-full text-white">
+                        <i class="fas fa-futbol text-7xl md:text-9xl opacity-50"></i>
                     </div>
                 </div>
                 <!-- Right: Text -->
                 <div class="md:w-1/2 text-center md:text-left">
                     <h1 class="font-anton text-5xl md:text-6xl uppercase mb-2">Predict the <span class="text-red-600">World Cup</span></h1>
-                    <h2 class="font-anton text-2xl md:text-3xl uppercase mb-4 text-gray-700">Presented by <span class="text-red-600">90 Minutes or More</span></h2>
-                    <p class="text-gray-600 text-lg mb-6">Think you know football? Forecast the entire 2026 tournament – from group stage rankings to the champion – and compete on the leaderboard.</p>
+                    <h2 class="font-anton text-2xl md:text-3xl uppercase mb-2 text-gray-700">Presented by <span class="text-red-600">90 Minutes or More</span></h2>
+                    <h3 class="font-anton text-xl md:text-2xl uppercase mb-4 text-red-600">Win a pair of Toronto FC tickets!</h3>
+                    <p class="text-gray-600 text-lg mb-6">Plus gift cards, soccer merchandise & more. Think you know football? Forecast the entire 2026 tournament – from group stage rankings to the champion – and compete on the leaderboard.</p>
                     <div class="space-y-3 text-gray-700">
                         <p><i class="fas fa-check-circle text-green-600 mr-2"></i> Rank all 12 groups (1st → 4th)</p>
                         <p><i class="fas fa-check-circle text-green-600 mr-2"></i> Select the 8 best third‑place teams</p>
                         <p><i class="fas fa-check-circle text-green-600 mr-2"></i> Pick winners for every knockout match</p>
                         <p><i class="fas fa-check-circle text-green-600 mr-2"></i> Submit & get a personalised summary</p>
                         <p><i class="fas fa-check-circle text-green-600 mr-2"></i> Appear on the leaderboard after email confirmation</p>
-                        <p class="mt-2 pt-2 border-t border-gray-200">
-                            <i class="fas fa-trophy text-yellow-600 mr-2"></i> 
-                            <span class="font-bold text-red-600">🎁 After confirmation, you're entered to win 1 of 5 prizes!</span><br>
-                            <span class="text-sm text-gray-500 ml-6">🏆 Toronto FC tickets • ⚽ Soccer merchandise • 🎫 Gift cards & more</span>
+                        <p class="mt-2 pt-2 border-t border-gray-200 text-gray-700">
+                            <span class="font-bold">After confirmation, you're automatically entered to win.</span> The most accurate predictors will receive prizes including Toronto FC tickets, gift cards, and soccer merchandise.
                         </p>
                     </div>
                     <div class="mt-8">
-                        <a href="game.html" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-10 rounded-lg text-lg transition shadow-lg hover:shadow-xl">🎯 Start Predicting →</a>
+                        <a href="game.html" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-10 rounded-lg text-lg transition shadow-lg hover:shadow-xl">Start Predicting →</a>
                     </div>
                 </div>
             </div>
@@ -110,19 +110,19 @@
             <h2 class="font-anton text-3xl uppercase mb-4">How It <span class="text-red-600">Works</span></h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-8">
                 <div>
-                    <div class="text-4xl text-red-600 mb-3">📊</div>
-                    <h3 class="font-bold text-xl mb-2">Group Stage</h3>
-                    <p class="text-gray-600">Rank each team 1st, 2nd, 3rd, 4th. The top two automatically advance.</p>
+                    <div class="text-4xl text-red-600 mb-3">1</div>
+                    <h3 class="font-bold text-xl mb-2">Rank the Groups</h3>
+                    <p class="text-gray-600">Predict 1st through 4th place in all 12 groups.</p>
                 </div>
                 <div>
-                    <div class="text-4xl text-red-600 mb-3">🏆</div>
-                    <h3 class="font-bold text-xl mb-2">Knockout Bracket</h3>
-                    <p class="text-gray-600">Pick winners for all 32 matches – from Round of 32 to the Final.</p>
+                    <div class="text-4xl text-red-600 mb-3">2</div>
+                    <h3 class="font-bold text-xl mb-2">Pick the Bracket</h3>
+                    <p class="text-gray-600">Select winners for every knockout match from the Round of 32 to the Final.</p>
                 </div>
                 <div>
-                    <div class="text-4xl text-red-600 mb-3">📧</div>
-                    <h3 class="font-bold text-xl mb-2">Confirmation & Prizes</h3>
-                    <p class="text-gray-600">Confirm your email to get on the leaderboard and be entered to win prizes!</p>
+                    <div class="text-4xl text-red-600 mb-3">3</div>
+                    <h3 class="font-bold text-xl mb-2">Confirm & Win</h3>
+                    <p class="text-gray-600">Verify your email to join the leaderboard and be entered to win prizes.</p>
                 </div>
             </div>
         </div>

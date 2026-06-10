@@ -89,6 +89,23 @@
             font-size: 4rem;
             opacity: 0.2;
         }
+
+        /* Desktop optimizations */
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+        @media (min-width: 1280px) {
+            .hero-slide {
+                min-height: 600px;
+            }
+        }
+        .product-card img {
+            aspect-ratio: 1/1;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body class="bg-white text-black">

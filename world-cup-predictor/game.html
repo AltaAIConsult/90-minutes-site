@@ -747,7 +747,8 @@
             if (sidebar) sidebar.classList.toggle('translate-x-full');
         };
 
-        document.addEventListener('DOMContentLoaded', init);
+        // Script is at the bottom of body — all DOM exists, call init directly
+        init();
     </script>
 </body>
 </html>

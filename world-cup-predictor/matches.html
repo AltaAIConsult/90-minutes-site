@@ -90,6 +90,21 @@
         /* Flag fallback */
         .fi { display: inline-block; }
     </style>
+
+    <!-- PWA / Mobile App -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="90+M" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" href="/images/icon-192x192.png" />
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js');
+            });
+        }
+    </script>
 </head>
 <body>
 
@@ -318,6 +333,19 @@
         // Fetch data
         // ============================================================
         async function fetchData() {
+            // Try live-data API first (has real API integrations)
+            try {
+                const liveRes = await fetch('/.netlify/functions/live-data?source=matches');
+                const liveData = await liveRes.json();
+                if (liveData.fixtures && liveData.fixtures.length > 0) {
+                    console.log('✅ Using live-data API');
+                    return liveData.fixtures;
+                }
+            } catch (e) {
+                console.warn('Live-data API unavailable, trying match-schedule...');
+            }
+            
+            // Fall back to match-schedule API
             try {
                 const res = await fetch('/.netlify/functions/match-schedule');
                 const data = await res.json();

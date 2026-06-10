@@ -1,0 +1,28 @@
+{
+  "appId": "com.ninetyminutes.more",
+  "appName": "90 Minutes or More",
+  "webDir": ".",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://90minutesormore.com",
+    "cleartext": false
+  },
+  "ios": {
+    "contentInset": "always",
+    "allowsLinkPreview": false,
+    "scrollEnabled": true
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#dc2626",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP"
+    }
+  }
+}

@@ -18,6 +18,16 @@ exports.handler = async () => {
         status TEXT DEFAULT 'scheduled',
         updated_at TIMESTAMPTZ DEFAULT NOW()
       );
+
+      CREATE TABLE IF NOT EXISTS live_cache (
+        cache_key TEXT PRIMARY KEY,
+        source TEXT DEFAULT 'api-football',
+        data JSONB DEFAULT '{}'::jsonb,
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_live_cache_source ON live_cache(source);
+      CREATE INDEX IF NOT EXISTS idx_live_cache_updated ON live_cache(updated_at);
       
       -- Check if verified_submissions has score column
       DO $$ 
@@ -61,7 +71,17 @@ exports.handler = async () => {
   away_score INTEGER,
   status TEXT DEFAULT 'scheduled',
   updated_at TIMESTAMPTZ DEFAULT NOW()
-);`
+);
+
+CREATE TABLE IF NOT EXISTS live_cache (
+  cache_key TEXT PRIMARY KEY,
+  source TEXT DEFAULT 'api-football',
+  data JSONB DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_live_cache_source ON live_cache(source);
+CREATE INDEX IF NOT EXISTS idx_live_cache_updated ON live_cache(updated_at);`
         })
       };
     }

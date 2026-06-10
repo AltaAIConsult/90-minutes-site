@@ -35,8 +35,8 @@ exports.handler = async (event) => {
 
     const prediction = pending.prediction;
     
-    // FIXED: Use correct path - knockout.final (not knockoutWinners)
-    const champion = prediction?.knockout?.final || null;
+    // Support both old (knockout.final) and new (knockoutWinners.final) formats
+    const champion = prediction?.knockoutWinners?.final || prediction?.knockout?.final || null;
     const verifiedAt = new Date().toISOString();
 
     const { error: insertError } = await supabase
@@ -127,8 +127,8 @@ exports.handler = async (event) => {
 function buildSummaryEmail(name, prediction) {
   const groupStage = prediction.groupStage || {};
   const thirdPlaceSelected = prediction.thirdPlaceSelected || [];
-  // FIXED: Use knockout (not knockoutWinners)
-  const knockout = prediction.knockout || {};
+  // Support both old (knockout) and new (knockoutWinners) formats
+  const knockout = prediction.knockoutWinners || prediction.knockout || {};
   const groups = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
 
   const flagMap = {

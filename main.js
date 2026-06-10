@@ -510,52 +510,67 @@ async function getProducts() {
 }
 
 // ==========================================================
-// PODCASTS FROM SANITY
+// PODCASTS — AUTO-FETCH FROM YOUTUBE API WITH ROTATION
 // ==========================================================
 async function loadPodcasts() {
     const list = document.getElementById('podcast-list');
     if (!list) return;
     
     try {
-        const query = `*[_type == "podcast"] | order(_createdAt desc) {
-            title,
-            youtubeLink
-        }`;
+        // Try YouTube API first (auto-fetches latest videos)
+        let podcasts = null;
+        try {
+            const ytRes = await fetch('/.netlify/functions/youtube-podcasts');
+            const ytData = await ytRes.json();
+            if (ytData.podcasts && ytData.podcasts.length > 0) {
+                podcasts = ytData.podcasts;
+                console.log(`🎙️ YouTube podcasts loaded: ${podcasts.length} (source: ${ytData.source})`);
+            }
+        } catch (ytErr) {
+            console.warn('YouTube API unavailable, trying Sanity...', ytErr);
+        }
         
-        const response = await fetch(getSanityUrl(query));
-        const data = await response.json();
-        const podcasts = data.result;
-        
-        console.log('Podcasts loaded:', podcasts);
+        // Fall back to Sanity CMS
+        if (!podcasts) {
+            const query = `*[_type == "podcast"] | order(_createdAt desc) { title, youtubeLink }`;
+            const response = await fetch(getSanityUrl(query));
+            const data = await response.json();
+            if (data.result && data.result.length > 0) {
+                podcasts = data.result.map(p => ({
+                    title: p.title,
+                    videoId: (p.youtubeLink || '').match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1] || '',
+                    youtubeLink: p.youtubeLink,
+                    embedUrl: p.youtubeLink?.replace('watch?v=', 'embed/').split('&')[0] || ''
+                }));
+                console.log('🎙️ Sanity podcasts loaded:', podcasts.length);
+            }
+        }
         
         if (!podcasts || podcasts.length === 0) {
-            list.innerHTML = '<p class="text-gray-400 text-center col-span-3">No episodes yet. Add some in Sanity!</p>';
+            list.innerHTML = '<p class="text-gray-400 text-center col-span-3">No episodes yet. Subscribe on YouTube!</p>';
             return;
         }
         
-        list.innerHTML = podcasts.map(p => {
-            let embed = p.youtubeLink || '';
-            if (embed.includes('watch?v=')) {
-                embed = embed.replace('watch?v=', 'embed/').split('&')[0];
-            } else if (embed.includes('youtu.be/')) {
-                const id = embed.split('youtu.be/')[1];
-                embed = `https://www.youtube.com/embed/${id}`;
-            }
-            
+        // ROTATION: Pick 3 random episodes to show
+        const shuffled = [...podcasts].sort(() => Math.random() - 0.5);
+        const selected = shuffled.slice(0, Math.min(3, shuffled.length));
+        
+        list.innerHTML = selected.map(p => {
+            const embedUrl = p.embedUrl || (p.youtubeLink || '').replace('watch?v=', 'embed/').split('&')[0];
             return `
                 <div class="bg-gray-900 rounded-lg overflow-hidden">
                     <div class="h-48 bg-gray-800">
-                        <iframe src="${embed}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        <iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
                     <div class="p-6">
                         <h3 class="font-bold text-xl mb-2">${p.title || 'Untitled Episode'}</h3>
-                        <a href="${p.youtubeLink}" target="_blank" class="text-red-500 hover:text-red-400 text-sm">Watch on YouTube →</a>
+                        <a href="${p.youtubeLink || '#'}" target="_blank" class="text-red-500 hover:text-red-400 text-sm">Watch on YouTube →</a>
                     </div>
                 </div>
             `;
         }).join('');
         
-        console.log('✓ Podcasts rendered:', podcasts.length);
+        console.log(`✓ Podcasts rendered: ${selected.length} (rotated from ${podcasts.length} total)`);
         
     } catch (err) {
         console.error('✗ Podcasts error:', err);

@@ -994,31 +994,27 @@ function initMobileMenu() {
 // ==========================================================
 // INITIALIZE BASED ON PAGE - WITH PREDICTOR DETECTION
 // ==========================================================
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Initializing...');
-    initMobileMenu();
-    
-    const path = window.location.pathname;
-    
-    // SKIP main site initialization on predictor page
-    if (path.includes('/world-cup-predictor')) {
-        console.log('Predictor page detected - skipping main site initialization');
-        return;
-    }
-    
-    if (path.includes('/news/article.html')) {
-        loadArticlePage();
-    } else if (path.includes('/news/')) {
-        loadNewsPage();
-    } else if (path.includes('/podcast/')) {
-        loadPodcastPage();
-    } else {
-        // Homepage
-        loadHeroSlides();
-        loadHeadlines();
-        loadCanadianCorner();
-        loadPodcasts();
-        getProducts();
-        startSlideTimer();
-    }
-});
+// Script is at the bottom of body — call directly
+console.log('🚀 Initializing...');
+initMobileMenu();
+
+const path = window.location.pathname;
+
+// SKIP main site initialization on predictor page
+if (path.includes('/world-cup-predictor')) {
+    console.log('Predictor page detected - skipping main site initialization');
+} else if (path.includes('/news/article.html')) {
+    loadArticlePage();
+} else if (path.includes('/news/')) {
+    loadNewsPage();
+} else if (path.includes('/podcast/')) {
+    loadPodcastPage();
+} else {
+    // Homepage
+    loadHeroSlides();
+    loadHeadlines();
+    loadCanadianCorner();
+    loadPodcasts();
+    getProducts();
+    startSlideTimer();
+}

@@ -41,6 +41,16 @@
     }
     </script>
     
+    <!-- Resource Hints -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+    <link rel="dns-prefetch" href="https://llmrml4v.api.sanity.io" />
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -87,7 +97,7 @@
     <nav class="fixed w-full bg-white shadow-md z-50">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center">
             <a href="index.html" class="flex items-center group">
-                <img src="images/logo.jpeg" alt="90 Minutes or More" class="h-14 mr-3 group-hover:scale-105 transition duration-300">
+                <img src="images/logo.jpeg" alt="90 Minutes or More" class="h-14 mr-3 group-hover:scale-105 transition duration-300" loading="eager">
                 <div class="hidden sm:block">
                     <span class="font-anton text-2xl tracking-tight leading-none">
                         <span class="text-red-600">90</span><span class="text-black">MINUTES</span>

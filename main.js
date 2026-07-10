@@ -437,42 +437,55 @@ function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
 }
 
 // ==========================================================
-// TOP NEWS STORIES - RSS FEED FETCH
+// TOP NEWS STORIES - RSS FEED FETCH (FIXED)
 // ==========================================================
 
 async function loadTopNews() {
     const grid = document.getElementById('news-feed-grid');
-    if (!grid) return;
+    if (!grid) {
+        console.log('❌ news-feed-grid not found');
+        return;
+    }
+    
+    console.log('🟢 loadTopNews() called');
     
     try {
-        // Fetch multiple RSS feeds using RSS2JSON proxy
-        const feeds = [
-            { url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.espn.com/espn/rss/soccer/news', source: 'ESPN' },
-            { url: 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.skynews.com/feeds/rss/sports.xml', source: 'Sky Sports' }
+        // Try direct fetch with a different proxy
+        const feedUrls = [
+            'https://api.rss2json.com/v1/api.json?rss_url=https://www.espn.com/espn/rss/soccer/news',
+            'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.skynews.com/feeds/rss/sports.xml'
         ];
         
-        const fetchPromises = feeds.map(feed => 
-            fetch(feed.url)
-                .then(res => res.json())
-                .then(data => ({ ...data, source: feed.source }))
-                .catch(() => ({ status: 'error', source: feed.source }))
-        );
+        const fetchPromises = feedUrls.map(async (url, index) => {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                return { data, index, success: true };
+            } catch (err) {
+                console.log(`Feed ${index} failed:`, err.message);
+                return { index, success: false };
+            }
+        });
         
         const results = await Promise.all(fetchPromises);
         
-        // Combine all articles from both feeds
         let allArticles = [];
-        results.forEach(result => {
-            if (result.status === 'ok' && result.items) {
-                const articles = result.items.map(item => ({
+        const sourceNames = ['ESPN', 'Sky Sports'];
+        
+        results.forEach((result, idx) => {
+            if (result.success && result.data && result.data.items) {
+                const source = sourceNames[idx] || 'Unknown';
+                const articles = result.data.items.map(item => ({
                     title: item.title || 'Untitled',
                     link: item.link || '#',
                     pubDate: item.pubDate || new Date().toISOString(),
-                    source: result.source,
+                    source: source,
                     description: item.description || '',
                     thumbnail: item.thumbnail || item.enclosure?.link || null
                 }));
                 allArticles = allArticles.concat(articles);
+                console.log(`✅ ${source}: ${articles.length} articles loaded`);
             }
         });
         
@@ -481,28 +494,36 @@ async function loadTopNews() {
         
         // Limit to 12 articles
         const topArticles = allArticles.slice(0, 12);
+        console.log(`📰 Total articles: ${topArticles.length} loaded`);
         
         if (topArticles.length === 0) {
-            grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-8">No stories available at the moment. Check back soon!</p>';
+            grid.innerHTML = `
+                <div class="col-span-3 text-center py-8 text-gray-500">
+                    <p>No stories available at the moment.</p>
+                    <p class="text-sm mt-2">Try again later or check back for updates.</p>
+                </div>
+            `;
             return;
         }
         
         // Render cards
         grid.innerHTML = topArticles.map(article => {
             const timeAgo = getTimeAgo(article.pubDate);
-            // Get first image from description if thumbnail not available
             let imgSrc = article.thumbnail || '';
             if (!imgSrc && article.description) {
                 const imgMatch = article.description.match(/<img[^>]+src="([^">]+)"/);
                 if (imgMatch) imgSrc = imgMatch[1];
             }
             
+            // Clean up title (remove special characters)
+            const cleanTitle = article.title.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+            
             return `
                 <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="group bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 block">
                     <div class="h-40 bg-gray-200 overflow-hidden">
                         ${imgSrc ? 
-                            `<img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${article.title}">` :
-                            `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 text-sm">${article.source}</div>`
+                            `<img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${cleanTitle}" loading="lazy">` :
+                            `<div class="w-full h-full bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center text-gray-500 text-sm font-bold">${article.source}</div>`
                         }
                     </div>
                     <div class="p-4">
@@ -511,16 +532,23 @@ async function loadTopNews() {
                             <span class="text-xs text-gray-400">•</span>
                             <span class="text-xs text-gray-400">${timeAgo}</span>
                         </div>
-                        <h3 class="font-bold text-base line-clamp-2 group-hover:text-red-600 transition">${article.title}</h3>
+                        <h3 class="font-bold text-base line-clamp-2 group-hover:text-red-600 transition">${cleanTitle}</h3>
                         <span class="text-sm text-red-600 font-semibold mt-2 inline-block opacity-0 group-hover:opacity-100 transition">Read More →</span>
                     </div>
                 </a>
             `;
         }).join('');
         
+        console.log('✅ Top news stories rendered successfully');
+        
     } catch (error) {
-        console.error('Error loading news feed:', error);
-        grid.innerHTML = '<p class="col-span-3 text-center text-red-500 py-8">Unable to load news stories. Please try again later.</p>';
+        console.error('❌ Error loading news feed:', error);
+        grid.innerHTML = `
+            <div class="col-span-3 text-center py-8 text-red-500">
+                <p>Unable to load news stories.</p>
+                <p class="text-sm text-gray-500 mt-2">Please try again later.</p>
+            </div>
+        `;
     }
 }
 
@@ -1108,6 +1136,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadPodcasts();
         getProducts();
         startSlideTimer();
-        loadTopNews(); // <-- ADDED: RSS feed section
+        loadTopNews(); // <-- RSS feed section
     }
 });

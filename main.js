@@ -321,7 +321,7 @@ function getTimeAgo(dateString) {
 }
 
 // ==========================================================
-// CANADIAN CORNER - COMPLETELY REWRITTEN
+// CANADIAN CORNER
 // ==========================================================
 async function loadCanadianCorner() {
     try {
@@ -1087,34 +1087,47 @@ function initMobileMenu() {
 }
 
 // ==========================================================
-// INITIALIZE BASED ON PAGE - WITH PREDICTOR DETECTION
+// INITIALIZE BASED ON ELEMENT DETECTION (More reliable than URL paths)
 // ==========================================================
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Initializing...');
+    console.log('🚀 Initializing 90 Minutes or More...');
     initMobileMenu();
     
-    const path = window.location.pathname;
-    
-    // SKIP main site initialization on predictor page
-    if (path.includes('/world-cup-predictor')) {
-        console.log('Predictor page detected - skipping main site initialization');
-        return;
-    }
-    
-    if (path.includes('/news/article.html')) {
-        loadArticlePage();
-    } else if (path.includes('/news/')) {
-        loadNewsPage();
-    } else if (path.includes('/podcast/')) {
-        loadPodcastPage();
-    } else {
-        // Homepage
+    // 1. GLOBAL COMPONENTS (Always try to update cart count)
+    updateCartDisplay();
+
+    // 2. HOMEPAGE SPECIFIC (Check if these IDs exist on the current page)
+    if (document.getElementById('hero-section')) {
+        console.log('🏠 Homepage detected');
         loadHeroSlides();
         loadHeadlines();
         loadCanadianCorner();
         loadPodcasts();
         getProducts();
         startSlideTimer();
-        loadTopNews(); // <-- RSS feed section
+    }
+
+    // 3. RSS FEED SECTION (Check for the news grid ID)
+    if (document.getElementById('news-feed-grid')) {
+        console.log('📰 News Feed section detected');
+        loadTopNews();
+    }
+
+    // 4. NEWS LISTING PAGE
+    if (document.getElementById('news-grid') && !window.location.pathname.includes('article.html')) {
+        console.log('📂 News Listing page detected');
+        loadNewsPage();
+    }
+
+    // 5. ARTICLE SINGLE PAGE
+    if (document.getElementById('article-content')) {
+        console.log('📄 Article page detected');
+        loadArticlePage();
+    }
+
+    // 6. PODCAST PAGE
+    if (document.getElementById('all-podcasts')) {
+        console.log('🎙️ Podcast page detected');
+        loadPodcastPage();
     }
 });

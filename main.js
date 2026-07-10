@@ -437,6 +437,94 @@ function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
 }
 
 // ==========================================================
+// TOP NEWS STORIES - RSS FEED FETCH
+// ==========================================================
+
+async function loadTopNews() {
+    const grid = document.getElementById('news-feed-grid');
+    if (!grid) return;
+    
+    try {
+        // Fetch multiple RSS feeds using RSS2JSON proxy
+        const feeds = [
+            { url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.espn.com/espn/rss/soccer/news', source: 'ESPN' },
+            { url: 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.skynews.com/feeds/rss/sports.xml', source: 'Sky Sports' }
+        ];
+        
+        const fetchPromises = feeds.map(feed => 
+            fetch(feed.url)
+                .then(res => res.json())
+                .then(data => ({ ...data, source: feed.source }))
+                .catch(() => ({ status: 'error', source: feed.source }))
+        );
+        
+        const results = await Promise.all(fetchPromises);
+        
+        // Combine all articles from both feeds
+        let allArticles = [];
+        results.forEach(result => {
+            if (result.status === 'ok' && result.items) {
+                const articles = result.items.map(item => ({
+                    title: item.title || 'Untitled',
+                    link: item.link || '#',
+                    pubDate: item.pubDate || new Date().toISOString(),
+                    source: result.source,
+                    description: item.description || '',
+                    thumbnail: item.thumbnail || item.enclosure?.link || null
+                }));
+                allArticles = allArticles.concat(articles);
+            }
+        });
+        
+        // Sort by date (newest first)
+        allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        
+        // Limit to 12 articles
+        const topArticles = allArticles.slice(0, 12);
+        
+        if (topArticles.length === 0) {
+            grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-8">No stories available at the moment. Check back soon!</p>';
+            return;
+        }
+        
+        // Render cards
+        grid.innerHTML = topArticles.map(article => {
+            const timeAgo = getTimeAgo(article.pubDate);
+            // Get first image from description if thumbnail not available
+            let imgSrc = article.thumbnail || '';
+            if (!imgSrc && article.description) {
+                const imgMatch = article.description.match(/<img[^>]+src="([^">]+)"/);
+                if (imgMatch) imgSrc = imgMatch[1];
+            }
+            
+            return `
+                <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="group bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 block">
+                    <div class="h-40 bg-gray-200 overflow-hidden">
+                        ${imgSrc ? 
+                            `<img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${article.title}">` :
+                            `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 text-sm">${article.source}</div>`
+                        }
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xs font-bold text-red-600 uppercase">${article.source}</span>
+                            <span class="text-xs text-gray-400">•</span>
+                            <span class="text-xs text-gray-400">${timeAgo}</span>
+                        </div>
+                        <h3 class="font-bold text-base line-clamp-2 group-hover:text-red-600 transition">${article.title}</h3>
+                        <span class="text-sm text-red-600 font-semibold mt-2 inline-block opacity-0 group-hover:opacity-100 transition">Read More →</span>
+                    </div>
+                </a>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading news feed:', error);
+        grid.innerHTML = '<p class="col-span-3 text-center text-red-500 py-8">Unable to load news stories. Please try again later.</p>';
+    }
+}
+
+// ==========================================================
 // PRODUCTS FROM NETLIFY FUNCTION
 // ==========================================================
 async function getProducts() {
@@ -1020,5 +1108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadPodcasts();
         getProducts();
         startSlideTimer();
+        loadTopNews(); // <-- ADDED: RSS feed section
     }
 });

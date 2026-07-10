@@ -321,7 +321,7 @@ function getTimeAgo(dateString) {
 }
 
 // ==========================================================
-// CANADIAN CORNER
+// CANADIAN CORNER - COMPLETELY REWRITTEN
 // ==========================================================
 async function loadCanadianCorner() {
     try {
@@ -522,6 +522,8 @@ async function loadTopNews() {
                 </a>
             `;
         }).join('');
+        
+        console.log('✅ Top news stories rendered successfully');
         
     } catch (error) {
         console.error('Error loading news feed:', error);

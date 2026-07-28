@@ -218,7 +218,7 @@
             }
         }
 
-        // 2. LOAD CONTRIBUTORS (UPDATED: AGGRESSIVE DETECTION)
+        // 2. LOAD CONTRIBUTORS (FIXED FOR FULL URLS)
         async function loadContributors() {
             const grid = document.getElementById('contributors-grid');
             if (!grid) return;
@@ -241,30 +241,34 @@
                     return;
                 }
 
-                // For debugging - let's check what Sanity is actually sending us
-                console.log('🟢 Contributors loaded from Sanity:', contributors);
-
                 grid.innerHTML = contributors.map(c => {
                     // Build social links
                     let socialHtml = '';
                     
-                    console.log(`Checking ${c.name}:`, { instagram: c.instagram });
-
-                    // Handle Instagram (Aggressive detection)
+                    // Handle Instagram (Fix: detect if it's a full URL already)
                     if (c.instagram && c.instagram.trim() !== '') {
-                        let instaHandle = c.instagram.replace('@', '').trim();
-                        socialHtml += `<a href="https://www.instagram.com/${instaHandle}" target="_blank" class="text-pink-600 hover:text-pink-800 transition text-xl"><i class="fab fa-instagram"></i></a> `;
+                        let instaLink = c.instagram.trim();
+                        // If it doesn't start with http, assume it's a handle and build the URL
+                        if (!instaLink.startsWith('http')) {
+                            let instaHandle = instaLink.replace('@', '');
+                            instaLink = `https://www.instagram.com/${instaHandle}`;
+                        }
+                        socialHtml += `<a href="${instaLink}" target="_blank" class="text-pink-600 hover:text-pink-800 transition text-xl"><i class="fab fa-instagram"></i></a> `;
                     }
                     
-                    // Handle Twitter (Aggressive detection)
+                    // Handle Twitter (Fix: detect if it's a full URL already)
                     if (c.twitter && c.twitter.trim() !== '') {
-                        let twitterHandle = c.twitter.replace('@', '').trim();
-                        socialHtml += `<a href="https://twitter.com/${twitterHandle}" target="_blank" class="text-blue-500 hover:text-blue-700 transition text-xl"><i class="fab fa-twitter"></i></a> `;
+                        let twitterLink = c.twitter.trim();
+                        if (!twitterLink.startsWith('http')) {
+                            let twitterHandle = twitterLink.replace('@', '');
+                            twitterLink = `https://twitter.com/${twitterHandle}`;
+                        }
+                        socialHtml += `<a href="${twitterLink}" target="_blank" class="text-blue-500 hover:text-blue-700 transition text-xl"><i class="fab fa-twitter"></i></a> `;
                     }
                     
                     // Handle Portfolio Link
                     if (c.portfolioLink && c.portfolioLink.trim() !== '') {
-                        socialHtml += `<a href="${c.portfolioLink}" target="_blank" class="text-gray-700 hover:text-black transition text-xl"><i class="fas fa-globe"></i></a>`;
+                        socialHtml += `<a href="${c.portfolioLink.trim()}" target="_blank" class="text-gray-700 hover:text-black transition text-xl"><i class="fas fa-globe"></i></a>`;
                     }
 
                     if (!socialHtml) socialHtml = `<span class="text-xs text-gray-400">No links provided</span>`;

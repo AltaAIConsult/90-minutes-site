@@ -75,6 +75,10 @@ export default {
           ]
         }
       ],
+      // UPDATED OPTIONS: This adds a grid layout in Sanity Studio for easier viewing of your multi-uploads
+      options: {
+        layout: 'grid'
+      },
       hidden: ({ document }) => document?.type !== 'photography',
       validation: Rule => Rule.custom((value, context) => {
         if (context.document?.type === 'photography' && (!value || value.length === 0)) {

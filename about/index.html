@@ -8,6 +8,10 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ADDED THIS: FontAwesome for Instagram/Twitter icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .font-anton { font-family: 'Anton', sans-serif; }
@@ -127,7 +131,9 @@
             <h2 class="font-anton text-4xl uppercase text-center mb-4">Meet the <span class="text-red-600">Team</span></h2>
             <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16">The voices behind 90 Minutes or More</p>
 
+            <!-- JavaScript will inject the team cards in here -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="team-grid">
+                <!-- Loading Spinner -->
                 <div class="col-span-full text-center py-8">
                     <i class="fas fa-spinner fa-spin text-red-600 text-4xl"></i>
                 </div>
@@ -141,7 +147,9 @@
             <h2 class="font-anton text-4xl uppercase text-center mb-4">Official <span class="text-red-600">Contributors</span></h2>
             <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16">The photographers and digital media stars working with us.</p>
 
+            <!-- JavaScript will inject the contributor cards in here -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="contributors-grid">
+                <!-- Loading Spinner -->
                 <div class="col-span-full text-center py-8">
                     <i class="fas fa-spinner fa-spin text-red-600 text-4xl"></i>
                 </div>
@@ -161,6 +169,7 @@
         </div>
     </section>
 
+    <!-- FOOTER -->
     <footer class="bg-black text-white py-12 text-center">
         <p class="text-gray-400">&copy; 2024 90 Minutes or More. All rights reserved.</p>
     </footer>
@@ -218,7 +227,7 @@
             }
         }
 
-        // 2. LOAD CONTRIBUTORS (FIXED FOR FULL URLS)
+        // 2. LOAD CONTRIBUTORS (UPDATED: NO PLACEHOLDER PHOTO, SMART SOCIAL LINKS)
         async function loadContributors() {
             const grid = document.getElementById('contributors-grid');
             if (!grid) return;

@@ -1,6 +1,5 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
-import {media} from 'sanity-plugin-media' // <--- 1. ADD THIS IMPORT
 import {schemaTypes, documentActions} from './schemas/index.js'
 
 export default defineConfig({
@@ -12,7 +11,6 @@ export default defineConfig({
 
   plugins: [
     structureTool(),
-    media(), // <--- 2. ADD THIS TO THE PLUGINS ARRAY
   ],
 
   schema: {

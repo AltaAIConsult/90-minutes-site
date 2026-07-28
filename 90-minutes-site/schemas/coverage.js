@@ -65,7 +65,11 @@ export default {
       of: [
         {
           type: 'image',
-          options: { hotspot: true },
+          options: { 
+            hotspot: true,
+            accept: 'image/*', 
+            multiple: true  // <--- This enables multi-upload
+          },
           fields: [
             {
               name: 'caption',
@@ -75,7 +79,6 @@ export default {
           ]
         }
       ],
-      // UPDATED OPTIONS: This adds a grid layout in Sanity Studio for easier viewing of your multi-uploads
       options: {
         layout: 'grid'
       },

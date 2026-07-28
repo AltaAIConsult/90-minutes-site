@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Coverage | 90 Minutes or More</title>
+    <meta name="description" content="Official media coverage from 90 Minutes or More – match photography, interviews, and event coverage.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .font-anton { font-family: 'Anton', sans-serif; }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
+        .nav-link:hover::after { width: 100%; }
+        
+        /* Coverage Card Styles */
+        .coverage-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .coverage-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+        
+        /* Lightbox Styles */
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .lightbox-overlay.active {
+            display: flex;
+        }
+        .lightbox-content {
+            max-width: 90vw;
+            max-height: 85vh;
+            position: relative;
+        }
+        .lightbox-content img,
+        .lightbox-content iframe {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 8px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .lightbox-close {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 1001;
+            transition: transform 0.2s;
+        }
+        .lightbox-close:hover { transform: scale(1.2); }
+        .lightbox-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            padding: 20px;
+            z-index: 1001;
+            transition: background 0.2s;
+            background: rgba(0,0,0,0.3);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lightbox-nav:hover { background: rgba(0,0,0,0.6); }
+        .lightbox-nav.prev { left: 20px; }
+        .lightbox-nav.next { right: 20px; }
+        .lightbox-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 14px;
+            z-index: 1001;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        .lightbox-caption {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 16px;
+            z-index: 1001;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 20px;
+            border-radius: 8px;
+            max-width: 80%;
+            text-align: center;
+        }
+        .video-duration {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        @media (max-width: 768px) {
+            .lightbox-nav { width: 40px; height: 40px; font-size: 20px; padding: 10px; }
+            .lightbox-nav.prev { left: 10px; }
+            .lightbox-nav.next { right: 10px; }
+            .lightbox-close { font-size: 30px; top: 10px; right: 15px; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/index.html" class="flex items-center group">
+                <img src="/images/logo.jpeg" alt="90 Minutes or More" class="h-10 mr-2">
+                <div class="hidden sm:block">
+                    <span class="font-anton text-xl">
+                        <span class="text-red-600">90</span><span class="text-black">MINUTES</span>
+                    </span>
+                    <span class="text-xs ml-1">or More</span>
+                </div>
+            </a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/index.html" class="nav-link text-sm text-black hover:text-red-600">Home</a>
+                <a href="/news/index.html" class="nav-link text-sm text-black hover:text-red-600">News</a>
+                <a href="/article/index.html" class="nav-link text-sm text-black hover:text-red-600">Articles</a>
+                <a href="/services/index.html" class="nav-link text-sm text-black hover:text-red-600">Services</a>
+                <a href="/shop/index.html" class="nav-link text-sm text-black hover:text-red-600">Shop</a>
+                <a href="/podcast/index.html" class="nav-link text-sm text-black hover:text-red-600">Podcast</a>
+                <a href="/about/index.html" class="nav-link text-sm text-black hover:text-red-600">About</a>
+                <a href="/official-coverage/index.html" class="nav-link text-sm text-red-600 font-semibold">Coverage</a>
+                <button onclick="toggleCart()" class="relative bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md text-sm transition">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                </button>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-black"><i class="fas fa-bars text-xl"></i></button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pb-3">
+            <a href="/index.html" class="block py-2 hover:text-red-600">Home</a>
+            <a href="/news/index.html" class="block py-2 hover:text-red-600">News</a>
+            <a href="/article/index.html" class="block py-2 hover:text-red-600">Articles</a>
+            <a href="/services/index.html" class="block py-2 hover:text-red-600">Services</a>
+            <a href="/shop/index.html" class="block py-2 hover:text-red-600">Shop</a>
+            <a href="/podcast/index.html" class="block py-2 hover:text-red-600">Podcast</a>
+            <a href="/about/index.html" class="block py-2 hover:text-red-600">About</a>
+            <a href="/official-coverage/index.html" class="block py-2 text-red-600 font-semibold">Coverage</a>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="pt-32 pb-8 bg-red-600 text-white text-center">
+        <div class="container mx-auto px-4">
+            <h1 class="font-anton text-5xl md:text-6xl uppercase">Official <span class="text-black">Coverage</span></h1>
+            <p class="text-lg mt-4 max-w-2xl mx-auto">Our original match photography, interviews, and event coverage from the games we attend.</p>
+        </div>
+    </section>
+
+    <!-- Coverage Grid -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div id="coverage-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="col-span-3 text-center py-16 text-gray-400">Loading coverage...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <img src="/images/logo.jpeg" alt="90 Minutes or More" class="h-10 mb-4">
+                    <p class="text-gray-400 text-sm">Your comprehensive football media platform.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-red-600">Content</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="/news/index.html" class="hover:text-white">Latest News</a></li>
+                        <li><a href="/article/index.html" class="hover:text-white">Articles</a></li>
+                        <li><a href="/podcast/index.html" class="hover:text-white">Podcast</a></li>
+                        <li><a href="/shop/index.html" class="hover:text-white">Shop</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-red-600">Company</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="/about/index.html" class="hover:text-white">About Us</a></li>
+                        <li><a href="/services/index.html" class="hover:text-white">Services</a></li>
+                        <li><a href="/contact/index.html" class="hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-red-600">Contact</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><i class="fas fa-envelope mr-2"></i> 90minutesom@gmail.com</li>
+                        <li><i class="fas fa-phone mr-2"></i> 1-(647) 213-5462</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i> Toronto, ON</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2024 90 Minutes or More. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox-overlay">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <div id="lightbox-nav-prev" class="lightbox-nav prev" onclick="changeLightbox(-1)">‹</div>
+        <div id="lightbox-nav-next" class="lightbox-nav next" onclick="changeLightbox(1)">›</div>
+        <div id="lightbox-content" class="lightbox-content"></div>
+        <div id="lightbox-counter" class="lightbox-counter"></div>
+        <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+
+    <script>
+        // ==========================================================
+        // OFFICIAL COVERAGE - LOAD FROM SANITY
+        // ==========================================================
+
+        const SANITY_PROJECT_ID = 'llmrml4v';
+        const SANITY_DATASET = 'production';
+        const SANITY_API_VERSION = 'v2024-03-11';
+
+        let coverageData = [];
+        let currentLightboxIndex = 0;
+        let currentLightboxType = '';
+        let currentLightboxItems = [];
+
+        function getSanityUrl(query) {
+            const encodedQuery = encodeURIComponent(query);
+            return `https://${SANITY_PROJECT_ID}.api.sanity.io/${SANITY_API_VERSION}/data/query/${SANITY_DATASET}?query=${encodedQuery}`;
+        }
+
+        function getImageUrl(image) {
+            if (!image) return '';
+            return `https://cdn.sanity.io/images/${SANITY_PROJECT_ID}/${SANITY_DATASET}/${image.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}`;
+        }
+
+        function getYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function getYouTubeThumbnail(url) {
+            const id = getYouTubeId(url);
+            return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : '';
+        }
+
+        function getYouTubeEmbed(url) {
+            const id = getYouTubeId(url);
+            return id ? `https://www.youtube.com/embed/${id}?autoplay=0&rel=0` : '';
+        }
+
+        function getTimeAgo(dateString) {
+            if (!dateString) return 'Recently';
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + ' years ago';
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + ' months ago';
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + ' days ago';
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + ' hours ago';
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + ' minutes ago';
+            return 'Just now';
+        }
+
+        async function loadCoverage() {
+            const grid = document.getElementById('coverage-grid');
+            if (!grid) return;
+
+            try {
+                const query = `*[_type == "coverage"] | order(order asc, matchDate desc) {
+                    _id,
+                    title,
+                    slug,
+                    type,
+                    coverImage,
+                    matchDate,
+                    venue,
+                    description,
+                    gallery,
+                    youtubeUrl,
+                    videoDuration
+                }`;
+
+                const response = await fetch(getSanityUrl(query));
+                const data = await response.json();
+                coverageData = data.result || [];
+
+                if (coverageData.length === 0) {
+                    grid.innerHTML = '<div class="col-span-3 text-center py-16 text-gray-500">No coverage uploaded yet. Check back soon!</div>';
+                    return;
+                }
+
+                grid.innerHTML = coverageData.map(item => {
+                    const coverUrl = getImageUrl(item.coverImage);
+                    const isVideo = item.type === 'video';
+                    const photoCount = item.gallery ? item.gallery.length : 0;
+                    const date = item.matchDate ? new Date(item.matchDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+                    
+                    let badge = '';
+                    let icon = '';
+                    let extraInfo = '';
+                    
+                    if (isVideo) {
+                        badge = '🎬 Video';
+                        icon = 'fa-play-circle';
+                        const duration = item.videoDuration || '';
+                        extraInfo = duration ? `<span class="text-xs text-gray-500 ml-2">${duration}</span>` : '';
+                    } else {
+                        badge = '📸 Photography';
+                        icon = 'fa-images';
+                        extraInfo = `<span class="text-xs text-gray-500">${photoCount} photos</span>`;
+                    }
+
+                    return `
+                        <div class="coverage-card bg-white rounded-xl shadow-md overflow-hidden" onclick="openCoverage('${item._id}')">
+                            <div class="relative h-52 overflow-hidden bg-gray-200">
+                                ${coverUrl ? 
+                                    `<img src="${coverUrl}" class="w-full h-full object-cover" alt="${item.title}">` :
+                                    `<div class="w-full h-full bg-gradient-to-br from-red-500 to-red-800 flex items-center justify-center text-white text-4xl">${isVideo ? '🎬' : '📸'}</div>`
+                                }
+                                ${isVideo ? '<div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play-circle text-white text-6xl opacity-80"></i></div>' : ''}
+                                <div class="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">${badge}</div>
+                                ${isVideo ? '<div class="absolute bottom-3 right-3 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">▶ Watch</div>' : ''}
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg mb-1">${item.title}</h3>
+                                ${date ? `<p class="text-sm text-gray-500">${date}</p>` : ''}
+                                ${item.venue ? `<p class="text-sm text-gray-400">📍 ${item.venue}</p>` : ''}
+                                ${item.description ? `<p class="text-sm text-gray-600 mt-2 line-clamp-2">${item.description}</p>` : ''}
+                                <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                                    <span class="text-sm text-gray-500"><i class="fas ${icon} mr-1"></i> ${extraInfo}</span>
+                                    <span class="text-red-600 text-sm font-semibold hover:underline">View ${isVideo ? 'Video' : 'Gallery'} →</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Store data reference for lightbox
+                window.coverageData = coverageData;
+
+            } catch (error) {
+                console.error('Error loading coverage:', error);
+                grid.innerHTML = '<div class="col-span-3 text-center py-16 text-red-500">Error loading coverage. Please try again later.</div>';
+            }
+        }
+
+        // ==========================================================
+        // LIGHTBOX FUNCTIONS
+        // ==========================================================
+
+        function openCoverage(id) {
+            const item = coverageData.find(c => c._id === id);
+            if (!item) return;
+
+            if (item.type === 'photography') {
+                // Open photo gallery
+                currentLightboxType = 'photography';
+                currentLightboxItems = item.gallery || [];
+                currentLightboxIndex = 0;
+                showLightboxPhoto(0);
+                document.getElementById('lightbox').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else if (item.type === 'video') {
+                // Open video
+                currentLightboxType = 'video';
+                const embedUrl = getYouTubeEmbed(item.youtubeUrl);
+                if (embedUrl) {
+                    document.getElementById('lightbox-content').innerHTML = `
+                        <iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width: 90vw; max-width: 800px; height: 50vh; max-height: 70vh; border-radius: 12px;"></iframe>
+                    `;
+                    document.getElementById('lightbox-counter').textContent = '';
+                    document.getElementById('lightbox-caption').textContent = item.title;
+                    document.getElementById('lightbox').classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    document.getElementById('lightbox-nav-prev').style.display = 'none';
+                    document.getElementById('lightbox-nav-next').style.display = 'none';
+                }
+            }
+        }
+
+        function showLightboxPhoto(index) {
+            const items = currentLightboxItems;
+            if (!items || items.length === 0) return;
+            if (index < 0) index = items.length - 1;
+            if (index >= items.length) index = 0;
+            currentLightboxIndex = index;
+
+            const item = items[index];
+            const imageUrl = getImageUrl(item);
+            const caption = item.caption || '';
+
+            document.getElementById('lightbox-content').innerHTML = `
+                <img src="${imageUrl}" alt="${caption || 'Photo'}" onclick="changeLightbox(1)">
+            `;
+            document.getElementById('lightbox-counter').textContent = `${index + 1} / ${items.length}`;
+            document.getElementById('lightbox-caption').textContent = caption;
+
+            document.getElementById('lightbox-nav-prev').style.display = items.length > 1 ? 'flex' : 'none';
+            document.getElementById('lightbox-nav-next').style.display = items.length > 1 ? 'flex' : 'none';
+
+            // Keyboard navigation
+            document.onkeydown = function(e) {
+                if (e.key === 'ArrowLeft') changeLightbox(-1);
+                if (e.key === 'ArrowRight') changeLightbox(1);
+                if (e.key === 'Escape') closeLightbox();
+            };
+        }
+
+        function changeLightbox(direction) {
+            if (currentLightboxType === 'photography') {
+                showLightboxPhoto(currentLightboxIndex + direction);
+            }
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('lightbox-content').innerHTML = '';
+            document.getElementById('lightbox-counter').textContent = '';
+            document.getElementById('lightbox-caption').textContent = '';
+            document.onkeydown = null;
+            document.getElementById('lightbox-nav-prev').style.display = 'flex';
+            document.getElementById('lightbox-nav-next').style.display = 'flex';
+        }
+
+        // Close lightbox on click outside content
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target === this) closeLightbox();
+        });
+
+        // ==========================================================
+        // CART TOGGLE (for navbar)
+        // ==========================================================
+
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            if (sidebar) sidebar.classList.toggle('translate-x-full');
+        }
+
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (menuBtn && mobileMenu) {
+                menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            }
+            
+            // Load coverage
+            loadCoverage();
+        });
+    </script>
+
+    <!-- Cart Sidebar (included for navbar cart button) -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl z-[60] p-6 flex flex-col translate-x-full transition-transform duration-300">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Your Cart</h2>
+            <button onclick="toggleCart()" class="text-2xl text-gray-500 hover:text-gray-800">&times;</button>
+        </div>
+        <div id="cart-items" class="flex-grow overflow-y-auto">
+            <p class="text-gray-500">Your cart is empty.</p>
+        </div>
+        <div class="border-t pt-4 mt-4">
+            <div class="flex justify-between font-bold text-lg mb-4">
+                <span>Total:</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button onclick="handleCheckout()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md transition duration-300">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>

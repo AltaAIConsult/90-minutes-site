@@ -222,7 +222,7 @@
             }
         }
 
-        // 2. LOAD CONTRIBUTORS (UPDATED: NO PHOTOS, ONLY CLICKABLE ICONS)
+        // 2. LOAD CONTRIBUTORS (UPDATED: NO PLACEHOLDER PHOTO, SMART SOCIAL LINKS)
         async function loadContributors() {
             const grid = document.getElementById('contributors-grid');
             if (!grid) return;
@@ -246,21 +246,31 @@
                 }
 
                 grid.innerHTML = contributors.map(c => {
-                    // Build social links ONLY if they actually exist in Sanity
+                    // Build social links
                     let socialHtml = '';
-                    if (c.instagram) socialHtml += `<a href="${c.instagram}" target="_blank" class="text-pink-600 hover:text-pink-800 transition"><i class="fab fa-instagram text-xl"></i></a> `;
-                    if (c.twitter) socialHtml += `<a href="${c.twitter}" target="_blank" class="text-blue-500 hover:text-blue-700 transition"><i class="fab fa-twitter text-xl"></i></a> `;
-                    if (c.portfolioLink) socialHtml += `<a href="${c.portfolioLink}" target="_blank" class="text-gray-700 hover:text-black transition"><i class="fas fa-globe text-xl"></i></a>`;
+                    
+                    // Handle Instagram (automatically fix @ or no @)
+                    if (c.instagram) {
+                        let instaHandle = c.instagram.replace('@', '').trim();
+                        socialHtml += `<a href="https://www.instagram.com/${instaHandle}" target="_blank" class="text-pink-600 hover:text-pink-800 transition text-xl"><i class="fab fa-instagram"></i></a> `;
+                    }
+                    
+                    // Handle Twitter (automatically fix @ or no @)
+                    if (c.twitter) {
+                        let twitterHandle = c.twitter.replace('@', '').trim();
+                        socialHtml += `<a href="https://twitter.com/${twitterHandle}" target="_blank" class="text-blue-500 hover:text-blue-700 transition text-xl"><i class="fab fa-twitter"></i></a> `;
+                    }
+                    
+                    // Handle Portfolio Link (leave as-is)
+                    if (c.portfolioLink) {
+                        socialHtml += `<a href="${c.portfolioLink}" target="_blank" class="text-gray-700 hover:text-black transition text-xl"><i class="fas fa-globe"></i></a>`;
+                    }
 
-                    // If no social links exist at all, show a small grey "No links" text
                     if (!socialHtml) socialHtml = `<span class="text-xs text-gray-400">No links provided</span>`;
 
+                    // NOTICE: The camera icon div has been COMPLETELY REMOVED here
                     return `
                         <div class="team-card bg-white p-6 rounded-lg shadow-lg text-center border border-gray-100">
-                            <!-- Replaced the large camera icon with a subtle, professional logo placeholder -->
-                            <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 text-3xl border-2 border-red-600">
-                                <i class="fas fa-camera"></i>
-                            </div>
                             <h3 class="text-xl font-bold text-red-600">${c.name}</h3>
                             <p class="text-gray-600 text-sm mb-4">${c.role}</p>
                             <div class="flex justify-center space-x-4">

@@ -4,40 +4,50 @@ import article from './article'
 import author from './author'
 import canadianCorner from './canadianCorner'
 import coverage from './coverage'
-import distributeArticle from './distributeArticle'
 import gallery from './gallery'
 import headline from './headline'
 import hero from './hero'
 import heroSlide from './heroSlide'
-import index from './index'
 import news from './news'
 import podcast from './podcast'
 import product from './product'
+import seo from './seo'
+import siteSettings from './siteSettings'
 
-// NEW SCHEMAS FOR ABOUT PAGE
+// NEW SCHEMAS
 import teamMember from './teamMember'
 import contributor from './contributor'
+import aboutGallery from './aboutGallery' // <--- ADDED THIS IMPORT
+
+// Import the custom action
+import {DistributeArticle} from './distributeArticle'
 
 export const schemaTypes = [
-    aboutPage,
-    article,
-    author,
-    canadianCorner,
-    coverage,
-    distributeArticle,
-    gallery,
-    headline,
-    hero,
-    heroSlide,
-    index,
-    news,
-    podcast,
-    product,
-    
-    // NEW SCHEMAS ADDED TO THE ARRAY
-    teamMember,
-    contributor,
+  aboutPage,
+  article,
+  author,
+  canadianCorner,
+  coverage,
+  gallery,
+  headline,
+  hero,
+  heroSlide,
+  news,
+  podcast,
+  product,
+  seo,
+  siteSettings,
+  // ADD THE NEW SCHEMAS TO THE ARRAY
+  teamMember,
+  contributor,
+  aboutGallery // <--- ADDED THIS TO THE LIST
 ]
 
-// If your original file had documentActions, keep them here exactly as before:
-export const documentActions = []
+// Export the custom action so it can be used in the studio
+export const documentActions = (prev, {schemaType}) => {
+  // Add the DistributeArticle action to news articles
+  if (schemaType === 'news') {
+    return [...prev, DistributeArticle]
+  }
+  return prev
+}

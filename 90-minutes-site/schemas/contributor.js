@@ -14,44 +14,33 @@ export default {
       name: 'role',
       title: 'Role / Position',
       type: 'string',
-      description: 'e.g., "Official Photographer", "Digital Media Manager"',
+      description: 'e.g., "Official Photographer"',
       validation: Rule => Rule.required()
     },
     {
       name: 'instagram',
-      title: 'Instagram Handle (Optional)',
-      type: 'url',
-      description: 'e.g., https://www.instagram.com/username/'
+      title: 'Instagram',
+      type: 'string',
+      description: 'Full URL (https://...) OR just the handle (@felipe)'
     },
     {
       name: 'twitter',
-      title: 'Twitter/X Handle (Optional)',
-      type: 'url'
+      title: 'Twitter/X',
+      type: 'string',
+      description: 'Full URL OR just the handle'
     },
     {
       name: 'portfolioLink',
-      title: 'Portfolio Website (Optional)',
-      type: 'url'
+      title: 'Portfolio Website',
+      type: 'url',
+      description: 'Full URL for their website (e.g., https://felipe.com)'
     },
     {
       name: 'order',
       title: 'Display Order',
       type: 'number',
-      description: 'Lower numbers appear first',
+      description: 'Lower numbers (1, 2, 3) appear first',
       initialValue: 0
     }
-  ],
-  orderings: [
-    {
-      title: 'Display Order',
-      name: 'orderAsc',
-      by: [{ field: 'order', direction: 'asc' }]
-    }
-  ],
-  preview: {
-    select: {
-      title: 'name',
-      subtitle: 'role'
-    }
-  }
+  ]
 }

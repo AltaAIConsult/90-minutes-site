@@ -1,4 +1,4 @@
-// schemas/index.js
+// 90-minutes-site/schemas/index.js
 import aboutPage from './aboutPage'
 import article from './article'
 import author from './author'
@@ -39,5 +39,5 @@ export const schemaTypes = [
     contributor,
 ]
 
-// If you have documentActions exported, keep them here as they were:
+// If your original file had documentActions, keep them here exactly as before:
 export const documentActions = []

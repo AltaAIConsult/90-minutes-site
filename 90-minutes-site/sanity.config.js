@@ -1,6 +1,8 @@
+// sanity.config.js
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
-import {schemaTypes, documentActions} from './schemas/index.js'
+import {media} from 'sanity-plugin-media' // Added back the media plugin for your multi-uploads
+import {schemaTypes, documentActions} from './90-minutes-site/schemas/index.js' // <--- POINTS TO THE NESTED FOLDER
 
 export default defineConfig({
   name: 'default',
@@ -11,6 +13,7 @@ export default defineConfig({
 
   plugins: [
     structureTool(),
+    media(), // <--- IMPORTANT: Make sure this plugin is still listed!
   ],
 
   schema: {

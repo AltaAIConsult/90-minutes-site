@@ -65,11 +65,7 @@ export default {
       of: [
         {
           type: 'image',
-          options: { 
-            hotspot: true,
-            accept: 'image/*', 
-            multiple: true  // <--- This enables multi-upload
-          },
+          options: { hotspot: true },
           fields: [
             {
               name: 'caption',

@@ -437,9 +437,8 @@ function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
 }
 
 // ==========================================================
-// TOP NEWS STORIES - RSS FEED FETCH
+// TOP NEWS STORIES - RSS FEED FETCH (FIXED)
 // ==========================================================
-
 async function loadTopNews() {
     const grid = document.getElementById('news-feed-grid');
     if (!grid) {
@@ -467,16 +466,35 @@ async function loadTopNews() {
         
         // Combine all articles from both feeds
         let allArticles = [];
+        
         results.forEach(result => {
             if (result.status === 'ok' && result.items) {
-                const articles = result.items.map(item => ({
-                    title: item.title || 'Untitled',
-                    link: item.link || '#',
-                    pubDate: item.pubDate || new Date().toISOString(),
-                    source: result.source,
-                    description: item.description || '',
-                    thumbnail: item.thumbnail || item.enclosure?.link || null
-                }));
+                const articles = result.items.map(item => {
+                    // 1. FIX BROKEN LINKS: Add domain prefix if it's a relative path
+                    let link = item.link || '#';
+                    if (result.source === 'Sky Sports' && link.startsWith('/')) {
+                        link = `https://www.skysports.com${link}`;
+                    } else if (result.source === 'ESPN' && link.startsWith('/')) {
+                        link = `https://www.espn.com${link}`;
+                    }
+                    
+                    // 2. FIX ESPN: Sometimes ESPN uses 'guid' instead of 'link'
+                    if (link === '#' && item.guid) {
+                        link = item.guid;
+                        if (result.source === 'ESPN' && link.startsWith('/')) {
+                            link = `https://www.espn.com${link}`;
+                        }
+                    }
+
+                    return {
+                        title: item.title || 'Untitled',
+                        link: link,
+                        pubDate: item.pubDate || new Date().toISOString(),
+                        source: result.source,
+                        description: item.description || '',
+                        thumbnail: item.thumbnail || item.enclosure?.link || null
+                    };
+                });
                 allArticles = allArticles.concat(articles);
             }
         });

@@ -20,21 +20,21 @@ export default {
           type: 'image',
           options: { 
             hotspot: true,
-            accept: 'image/*', 
-            multiple: true // Keeps your multi-upload capability!
+            accept: 'image/*'
           },
         }
       ],
       options: {
-        layout: 'grid'
+        layout: 'grid',
+        multiple: true // <--- THIS IS THE FIX
       },
-      validation: Rule => Rule.required().min(1).max(8) // Allows up to 8 images
+      validation: Rule => Rule.required().min(1).max(8)
     }
   ],
   preview: {
     select: {
       title: 'title',
-      media: 'images.0' // Shows the first image as a preview in Sanity
+      media: 'images.0'
     }
   }
 }

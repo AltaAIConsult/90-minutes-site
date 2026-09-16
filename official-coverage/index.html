@@ -16,7 +16,6 @@
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
         .nav-link:hover::after { width: 100%; }
         
-        /* Coverage Card Styles */
         .coverage-card {
             transition: all 0.3s ease;
             cursor: pointer;
@@ -26,7 +25,6 @@
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
         }
         
-        /* Lightbox Styles */
         .lightbox-overlay {
             display: none;
             position: fixed;
@@ -149,11 +147,11 @@
                 <a href="/index.html" class="nav-link text-sm text-black hover:text-red-600">Home</a>
                 <a href="/news/index.html" class="nav-link text-sm text-black hover:text-red-600">News</a>
                 <a href="/article/index.html" class="nav-link text-sm text-black hover:text-red-600">Articles</a>
+                <a href="/official-coverage/index.html" class="nav-link text-sm text-red-600 font-semibold">Official Coverage</a>
                 <a href="/services/index.html" class="nav-link text-sm text-black hover:text-red-600">Services</a>
                 <a href="/shop/index.html" class="nav-link text-sm text-black hover:text-red-600">Shop</a>
                 <a href="/podcast/index.html" class="nav-link text-sm text-black hover:text-red-600">Podcast</a>
                 <a href="/about/index.html" class="nav-link text-sm text-black hover:text-red-600">About</a>
-                <a href="/official-coverage/index.html" class="nav-link text-sm text-red-600 font-semibold">Coverage</a>
                 <button onclick="toggleCart()" class="relative bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md text-sm transition">
                     <i class="fas fa-shopping-cart"></i>
                     <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
@@ -165,11 +163,11 @@
             <a href="/index.html" class="block py-2 hover:text-red-600">Home</a>
             <a href="/news/index.html" class="block py-2 hover:text-red-600">News</a>
             <a href="/article/index.html" class="block py-2 hover:text-red-600">Articles</a>
+            <a href="/official-coverage/index.html" class="block py-2 text-red-600 font-semibold">Official Coverage</a>
             <a href="/services/index.html" class="block py-2 hover:text-red-600">Services</a>
             <a href="/shop/index.html" class="block py-2 hover:text-red-600">Shop</a>
             <a href="/podcast/index.html" class="block py-2 hover:text-red-600">Podcast</a>
             <a href="/about/index.html" class="block py-2 hover:text-red-600">About</a>
-            <a href="/official-coverage/index.html" class="block py-2 text-red-600 font-semibold">Coverage</a>
         </div>
     </nav>
 
@@ -264,11 +262,40 @@
             return `https://cdn.sanity.io/images/${SANITY_PROJECT_ID}/${SANITY_DATASET}/${image.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}`;
         }
 
+        // ==========================================================
+        // YOUTUBE ID EXTRACTOR — Handles Regular, Shorts, youtu.be, embed
+        // ==========================================================
         function getYouTubeId(url) {
             if (!url) return null;
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
+            
+            // Strip whitespace and trailing slash
+            url = url.trim();
+            
+            let videoId = null;
+            
+            // Format 1: youtube.com/shorts/VIDEO_ID
+            if (url.includes('/shorts/')) {
+                videoId = url.split('/shorts/')[1].split(/[?&#]/)[0];
+            }
+            // Format 2: youtube.com/watch?v=VIDEO_ID
+            else if (url.includes('watch?v=')) {
+                videoId = url.split('watch?v=')[1].split(/[?&#]/)[0];
+            }
+            // Format 3: youtu.be/VIDEO_ID
+            else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1].split(/[?&#]/)[0];
+            }
+            // Format 4: youtube.com/embed/VIDEO_ID
+            else if (url.includes('/embed/')) {
+                videoId = url.split('/embed/')[1].split(/[?&#]/)[0];
+            }
+            // Format 5: youtube.com/v/VIDEO_ID (old format)
+            else if (url.includes('/v/')) {
+                videoId = url.split('/v/')[1].split(/[?&#]/)[0];
+            }
+            
+            // Validate: YouTube IDs are always 11 characters
+            return (videoId && videoId.length === 11) ? videoId : null;
         }
 
         function getYouTubeThumbnail(url) {
@@ -373,7 +400,6 @@
                     `;
                 }).join('');
 
-                // Store data reference for lightbox
                 window.coverageData = coverageData;
 
             } catch (error) {
@@ -391,7 +417,6 @@
             if (!item) return;
 
             if (item.type === 'photography') {
-                // Open photo gallery
                 currentLightboxType = 'photography';
                 currentLightboxItems = item.gallery || [];
                 currentLightboxIndex = 0;
@@ -399,7 +424,6 @@
                 document.getElementById('lightbox').classList.add('active');
                 document.body.style.overflow = 'hidden';
             } else if (item.type === 'video') {
-                // Open video
                 currentLightboxType = 'video';
                 const embedUrl = getYouTubeEmbed(item.youtubeUrl);
                 if (embedUrl) {
@@ -412,6 +436,9 @@
                     document.body.style.overflow = 'hidden';
                     document.getElementById('lightbox-nav-prev').style.display = 'none';
                     document.getElementById('lightbox-nav-next').style.display = 'none';
+                } else {
+                    console.warn('Could not parse YouTube URL:', item.youtubeUrl);
+                    alert('This video link could not be loaded. Please check the URL in Sanity.');
                 }
             }
         }
@@ -436,7 +463,6 @@
             document.getElementById('lightbox-nav-prev').style.display = items.length > 1 ? 'flex' : 'none';
             document.getElementById('lightbox-nav-next').style.display = items.length > 1 ? 'flex' : 'none';
 
-            // Keyboard navigation
             document.onkeydown = function(e) {
                 if (e.key === 'ArrowLeft') changeLightbox(-1);
                 if (e.key === 'ArrowRight') changeLightbox(1);
@@ -461,7 +487,6 @@
             document.getElementById('lightbox-nav-next').style.display = 'flex';
         }
 
-        // Close lightbox on click outside content
         document.getElementById('lightbox').addEventListener('click', function(e) {
             if (e.target === this) closeLightbox();
         });
@@ -475,7 +500,6 @@
             if (sidebar) sidebar.classList.toggle('translate-x-full');
         }
 
-        // Mobile menu toggle
         document.addEventListener('DOMContentLoaded', function() {
             const menuBtn = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
@@ -483,7 +507,6 @@
                 menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
             }
             
-            // Load coverage
             loadCoverage();
         });
     </script>

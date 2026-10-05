@@ -439,6 +439,16 @@ function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
 // ==========================================================
 // TOP NEWS STORIES - RSS FEED FETCH (FIXED)
 // ==========================================================
+// Fallback logos for articles without a thumbnail (each URL verified to load)
+const SOURCE_LOGOS = {
+    'ESPN': 'https://a.espncdn.com/i/espn/espn_logos/espn_red.png',
+    'BBC Sport': 'https://static.files.bbci.co.uk/core/website/assets/static/sport/images/metadata/poster-1024x576.146fae5646.png',
+    'The Guardian': 'https://assets.guim.co.uk/images/guardian-logo-rss.c45beb1bafa34b347ac333af2e6fe23f.png',
+    'Olé': 'https://www.ole.com.ar/img/OleImg/logo_ole.png',
+    'Diario AS': 'https://as00.epimg.net/iconos/v1.x/v1.0/logos/cabecera_portada.png',
+    'Marca': 'https://objetos.estaticos-marca.com/imagen/canalima144.gif'
+};
+
 async function loadTopNews() {
     const grid = document.getElementById('news-feed-grid');
     if (!grid) {
@@ -449,55 +459,12 @@ async function loadTopNews() {
     console.log('🟢 loadTopNews() called');
     
     try {
-        // Fetch multiple RSS feeds using RSS2JSON proxy
-        const feeds = [
-            { url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.espn.com/espn/rss/soccer/news', source: 'ESPN' },
-            { url: 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.skynews.com/feeds/rss/sports.xml', source: 'Sky Sports' }
-        ];
-        
-        const fetchPromises = feeds.map(feed => 
-            fetch(feed.url)
-                .then(res => res.json())
-                .then(data => ({ ...data, source: feed.source }))
-                .catch(() => ({ status: 'error', source: feed.source }))
-        );
-        
-        const results = await Promise.all(fetchPromises);
-        
-        // Combine all articles from both feeds
-        let allArticles = [];
-        
-        results.forEach(result => {
-            if (result.status === 'ok' && result.items) {
-                const articles = result.items.map(item => {
-                    // 1. FIX BROKEN LINKS: Add domain prefix if it's a relative path
-                    let link = item.link || '#';
-                    if (result.source === 'Sky Sports' && link.startsWith('/')) {
-                        link = `https://www.skysports.com${link}`;
-                    } else if (result.source === 'ESPN' && link.startsWith('/')) {
-                        link = `https://www.espn.com${link}`;
-                    }
-                    
-                    // 2. FIX ESPN: Sometimes ESPN uses 'guid' instead of 'link'
-                    if (link === '#' && item.guid) {
-                        link = item.guid;
-                        if (result.source === 'ESPN' && link.startsWith('/')) {
-                            link = `https://www.espn.com${link}`;
-                        }
-                    }
-
-                    return {
-                        title: item.title || 'Untitled',
-                        link: link,
-                        pubDate: item.pubDate || new Date().toISOString(),
-                        source: result.source,
-                        description: item.description || '',
-                        thumbnail: item.thumbnail || item.enclosure?.link || null
-                    };
-                });
-                allArticles = allArticles.concat(articles);
-            }
-        });
+        // Fetch all RSS feeds (ESPN, BBC Sport, Guardian, Olé, AS, Marca) via our Netlify Function
+        const res = await fetch('/.netlify/functions/news-feed');
+        if (!res.ok) throw new Error(`News feed request failed: ${res.status}`);
+        const data = await res.json();
+        const allArticles = Array.isArray(data) ? data : [];
+        console.log(`🟢 Received ${allArticles.length} articles from news-feed`);
         
         // Sort by date (newest first)
         allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
@@ -519,12 +486,16 @@ async function loadTopNews() {
                 const imgMatch = article.description.match(/<img[^>]+src="([^">]+)"/);
                 if (imgMatch) imgSrc = imgMatch[1];
             }
+            // No thumbnail (e.g. ESPN's feed has no images): fall back to the source logo
+            const isLogoFallback = !imgSrc && Boolean(SOURCE_LOGOS[article.source]);
+            if (isLogoFallback) imgSrc = SOURCE_LOGOS[article.source];
             
             return `
-                <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="group bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 block">
+                <a href="${article.link}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer" class="group bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 block">
                     <div class="h-40 bg-gray-200 overflow-hidden">
                         ${imgSrc ? 
-                            `<img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${article.title}">` :
+                            `<img src="${imgSrc}" class="w-full h-full ${isLogoFallback ? 'object-contain p-6 bg-white' : 'object-cover'} group-hover:scale-105 transition duration-300" alt="${article.title.replace(/"/g, '&quot;')}" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 text-sm" style="display:none">${article.source}</div>` :
                             `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 text-sm">${article.source}</div>`
                         }
                     </div>

@@ -2,16 +2,17 @@
 // [{ title, link, pubDate, source, description, thumbnail }] (newest first, max 20)
 
 const FEEDS = [
-    { url: 'https://www.espn.com/espn/rss/soccer/news', source: 'ESPN', domain: 'https://www.espn.com' },
     { url: 'https://feeds.bbci.co.uk/sport/football/rss.xml', source: 'BBC Sport', domain: 'https://www.bbc.co.uk' },
     { url: 'https://www.theguardian.com/football/rss', source: 'The Guardian', domain: 'https://www.theguardian.com' },
     { url: 'http://www.ole.com.ar/rss/futbol-internacional/', source: 'Olé', domain: 'https://www.ole.com.ar' },
     { url: 'https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/portada/', source: 'Diario AS', domain: 'https://as.com' },
-    { url: 'https://e00-marca.uecdn.es/rss/futbol.xml', source: 'Marca', domain: 'https://www.marca.com' }
+    { url: 'https://e00-marca.uecdn.es/rss/futbol.xml', source: 'Marca', domain: 'https://www.marca.com' },
+    // Public soccer feed linked from foxsports.com
+    { url: 'https://api.foxsports.com/v2/content/optimized-rss?partnerKey=MB0Wehpmuj2lUhuRhQaafhBjAJqaPU244mlTDK1i&size=30&tags=fs/soccer', source: 'Fox Sports', domain: 'https://www.foxsports.com' }
 ];
 
 const MAX_ARTICLES = 20;
-// Some feeds (e.g. ESPN) stamp every item with the feed's build time, so cap each source to keep the mix varied
+// Cap each source so no single feed dominates the mix
 const MAX_PER_SOURCE = 4;
 const FETCH_TIMEOUT_MS = 5000;
 

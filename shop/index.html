@@ -15,6 +15,19 @@
         .nav-link { position: relative; }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
         .nav-link:hover::after { width: 100%; }
+
+        /* Glass Dock (shared with the Stats Hub) */
+        .glass-dock {
+            background: rgba(20, 20, 20, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .dock-item.active { color: #ffffff; }
+        .dock-item.active i { color: #ef4444; }
+        /* Keep the footer clear of the fixed dock */
+        footer { padding-bottom: 8rem !important; }
     </style>
 </head>
 <body class="bg-white text-black">
@@ -28,31 +41,61 @@
                     <span class="text-lg font-medium text-black"> or More</span>
                 </div>
             </a>
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="../index.html" class="nav-link text-sm text-black hover:text-red-600">Home</a>
-                <a href="index.html" class="nav-link text-sm text-red-600 font-semibold">Shop</a>
-                <a href="../article/index.html" class="nav-link text-sm text-black hover:text-red-600">Articles</a>
-                <a href="/stats/index.html" class="nav-link text-sm text-black hover:text-red-600">Stats</a>
-                <a href="../stadium-zone/index.html" class="nav-link text-sm text-black hover:text-red-600">Stadium Zone</a>
-                <a href="../news/index.html" class="nav-link text-sm text-black hover:text-red-600">News</a>
-                <a href="../podcast/index.html" class="nav-link text-sm text-black hover:text-red-600">Podcast</a>
-                <a href="../about/index.html" class="nav-link text-sm text-black hover:text-red-600">About</a>
-                <a href="../contact/index.html" class="nav-link text-sm text-black hover:text-red-600">Contact</a>
-                
-                <button onclick="toggleCart()" class="relative bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md text-sm transition duration-300 flex items-center">
-                    <i class="fas fa-shopping-cart mr-2"></i>
-                    <span>Cart</span>
+            <div class="flex items-center gap-4">
+                <div class="hidden lg:flex items-center space-x-5">
+                    <a href="/index.html" class="nav-link text-sm text-black hover:text-red-600">Home</a>
+                    <a href="/news/index.html" class="nav-link text-sm text-black hover:text-red-600">News</a>
+                    <a href="/article/index.html" class="nav-link text-sm text-black hover:text-red-600">Articles</a>
+                    <a href="/stats/index.html" class="nav-link text-sm text-black hover:text-red-600">Stats</a>
+                    <a href="/stadium-zone/index.html" class="nav-link text-sm text-black hover:text-red-600">Stadium Zone</a>
+                    <a href="/official-coverage/index.html" class="nav-link text-sm text-black hover:text-red-600">Official Coverage</a>
+                    <a href="/services/index.html" class="nav-link text-sm text-black hover:text-red-600">Services</a>
+                    <a href="/shop/index.html" class="nav-link text-sm text-red-600 font-semibold">Shop</a>
+                    <a href="/podcast/index.html" class="nav-link text-sm text-black hover:text-red-600">Podcast</a>
+                    <a href="/about/index.html" class="nav-link text-sm text-black hover:text-red-600">About</a>
+                </div>
+                <button onclick="toggleCart()" aria-label="Open cart" class="relative bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md text-sm transition duration-300 flex items-center">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="hidden xl:inline ml-2">Cart</span>
                     <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                </button>
+                <button id="mobile-menu-button" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded="false" class="lg:hidden text-black focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
             </div>
         </div>
+        <div id="mobile-menu" class="hidden lg:hidden bg-white w-full px-6 pb-4">
+            <a href="/index.html" class="block text-black hover:text-red-600 py-2">Home</a>
+            <a href="/news/index.html" class="block text-black hover:text-red-600 py-2">News</a>
+            <a href="/article/index.html" class="block text-black hover:text-red-600 py-2">Articles</a>
+            <a href="/stats/index.html" class="block text-black hover:text-red-600 py-2">Stats</a>
+            <a href="/stadium-zone/index.html" class="block text-black hover:text-red-600 py-2">Stadium Zone</a>
+            <a href="/official-coverage/index.html" class="block text-black hover:text-red-600 py-2">Official Coverage</a>
+            <a href="/services/index.html" class="block text-black hover:text-red-600 py-2">Services</a>
+            <a href="/shop/index.html" class="block text-red-600 font-semibold py-2">Shop</a>
+            <a href="/podcast/index.html" class="block text-black hover:text-red-600 py-2">Podcast</a>
+            <a href="/about/index.html" class="block text-black hover:text-red-600 py-2">About</a>
+        </div>
     </nav>
+    <script>
+        // Mobile menu toggle (guarded so main.js doesn't bind it a second time)
+        (function () {
+            var btn = document.getElementById('mobile-menu-button');
+            var menu = document.getElementById('mobile-menu');
+            if (!btn || !menu || btn.dataset.menuReady) return;
+            btn.dataset.menuReady = 'true';
+            btn.addEventListener('click', function () {
+                var open = menu.classList.toggle('hidden') === false;
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+        })();
+    </script>
 
     <!-- Hero Section -->
     <section class="pt-32 pb-12 bg-gray-50">
         <div class="container mx-auto px-6 text-center">
-            <h1 class="font-anton text-5xl md:text-6xl font-black uppercase mb-4">The <span class="text-red-600">Shop</span></h1>
-            <p class="text-gray-600 max-w-2xl mx-auto text-lg">Rep the culture. Premium football-inspired streetwear and accessories for the dedicated fan.</p>
+            <h1 class="font-anton text-5xl md:text-6xl font-black uppercase mb-4">Shop Our <span class="text-red-600">Merch</span></h1>
+            <p class="text-gray-600 max-w-2xl mx-auto text-lg">Rep the culture with exclusive 90 Minutes or More apparel and accessories.</p>
         </div>
     </section>
 
@@ -68,11 +111,12 @@
             </div>
             
             <!-- Product Grid -->
-            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Products loaded dynamically -->
-                <div class="animate-pulse bg-gray-200 h-96 rounded-lg"></div>
-                <div class="animate-pulse bg-gray-200 h-96 rounded-lg"></div>
-                <div class="animate-pulse bg-gray-200 h-96 rounded-lg"></div>
+            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Products loaded dynamically by getProducts() in main.js -->
+                <div class="animate-pulse bg-gray-200 h-80 rounded-lg"></div>
+                <div class="animate-pulse bg-gray-200 h-80 rounded-lg"></div>
+                <div class="animate-pulse bg-gray-200 h-80 rounded-lg"></div>
+                <div class="animate-pulse bg-gray-200 h-80 rounded-lg"></div>
             </div>
         </div>
     </section>
@@ -91,7 +135,7 @@
                 <span>Total:</span>
                 <span id="cart-total">$0.00</span>
             </div>
-            <button onclick="handleCheckout()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md transition duration-300">
+            <button id="sidebar-checkout-button" onclick="handleCheckout()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md transition duration-300">
                 Proceed to Checkout
             </button>
         </div>
@@ -135,5 +179,14 @@
     </footer>
 
     <script type="module" src="../main.js"></script>
+    <!-- Glass Navigation Dock -->
+    <nav class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-md glass-dock rounded-[2rem] px-2 py-3 flex justify-between items-center z-50" aria-label="Quick navigation">
+        <a href="/index.html" class="dock-item flex-1 min-w-0 flex flex-col items-center justify-center text-gray-400 hover:text-white transition"><i class="fas fa-home text-lg mb-1"></i><span class="text-[9px] font-semibold">Home</span></a>
+        <a href="/stats/index.html" class="dock-item flex-1 min-w-0 flex flex-col items-center justify-center text-gray-400 hover:text-white transition"><i class="fas fa-chart-bar text-lg mb-1"></i><span class="text-[9px] font-semibold">Stats</span></a>
+        <a href="/news/index.html" class="dock-item flex-1 min-w-0 flex flex-col items-center justify-center text-gray-400 hover:text-white transition"><i class="fas fa-newspaper text-lg mb-1"></i><span class="text-[9px] font-semibold">News</span></a>
+        <a href="/stadium-zone/index.html" aria-label="Stadium Zone" class="flex-shrink-0 flex items-center justify-center w-14 h-14 bg-red-600 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.6)] transform -translate-y-4 border-4 border-[#0a0a0a]"><i class="fas fa-gamepad text-xl"></i></a>
+        <a href="/shop/index.html" class="dock-item active flex-1 min-w-0 flex flex-col items-center justify-center text-gray-400 hover:text-white transition"><i class="fas fa-shopping-bag text-lg mb-1"></i><span class="text-[9px] font-semibold">Shop</span></a>
+        <a href="/podcast/index.html" class="dock-item flex-1 min-w-0 flex flex-col items-center justify-center text-gray-400 hover:text-white transition"><i class="fas fa-microphone text-lg mb-1"></i><span class="text-[9px] font-semibold">Podcast</span></a>
+    </nav>
 </body>
 </html>

@@ -49,6 +49,12 @@
         .rating-green { background-color: #22c55e; color: white; }
         .rating-yellow { background-color: #eab308; color: black; }
         .rating-orange { background-color: #f97316; color: white; }
+
+        /* Rating badges: bold white number on a faint tier tint (fixed width keeps scores aligned) */
+        .rating-badge { flex-shrink: 0; min-width: 3.25rem; text-align: center; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 1rem; line-height: 1.5rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+
+        html { scroll-behavior: smooth; }
+        .scroll-target { scroll-margin-top: 5rem; }
     </style>
 </head>
 <body class="pb-32">
@@ -78,7 +84,7 @@
         <!-- SECTION 1: LEAGUE STANDINGS -->
         <!-- ========================================== -->
         <div class="mb-10">
-            <h2 class="text-xl md:text-2xl font-bold mb-4 flex items-center gap-2">
+            <h2 id="standings-section" class="scroll-target text-xl md:text-2xl font-bold mb-4 flex items-center gap-2">
                 <i class="fas fa-list-ol text-blue-500"></i> League Standings
             </h2>
 
@@ -178,16 +184,7 @@
                 <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-amber-400 bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
             </div>
 
-            <!-- 11. Conference League -->
-            <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
-                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-emerald-900/20 to-transparent">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-emerald-600/20 flex items-center justify-center"><i class="fas fa-award text-emerald-400"></i></div><h2 class="font-bold text-lg text-white">Conference League</h2></div>
-                </div>
-                <div class="fade-out px-2"><table class="standings-table"><thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-white">Pts</th></tr></thead><tbody id="uecl-standings"><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load Conference League standings here</td></tr></tbody></table></div>
-                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-emerald-400 bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
-            </div>
-
-            <!-- 12. CPL -->
+            <!-- 11. CPL -->
             <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-gradient-to-r from-red-900/20 to-transparent">
                     <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-red-600/20 flex items-center justify-center"><i class="fas fa-maple-leaf text-red-500"></i></div><h2 class="font-bold text-lg text-white">CPL</h2></div>
@@ -202,7 +199,7 @@
         <!-- ========================================== -->
         <div class="mb-10">
             <div class="flex justify-between items-end mb-4">
-                <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2"><i class="fas fa-star text-yellow-500"></i> Top Rated Players</h2>
+                <h2 id="ratings-section" class="scroll-target text-xl md:text-2xl font-bold flex items-center gap-2"><i class="fas fa-star text-yellow-500"></i> Top Rated Players</h2>
                 <span class="text-[10px] text-gray-500 bg-gray-800 px-2 py-1 rounded">Updated Monthly</span>
             </div>
             
@@ -214,88 +211,88 @@
                         <span class="text-[10px] text-gray-500 uppercase tracking-wider">Top 10</span>
                     </div>
                     <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">1</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/65.png" alt="Man City" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">E. Haaland</p><p class="text-[10px] text-gray-400">Man City</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.93</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">1</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/65.png" alt="Man City" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">E. Haaland</p><p class="text-[10px] text-gray-400 truncate">Man City</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">2</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/61.png" alt="Chelsea" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">J. Pedro</p><p class="text-[10px] text-gray-400">Chelsea</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.67</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.93</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">2</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/61.png" alt="Chelsea" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">J. Pedro</p><p class="text-[10px] text-gray-400 truncate">Chelsea</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">3</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/62.png" alt="Everton" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">J. Tarkowski</p><p class="text-[10px] text-gray-400">Everton</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.64</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.67</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">3</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/62.png" alt="Everton" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">J. Tarkowski</p><p class="text-[10px] text-gray-400 truncate">Everton</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">4</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/58.png" alt="Aston Villa" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">E. Martínez</p><p class="text-[10px] text-gray-400">Aston Villa</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.63</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.64</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">4</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/61.png" alt="Chelsea" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">E. Martínez</p><p class="text-[10px] text-gray-400 truncate">Chelsea</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">5</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/73.png" alt="Spurs" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">J. van Hecke</p><p class="text-[10px] text-gray-400">Spurs</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.59</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.63</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">5</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/73.png" alt="Spurs" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">J. van Hecke</p><p class="text-[10px] text-gray-400 truncate">Spurs</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.59</span>
+                        </div>
                     </div>
                     <div class="hidden extra-ratings space-y-3 mt-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">6</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/64.png" alt="Liverpool" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">J. Jacquet</p><p class="text-[10px] text-gray-400">Liverpool</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.58</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">6</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/64.png" alt="Liverpool" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">J. Jacquet</p><p class="text-[10px] text-gray-400 truncate">Liverpool</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">7</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/71.png" alt="Sunderland" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">G. Xhaka</p><p class="text-[10px] text-gray-400">Sunderland</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.55</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.58</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">7</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/71.png" alt="Sunderland" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">G. Xhaka</p><p class="text-[10px] text-gray-400 truncate">Sunderland</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">8</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/397.png" alt="Brighton" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">L. Dunk</p><p class="text-[10px] text-gray-400">Brighton</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.51</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.55</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">8</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/397.png" alt="Brighton" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">L. Dunk</p><p class="text-[10px] text-gray-400 truncate">Brighton</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">9</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/63.png" alt="Fulham" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">A. Iwobi</p><p class="text-[10px] text-gray-400">Fulham</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.51</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.51</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">9</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/63.png" alt="Fulham" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Iwobi</p><p class="text-[10px] text-gray-400 truncate">Fulham</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">10</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/65.png" alt="Man City" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">R. Cherki</p><p class="text-[10px] text-gray-400">Man City</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.50</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.51</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">10</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/65.png" alt="Man City" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">R. Cherki</p><p class="text-[10px] text-gray-400 truncate">Man City</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.50</span>
+                        </div>
                     </div>
                     <button onclick="toggleRatings(this)" class="w-full mt-4 py-2 text-xs font-semibold text-purple-400 bg-black/20 rounded-lg hover:bg-black/40 transition">View Full Table</button>
                 </div>
@@ -307,88 +304,88 @@
                         <span class="text-[10px] text-gray-500 uppercase tracking-wider">Top 10</span>
                     </div>
                     <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">1</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/100.png" alt="Roma" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">P. Dybala</p><p class="text-[10px] text-gray-400">Roma</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.88</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">1</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/100.png" alt="Roma" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">P. Dybala</p><p class="text-[10px] text-gray-400 truncate">Roma</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">2</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/108.png" alt="Inter" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">M. Thuram</p><p class="text-[10px] text-gray-400">Inter</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.75</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.88</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">2</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/108.png" alt="Inter" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">M. Thuram</p><p class="text-[10px] text-gray-400 truncate">Inter</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">3</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/110.png" alt="Lazio" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">C. Mandas</p><p class="text-[10px] text-gray-400">Lazio</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.64</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.75</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">3</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/110.png" alt="Lazio" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">C. Mandas</p><p class="text-[10px] text-gray-400 truncate">Lazio</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">4</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">G. Calò</p><p class="text-[10px] text-gray-400">Juve Stabia</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.61</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.64</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">4</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/470.png" alt="Frosinone" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">G. Calò</p><p class="text-[10px] text-gray-400 truncate">Frosinone</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">5</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/100.png" alt="Roma" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">M. Soulé</p><p class="text-[10px] text-gray-400">Roma</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.59</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.61</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">5</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/100.png" alt="Roma" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">M. Soulé</p><p class="text-[10px] text-gray-400 truncate">Roma</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.59</span>
+                        </div>
                     </div>
                     <div class="hidden extra-ratings space-y-3 mt-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">6</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/7397.png" alt="Como" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">N. Paz</p><p class="text-[10px] text-gray-400">Como</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.59</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">6</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/7397.png" alt="Como" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">N. Paz</p><p class="text-[10px] text-gray-400 truncate">Como</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">7</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/110.png" alt="Lazio" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">M. Zaccagni</p><p class="text-[10px] text-gray-400">Lazio</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.51</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.59</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">7</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/110.png" alt="Lazio" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">M. Zaccagni</p><p class="text-[10px] text-gray-400 truncate">Lazio</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">8</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/108.png" alt="Inter" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">C. Augusto</p><p class="text-[10px] text-gray-400">Inter</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.49</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.51</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">8</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/108.png" alt="Inter" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">C. Augusto</p><p class="text-[10px] text-gray-400 truncate">Inter</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">9</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/7397.png" alt="Como" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">J. Ramón</p><p class="text-[10px] text-gray-400">Como</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.48</span>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.49</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">9</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/7397.png" alt="Como" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">J. Ramón</p><p class="text-[10px] text-gray-400 truncate">Como</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">10</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/113.png" alt="Napoli" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">K. De Bruyne</p><p class="text-[10px] text-gray-400">Napoli</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.47</span>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.48</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">10</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/113.png" alt="Napoli" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">K. De Bruyne</p><p class="text-[10px] text-gray-400 truncate">Napoli</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.47</span>
+                        </div>
                     </div>
                     <button onclick="toggleRatings(this)" class="w-full mt-4 py-2 text-xs font-semibold text-blue-400 bg-black/20 rounded-lg hover:bg-black/40 transition">View Full Table</button>
                 </div>
@@ -400,88 +397,88 @@
                         <span class="text-[10px] text-gray-500 uppercase tracking-wider">Top 10</span>
                     </div>
                     <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">1</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">Raphinha</p><p class="text-[10px] text-gray-400">Barcelona</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.46</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">1</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">Raphinha</p><p class="text-[10px] text-gray-400 truncate">Barcelona</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">2</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">L. Yamal</p><p class="text-[10px] text-gray-400">Barcelona</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.23</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.46</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">2</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">L. Yamal</p><p class="text-[10px] text-gray-400 truncate">Barcelona</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">3</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/558.png" alt="Celta Vigo" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">Á. Valles</p><p class="text-[10px] text-gray-400">Celta Vigo</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.16</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.23</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">3</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/558.png" alt="Celta Vigo" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">Á. Valles</p><p class="text-[10px] text-gray-400 truncate">Celta Vigo</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">4</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/86.png" alt="Real Madrid" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">K. Mbappé</p><p class="text-[10px] text-gray-400">Real Madrid</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.00</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.16</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">4</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/86.png" alt="Real Madrid" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">K. Mbappé</p><p class="text-[10px] text-gray-400 truncate">Real Madrid</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">5</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">Rodri</p><p class="text-[10px] text-gray-400">Barcelona</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.73</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.00</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">5</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">Rodri</p><p class="text-[10px] text-gray-400 truncate">Barcelona</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.73</span>
+                        </div>
                     </div>
                     <div class="hidden extra-ratings space-y-3 mt-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">6</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/86.png" alt="Real Madrid" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">J. Bellingham</p><p class="text-[10px] text-gray-400">Real Madrid</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.63</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">6</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/86.png" alt="Real Madrid" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">J. Bellingham</p><p class="text-[10px] text-gray-400 truncate">Real Madrid</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">7</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/94.png" alt="Villarreal" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">P. Aubameyang</p><p class="text-[10px] text-gray-400">Villarreal</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.60</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.63</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">7</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/94.png" alt="Villarreal" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">P. Aubameyang</p><p class="text-[10px] text-gray-400 truncate">Villarreal</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">8</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/86.png" alt="Real Madrid" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">A. Güler</p><p class="text-[10px] text-gray-400">Real Madrid</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.52</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.60</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">8</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/86.png" alt="Real Madrid" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Güler</p><p class="text-[10px] text-gray-400 truncate">Real Madrid</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">9</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">P. Cubarsí</p><p class="text-[10px] text-gray-400">Barcelona</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.51</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.52</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">9</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">P. Cubarsí</p><p class="text-[10px] text-gray-400 truncate">Barcelona</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">10</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/77.png" alt="Athletic Club" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">A. Paredes</p><p class="text-[10px] text-gray-400">Athletic Club</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.49</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.51</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">10</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/77.png" alt="Athletic Club" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Paredes</p><p class="text-[10px] text-gray-400 truncate">Athletic Club</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.49</span>
+                        </div>
                     </div>
                     <button onclick="toggleRatings(this)" class="w-full mt-4 py-2 text-xs font-semibold text-orange-400 bg-black/20 rounded-lg hover:bg-black/40 transition">View Full Table</button>
                 </div>
@@ -493,88 +490,88 @@
                         <span class="text-[10px] text-gray-500 uppercase tracking-wider">Top 10</span>
                     </div>
                     <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">1</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/5.png" alt="Bayern" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">M. Olise</p><p class="text-[10px] text-gray-400">Bayern</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.40</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">1</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/5.png" alt="Bayern" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">M. Olise</p><p class="text-[10px] text-gray-400 truncate">Bayern</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">2</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/10.png" alt="Stuttgart" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">M. Mittelstädt</p><p class="text-[10px] text-gray-400">Stuttgart</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.15</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.40</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">2</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/10.png" alt="Stuttgart" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">M. Mittelstädt</p><p class="text-[10px] text-gray-400 truncate">Stuttgart</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">3</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/5.png" alt="Bayern" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">J. Kimmich</p><p class="text-[10px] text-gray-400">Bayern</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.15</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.15</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">3</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/5.png" alt="Bayern" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">J. Kimmich</p><p class="text-[10px] text-gray-400 truncate">Bayern</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">4</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/16.png" alt="Augsburg" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">F. Dahmen</p><p class="text-[10px] text-gray-400">Augsburg</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.00</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.15</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">4</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/16.png" alt="Augsburg" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">F. Dahmen</p><p class="text-[10px] text-gray-400 truncate">Augsburg</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">5</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/7.png" alt="Hamburger SV" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">N. Noll</p><p class="text-[10px] text-gray-400">Hamburger SV</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.87</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.00</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">5</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/7.png" alt="Hamburger SV" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">N. Noll</p><p class="text-[10px] text-gray-400 truncate">Hamburger SV</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.87</span>
+                        </div>
                     </div>
                     <div class="hidden extra-ratings space-y-3 mt-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">6</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/6.png" alt="Schalke" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">L. Karius</p><p class="text-[10px] text-gray-400">Schalke</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.86</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">6</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/6.png" alt="Schalke" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">L. Karius</p><p class="text-[10px] text-gray-400 truncate">Schalke</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">7</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/4.png" alt="Dortmund" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">N. Schlotterbeck</p><p class="text-[10px] text-gray-400">Dortmund</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.80</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.86</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">7</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/4.png" alt="Dortmund" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">N. Schlotterbeck</p><p class="text-[10px] text-gray-400 truncate">Dortmund</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">8</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/721.png" alt="RB Leipzig" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">A. Nusa</p><p class="text-[10px] text-gray-400">RB Leipzig</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.71</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.80</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">8</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/721.png" alt="RB Leipzig" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Nusa</p><p class="text-[10px] text-gray-400 truncate">RB Leipzig</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">9</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/5.png" alt="Bayern" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">A. Pavlović</p><p class="text-[10px] text-gray-400">Bayern</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.65</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.71</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">9</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/5.png" alt="Bayern" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Pavlović</p><p class="text-[10px] text-gray-400 truncate">Bayern</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">10</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/721.png" alt="RB Leipzig" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">M. Vandevoordt</p><p class="text-[10px] text-gray-400">RB Leipzig</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.65</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.65</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">10</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/721.png" alt="RB Leipzig" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">M. Vandevoordt</p><p class="text-[10px] text-gray-400 truncate">RB Leipzig</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.65</span>
+                        </div>
                     </div>
                     <button onclick="toggleRatings(this)" class="w-full mt-4 py-2 text-xs font-semibold text-red-400 bg-black/20 rounded-lg hover:bg-black/40 transition">View Full Table</button>
                 </div>
@@ -586,88 +583,88 @@
                         <span class="text-[10px] text-gray-500 uppercase tracking-wider">Top 10</span>
                     </div>
                     <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">1</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/524.png" alt="PSG" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">D. Doué</p><p class="text-[10px] text-gray-400">PSG</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">9.30</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">1</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/546.png" alt="Lens" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">F. Thauvin</p><p class="text-[10px] text-gray-400 truncate">Lens</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">2</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">L. Yamal</p><p class="text-[10px] text-gray-400">Barcelona</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">9.17</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.00</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">2</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/511.png" alt="Toulouse" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">C. Cásseres Jr.</p><p class="text-[10px] text-gray-400 truncate">Toulouse</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">3</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/5.png" alt="Bayern" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">M. Olise</p><p class="text-[10px] text-gray-400">Bayern</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.80</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.90</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">3</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/523.png" alt="Lyon" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Lopes</p><p class="text-[10px] text-gray-400 truncate">Lyon</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">4</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/65.png" alt="Man City" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">E. Haaland</p><p class="text-[10px] text-gray-400">Man City</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.65</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.86</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">4</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/524.png" alt="PSG" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">Vitinha</p><p class="text-[10px] text-gray-400 truncate">PSG</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">5</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/65.png" alt="Man City" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">P. Foden</p><p class="text-[10px] text-gray-400">Man City</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.40</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.73</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">5</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/523.png" alt="Lyon" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">E. Nuamah</p><p class="text-[10px] text-gray-400 truncate">Lyon</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.55</span>
+                        </div>
                     </div>
                     <div class="hidden extra-ratings space-y-3 mt-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">6</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/7397.png" alt="Como" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">N. Paz</p><p class="text-[10px] text-gray-400">Como</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.30</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">6</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/3.png" alt="Leverkusen" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">L. Hrádecký</p><p class="text-[10px] text-gray-400 truncate">Leverkusen</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">7</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/108.png" alt="Inter" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">Y. Sommer</p><p class="text-[10px] text-gray-400">Inter</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.23</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.54</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">7</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/516.png" alt="Marseille" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">J. De Lange</p><p class="text-[10px] text-gray-400 truncate">Marseille</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">8</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/5.png" alt="Bayern" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">J. Kimmich</p><p class="text-[10px] text-gray-400">Bayern</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.15</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.54</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">8</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/523.png" alt="Lyon" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">D. Greif</p><p class="text-[10px] text-gray-400 truncate">Lyon</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">9</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/524.png" alt="PSG" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">O. Dembélé</p><p class="text-[10px] text-gray-400">PSG</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.13</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.53</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">9</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/523.png" alt="Lyon" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">B. Özer</p><p class="text-[10px] text-gray-400 truncate">Lyon</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">10</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/498.png" alt="Sporting CP" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">Kaique</p><p class="text-[10px] text-gray-400">Sporting CP</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.10</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.51</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">10</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/524.png" alt="PSG" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">Marquinhos</p><p class="text-[10px] text-gray-400 truncate">PSG</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.50</span>
+                        </div>
                     </div>
                     <button onclick="toggleRatings(this)" class="w-full mt-4 py-2 text-xs font-semibold text-teal-400 bg-black/20 rounded-lg hover:bg-black/40 transition">View Full Table</button>
                 </div>
@@ -679,88 +676,88 @@
                         <span class="text-[10px] text-gray-500 uppercase tracking-wider">Top 10</span>
                     </div>
                     <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">1</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">I. Adel</p><p class="text-[10px] text-gray-400">Apoel</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.80</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">1</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/524.png" alt="PSG" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">D. Doué</p><p class="text-[10px] text-gray-400 truncate">PSG</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">2</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">N. Castro</p><p class="text-[10px] text-gray-400">Apoel</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.60</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">9.30</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">2</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">L. Yamal</p><p class="text-[10px] text-gray-400 truncate">Barcelona</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">3</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">V. Musliu</p><p class="text-[10px] text-gray-400">Apoel</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.60</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">9.17</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">3</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/5.png" alt="Bayern" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">M. Olise</p><p class="text-[10px] text-gray-400 truncate">Bayern</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">4</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">C. Dessers</p><p class="text-[10px] text-gray-400">Copenhagen</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.50</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.80</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">4</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/65.png" alt="Man City" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">E. Haaland</p><p class="text-[10px] text-gray-400 truncate">Man City</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">5</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/64.png" alt="Liverpool" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">M. Salah</p><p class="text-[10px] text-gray-400">Liverpool</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.50</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.65</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">5</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/65.png" alt="Man City" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">P. Foden</p><p class="text-[10px] text-gray-400 truncate">Man City</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.40</span>
+                        </div>
                     </div>
                     <div class="hidden extra-ratings space-y-3 mt-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">6</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/1915.png" alt="Nijmegen" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">B. van Rooij</p><p class="text-[10px] text-gray-400">Nijmegen</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.45</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">6</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/7397.png" alt="Como" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">N. Paz</p><p class="text-[10px] text-gray-400 truncate">Como</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">7</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/1915.png" alt="Nijmegen" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">R. Vanwesemael</p><p class="text-[10px] text-gray-400">Nijmegen</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.25</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.30</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">7</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/108.png" alt="Inter" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">Y. Sommer</p><p class="text-[10px] text-gray-400 truncate">Inter</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">8</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">F. Djú</p><p class="text-[10px] text-gray-400">Apoel</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.15</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.23</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">8</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/5.png" alt="Bayern" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">J. Kimmich</p><p class="text-[10px] text-gray-400 truncate">Bayern</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">9</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/81.png" alt="Barcelona" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">M. ter Stegen</p><p class="text-[10px] text-gray-400">Barcelona</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.15</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.15</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">9</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/524.png" alt="PSG" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">O. Dembélé</p><p class="text-[10px] text-gray-400 truncate">PSG</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">10</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">N. Holm</p><p class="text-[10px] text-gray-400">Apoel</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.05</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.13</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">10</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/498.png" alt="Sporting CP" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">Kaique</p><p class="text-[10px] text-gray-400 truncate">Sporting CP</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.10</span>
+                        </div>
                     </div>
                     <button onclick="toggleRatings(this)" class="w-full mt-4 py-2 text-xs font-semibold text-indigo-400 bg-black/20 rounded-lg hover:bg-black/40 transition">View Full Table</button>
                 </div>
@@ -772,233 +769,276 @@
                         <span class="text-[10px] text-gray-500 uppercase tracking-wider">Top 10</span>
                     </div>
                     <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">1</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/92.png" alt="Real Sociedad" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">Y. Pino</p><p class="text-[10px] text-gray-400">Real Sociedad</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.53</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">1</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/92.png" alt="Real Sociedad" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">Y. Pino</p><p class="text-[10px] text-gray-400 truncate">Real Sociedad</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">2</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">V. Birmančević</p><p class="text-[10px] text-gray-400">Maccabi Tel Aviv</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.25</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.53</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">2</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/524.png" alt="Maccabi Tel Aviv" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">V. Birmančević</p><p class="text-[10px] text-gray-400 truncate">Maccabi Tel Aviv</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">3</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">N. Christogeorgos</p><p class="text-[10px] text-gray-400">PAOK</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.20</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.25</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">3</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/605.png" alt="PAOK" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">N. Christogeorgos</p><p class="text-[10px] text-gray-400 truncate">PAOK</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">4</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/92.png" alt="Real Sociedad" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">S. Gómez</p><p class="text-[10px] text-gray-400">Real Sociedad</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.10</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.20</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">4</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/92.png" alt="Real Sociedad" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">S. Gómez</p><p class="text-[10px] text-gray-400 truncate">Real Sociedad</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">5</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/92.png" alt="Real Sociedad" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">A. Bah</p><p class="text-[10px] text-gray-400">Real Sociedad</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.05</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.10</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">5</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/92.png" alt="Real Sociedad" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Bah</p><p class="text-[10px] text-gray-400 truncate">Real Sociedad</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.05</span>
+                        </div>
                     </div>
                     <div class="hidden extra-ratings space-y-3 mt-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">6</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/92.png" alt="Real Sociedad" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">G. Smith</p><p class="text-[10px] text-gray-400">Real Sociedad</p></div>
-                                </div>
-                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">8.00</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">6</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/92.png" alt="Real Sociedad" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">G. Smith</p><p class="text-[10px] text-gray-400 truncate">Real Sociedad</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">7</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/498.png" alt="Sporting CP" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">S. Coulibaly</p><p class="text-[10px] text-gray-400">Sporting CP</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.95</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.00</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">7</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/498.png" alt="Sporting CP" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">S. Coulibaly</p><p class="text-[10px] text-gray-400 truncate">Sporting CP</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">8</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/675.png" alt="Feyenoord" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">A. Silva</p><p class="text-[10px] text-gray-400">Feyenoord</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.93</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.95</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">8</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/675.png" alt="Feyenoord" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Silva</p><p class="text-[10px] text-gray-400 truncate">Feyenoord</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">9</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/3.png" alt="Bayer Leverkusen" class="w-6 h-6 object-contain" loading="lazy"></div>
-                                    <div><p class="font-semibold text-sm">M. Flekken</p><p class="text-[10px] text-gray-400">Bayer Leverkusen</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.90</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.93</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">9</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/3.png" alt="Bayer Leverkusen" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">M. Flekken</p><p class="text-[10px] text-gray-400 truncate">Bayer Leverkusen</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">10</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">F. Wievele</p><p class="text-[10px] text-gray-400">Anderlecht</p></div>
-                                </div>
-                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">7.85</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.90</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">10</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/441.png" alt="Anderlecht" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">F. Wievele</p><p class="text-[10px] text-gray-400 truncate">Anderlecht</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.85</span>
+                        </div>
                     </div>
                     <button onclick="toggleRatings(this)" class="w-full mt-4 py-2 text-xs font-semibold text-amber-400 bg-black/20 rounded-lg hover:bg-black/40 transition">View Full Table</button>
                 </div>
 
-                <!-- Conference League -->
+                <!-- MLS -->
                 <div class="rating-card bg-[#151515] border border-white/5 rounded-xl p-4">
                     <div class="flex justify-between items-center mb-4 pb-3 border-b border-white/5">
-                        <h3 class="font-bold text-white text-sm border-l-2 border-emerald-500 pl-2">Conference League</h3>
+                        <h3 class="font-bold text-white text-sm border-l-2 border-sky-500 pl-2">MLS</h3>
                         <span class="text-[10px] text-gray-500 uppercase tracking-wider">Top 10</span>
                     </div>
                     <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">1</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">L. Callegari</p><p class="text-[10px] text-gray-400">Vitesse</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.47</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">1</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/20232.png" alt="Inter Miami" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">L. Messi</p><p class="text-[10px] text-gray-400 truncate">Inter Miami</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">2</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">D. Nimick</p><p class="text-[10px] text-gray-400">Vitesse</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.43</span>
+                            <span class="rating-badge ring-1 bg-blue-500/20 ring-blue-500/30">8.38</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">2</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/182.png" alt="Chicago Fire" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">Guilherme</p><p class="text-[10px] text-gray-400 truncate">Chicago Fire</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">3</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">L. Kwemi</p><p class="text-[10px] text-gray-400">Vitesse</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.38</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.82</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">3</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/17606.png" alt="NYCFC" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">N. Fernández</p><p class="text-[10px] text-gray-400 truncate">NYCFC</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">4</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">T. Warschewski</p><p class="text-[10px] text-gray-400">Vitesse</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.33</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.81</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">4</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/9723.png" alt="Portland Timbers" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">Evander</p><p class="text-[10px] text-gray-400 truncate">Portland Timbers</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">5</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">A. Didic</p><p class="text-[10px] text-gray-400">Vitesse</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.29</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.75</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">5</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/189.png" alt="New England" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">C. Gil</p><p class="text-[10px] text-gray-400 truncate">New England</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.66</span>
+                        </div>
                     </div>
                     <div class="hidden extra-ratings space-y-3 mt-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">6</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">S. Rea</p><p class="text-[10px] text-gray-400">Vitesse</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.21</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">6</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/189.png" alt="New England" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">M. Turner</p><p class="text-[10px] text-gray-400 truncate">New England</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">7</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">G. Ntignee</p><p class="text-[10px] text-gray-400">Vitesse</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.21</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.62</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">7</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/22529.png" alt="San Diego FC" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Dreyer</p><p class="text-[10px] text-gray-400 truncate">San Diego FC</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">8</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">D. Klomp</p><p class="text-[10px] text-gray-400">Vitesse</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.20</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.53</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">8</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/20232.png" alt="Inter Miami" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">R. De Paul</p><p class="text-[10px] text-gray-400 truncate">Inter Miami</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">9</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">A. Pearlman</p><p class="text-[10px] text-gray-400">Vitesse</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.16</span>
+                            <span class="rating-badge ring-1 bg-green-500/20 ring-green-500/30">7.50</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">9</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/21300.png" alt="Charlotte FC" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">K. Kahlina</p><p class="text-[10px] text-gray-400 truncate">Charlotte FC</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">10</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm">M. Jevremović</p><p class="text-[10px] text-gray-400">Vitesse</p></div>
-                                </div>
-                                <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">7.15</span>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.43</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">10</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/21812.png" alt="St. Louis City" class="w-6 h-6 object-contain" loading="lazy"></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">B. Schwake</p><p class="text-[10px] text-gray-400 truncate">St. Louis City</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.43</span>
+                        </div>
                     </div>
-                    <button onclick="toggleRatings(this)" class="w-full mt-4 py-2 text-xs font-semibold text-emerald-400 bg-black/20 rounded-lg hover:bg-black/40 transition">View Full Table</button>
+                    <button onclick="toggleRatings(this)" class="w-full mt-4 py-2 text-xs font-semibold text-sky-400 bg-black/20 rounded-lg hover:bg-black/40 transition">View Full Table</button>
                 </div>
 
                 <!-- CPL -->
                 <div class="rating-card bg-[#151515] border border-white/5 rounded-xl p-4">
                     <div class="flex justify-between items-center mb-4 pb-3 border-b border-white/5">
-                        <h3 class="font-bold text-white text-sm border-l-2 border-red-500 pl-2">CPL</h3>
-                        <span class="text-[10px] text-gray-500 uppercase tracking-wider">Coming Soon</span>
+                        <h3 class="font-bold text-white text-sm border-l-2 border-rose-500 pl-2">CPL</h3>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-wider">Top 10</span>
                     </div>
                     <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">1</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0"><i class="fas fa-user text-gray-500 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm text-gray-500">Placeholder</p><p class="text-[10px] text-gray-600">To be updated</p></div>
-                                </div>
-                                <span class="bg-gray-700 text-gray-400 px-2 py-1 rounded text-xs font-bold">–</span>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">1</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">L. Callegari</p><p class="text-[10px] text-gray-400 truncate">Vancouver FC</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">2</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0"><i class="fas fa-user text-gray-500 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm text-gray-500">Placeholder</p><p class="text-[10px] text-gray-600">To be updated</p></div>
-                                </div>
-                                <span class="bg-gray-700 text-gray-400 px-2 py-1 rounded text-xs font-bold">–</span>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.47</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">2</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">D. Nimick</p><p class="text-[10px] text-gray-400 truncate">Halifax Wanderers</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">3</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0"><i class="fas fa-user text-gray-500 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm text-gray-500">Placeholder</p><p class="text-[10px] text-gray-600">To be updated</p></div>
-                                </div>
-                                <span class="bg-gray-700 text-gray-400 px-2 py-1 rounded text-xs font-bold">–</span>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.43</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">3</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">L. Kwemi</p><p class="text-[10px] text-gray-400 truncate">Forge FC</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">4</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0"><i class="fas fa-user text-gray-500 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm text-gray-500">Placeholder</p><p class="text-[10px] text-gray-600">To be updated</p></div>
-                                </div>
-                                <span class="bg-gray-700 text-gray-400 px-2 py-1 rounded text-xs font-bold">–</span>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.38</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">4</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">T. Warschewski</p><p class="text-[10px] text-gray-400 truncate">Cavalry FC</p></div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-500 font-bold text-sm w-5">5</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0"><i class="fas fa-user text-gray-500 text-xs"></i></div>
-                                    <div><p class="font-semibold text-sm text-gray-500">Placeholder</p><p class="text-[10px] text-gray-600">To be updated</p></div>
-                                </div>
-                                <span class="bg-gray-700 text-gray-400 px-2 py-1 rounded text-xs font-bold">–</span>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.33</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">5</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Didic</p><p class="text-[10px] text-gray-400 truncate">Pacific FC</p></div>
                             </div>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.29</span>
+                        </div>
                     </div>
+                    <div class="hidden extra-ratings space-y-3 mt-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">6</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">S. Rea</p><p class="text-[10px] text-gray-400 truncate">Forge FC</p></div>
+                            </div>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.21</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">7</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">G. Ntignee</p><p class="text-[10px] text-gray-400 truncate">Cavalry FC</p></div>
+                            </div>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.21</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">8</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">D. Klomp</p><p class="text-[10px] text-gray-400 truncate">Pacific FC</p></div>
+                            </div>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.20</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">9</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">A. Pearlman</p><p class="text-[10px] text-gray-400 truncate">York United</p></div>
+                            </div>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.16</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="text-gray-500 font-bold text-sm w-5 flex-shrink-0">10</span>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0"><i class="fas fa-shield-alt text-gray-400 text-xs"></i></div>
+                                <div class="min-w-0"><p class="font-semibold text-sm truncate">M. Jevremović</p><p class="text-[10px] text-gray-400 truncate">York United</p></div>
+                            </div>
+                            <span class="rating-badge ring-1 bg-yellow-500/20 ring-yellow-500/30">7.15</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleRatings(this)" class="w-full mt-4 py-2 text-xs font-semibold text-rose-400 bg-black/20 rounded-lg hover:bg-black/40 transition">View Full Table</button>
                 </div>
             </div>
         </div>
@@ -1007,7 +1047,7 @@
         <!-- SECTION 3: TOP SCORERS -->
         <!-- ========================================== -->
         <div class="mb-10">
-            <h2 class="text-xl md:text-2xl font-bold mb-4 flex items-center gap-2"><i class="fas fa-futbol text-green-500"></i> Top Scorers</h2>
+            <h2 id="scorers-section" class="scroll-target text-xl md:text-2xl font-bold mb-4 flex items-center gap-2"><i class="fas fa-futbol text-green-500"></i> Top Scorers</h2>
             <div id="top-scorers">
                 <div id="pl-scorers"></div>
                 <div id="sa-scorers"></div>
@@ -1017,7 +1057,6 @@
                 <div id="cl-scorers"></div>
                 <div id="asl-scorers"></div>
                 <div id="uel-scorers"></div>
-                <div id="uecl-scorers"></div>
             </div>
             <div id="top-scorers-placeholder" class="bg-[#151515] border border-white/5 rounded-2xl p-6 text-center text-gray-500 text-sm">
                 Top 10 Scorers for each league will load here via API.
@@ -1040,11 +1079,11 @@
 
     <!-- The Glass Navigation Dock -->
     <nav class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md glass-dock rounded-[2rem] px-2 py-3 flex justify-between items-center z-50">
-        <a href="../index.html" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400"><i class="fas fa-home text-lg mb-1"></i><span class="text-[9px] font-semibold">Home</span></a>
-        <a href="#" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400"><i class="fas fa-gamepad text-lg mb-1"></i><span class="text-[9px] font-semibold">Quizzes</span></a>
-        <a href="#" class="flex items-center justify-center w-14 h-14 bg-red-600 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.6)] transform -translate-y-4 border-4 border-[#0a0a0a]"><i class="fas fa-chart-bar text-xl"></i></a>
-        <a href="#" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400"><i class="fas fa-crosshairs text-lg mb-1"></i><span class="text-[9px] font-semibold">Predict</span></a>
-        <a href="#" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400"><i class="fas fa-gift text-lg mb-1"></i><span class="text-[9px] font-semibold">Rewards</span></a>
+        <a href="/index.html" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400 hover:text-white transition"><i class="fas fa-home text-lg mb-1"></i><span class="text-[9px] font-semibold">Home</span></a>
+        <a href="#ratings-section" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400 hover:text-white transition"><i class="fas fa-star text-lg mb-1"></i><span class="text-[9px] font-semibold">Ratings</span></a>
+        <a href="#standings-section" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400 hover:text-white transition"><i class="fas fa-list-ol text-lg mb-1"></i><span class="text-[9px] font-semibold">Tables</span></a>
+        <a href="#scorers-section" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400 hover:text-white transition"><i class="fas fa-futbol text-lg mb-1"></i><span class="text-[9px] font-semibold">Goals</span></a>
+        <a href="/stadium-zone/index.html" aria-label="Stadium Zone" class="flex items-center justify-center w-14 h-14 bg-red-600 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.6)] transform -translate-y-4 border-4 border-[#0a0a0a]"><i class="fas fa-gamepad text-xl"></i></a>
     </nav>
 
     <script>
@@ -1057,7 +1096,6 @@
             CL: 'Champions League',
             ASL: 'Argentina Liga',
             UEL: 'Europa League',
-            UECL: 'Conference League',
             CPL: 'CPL'
         };
         const VISIBLE_ROWS = 4;
@@ -1129,13 +1167,13 @@
                         </div>
                         <div class="p-2">
                             ${scorers.map((s, i) => `
-                            <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                                <div class="flex items-center gap-3">
+                            <div class="flex items-center justify-between gap-3 py-2 border-b border-white/5 last:border-0">
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
                                     <span class="text-gray-500 font-bold text-sm w-4">${i + 1}</span>
-                                    <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden">${s.team && s.team.crest ? `<img src="${escapeHtml(s.team.crest)}" alt="" class="w-6 h-6 object-contain" loading="lazy">` : '<i class="fas fa-user text-gray-400 text-xs"></i>'}</div>
-                                    <div><p class="font-semibold text-sm">${escapeHtml(s.player && s.player.name)}</p><p class="text-[10px] text-gray-400">${escapeHtml(s.team && (s.team.shortName || s.team.name))}</p></div>
+                                    <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">${s.team && s.team.crest ? `<img src="${escapeHtml(s.team.crest)}" alt="" class="w-6 h-6 object-contain" loading="lazy">` : '<i class="fas fa-user text-gray-400 text-xs"></i>'}</div>
+                                    <div class="min-w-0"><p class="font-semibold text-sm truncate">${escapeHtml(s.player && s.player.name)}</p><p class="text-[10px] text-gray-400 truncate">${escapeHtml(s.team && (s.team.shortName || s.team.name))}</p></div>
                                 </div>
-                                <span class="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">${escapeHtml(s.goals)}</span>
+                                <span class="text-xl font-bold text-white flex-shrink-0 tabular-nums">${escapeHtml(s.goals)}</span>
                             </div>`).join('')}
                         </div>
                     </div>`;
@@ -1164,7 +1202,6 @@
             fetchLeagueData('CL', 'cl-standings', 'cl-scorers');
             fetchLeagueData('ASL', 'asl-standings', 'asl-scorers');
             fetchLeagueData('UEL', 'uel-standings', 'uel-scorers');
-            fetchLeagueData('UECL', 'uecl-standings', 'uecl-scorers');
             fetchLeagueData('CPL', 'cpl-standings', 'cpl-scorers');
         });
 

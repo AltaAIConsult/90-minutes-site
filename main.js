@@ -441,7 +441,6 @@ function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
 // ==========================================================
 // Fallback logos for articles without a thumbnail (each URL verified to load)
 const SOURCE_LOGOS = {
-    'ESPN': 'https://a.espncdn.com/i/espn/espn_logos/espn_red.png',
     'BBC Sport': 'https://static.files.bbci.co.uk/core/website/assets/static/sport/images/metadata/poster-1024x576.146fae5646.png',
     'The Guardian': 'https://assets.guim.co.uk/images/guardian-logo-rss.c45beb1bafa34b347ac333af2e6fe23f.png',
     'Olé': 'https://www.ole.com.ar/img/OleImg/logo_ole.png',
@@ -459,7 +458,7 @@ async function loadTopNews() {
     console.log('🟢 loadTopNews() called');
     
     try {
-        // Fetch all RSS feeds (ESPN, BBC Sport, Guardian, Olé, AS, Marca) via our Netlify Function
+        // Fetch all RSS feeds (Guardian, BBC Sport, AS, Olé, Marca, Fox Sports) via our Netlify Function
         const res = await fetch('/.netlify/functions/news-feed');
         if (!res.ok) throw new Error(`News feed request failed: ${res.status}`);
         const data = await res.json();
@@ -486,7 +485,7 @@ async function loadTopNews() {
                 const imgMatch = article.description.match(/<img[^>]+src="([^">]+)"/);
                 if (imgMatch) imgSrc = imgMatch[1];
             }
-            // No thumbnail (e.g. ESPN's feed has no images): fall back to the source logo
+            // No thumbnail: fall back to the source logo
             const isLogoFallback = !imgSrc && Boolean(SOURCE_LOGOS[article.source]);
             if (isLogoFallback) imgSrc = SOURCE_LOGOS[article.source];
             
@@ -986,6 +985,7 @@ function addToCart(productId, variantId, productName, productPrice, productImage
         });
     }
     updateCartDisplay();
+    openCart();
 }
 
 function updateCartDisplay() {
@@ -1033,6 +1033,11 @@ function toggleCart() {
     if (sidebar) sidebar.classList.toggle('translate-x-full');
 }
 
+function openCart() {
+    const sidebar = document.getElementById('cart-sidebar');
+    if (sidebar) sidebar.classList.remove('translate-x-full');
+}
+
 async function handleCheckout() {
     const btn = document.getElementById('sidebar-checkout-button');
     if (!btn || cart.length === 0) return;
@@ -1070,7 +1075,9 @@ window.removeFromCart = removeFromCart;
 function initMobileMenu() {
     const btn = document.getElementById('mobile-menu-button');
     const menu = document.getElementById('mobile-menu');
-    if (btn && menu) {
+    // Pages bind the menu inline; skip if that already happened
+    if (btn && menu && !btn.dataset.menuReady) {
+        btn.dataset.menuReady = 'true';
         btn.addEventListener('click', () => menu.classList.toggle('hidden'));
     }
 }
@@ -1092,8 +1099,13 @@ document.addEventListener('DOMContentLoaded', () => {
         loadHeadlines();
         loadCanadianCorner();
         loadPodcasts();
-        getProducts();
         startSlideTimer();
+    }
+
+    // SHOP PAGE (product grid only exists on /shop/)
+    if (document.getElementById('product-list')) {
+        console.log('🛍️ Shop page detected');
+        getProducts();
     }
 
     // 3. RSS FEED SECTION (Check for the news grid ID)

@@ -2,172 +2,213 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Stadium Zone | 90 Minutes or More</title>
-    <meta name="description" content="Your home for interactive 90 Minutes or More features—vote, compete, and engage with the community.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stadium Zone | 90 Minutes or More</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: 'Poppins', sans-serif; }
+        /* Base App Styles */
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #0a0a0a; /* Deep, pitch black */
+            color: white;
+            overflow-x: hidden;
+            /* Hide default scrollbar for app feel */
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+        }
+        body::-webkit-scrollbar { display: none; }
+        
         .font-anton { font-family: 'Anton', sans-serif; }
-        .nav-link { position: relative; }
-        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #ef4444; transition: width 0.3s ease; }
-        .nav-link:hover::after { width: 100%; }
+
+        /* Hide standard scrollbars on horizontal sliders */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Glassmorphism Dock - The core "iPhone" feel */
+        .glass-dock {
+            background: rgba(20, 20, 20, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Active tab glow */
+        .dock-item.active {
+            color: #ef4444; /* Brand Red */
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+        
+        .dock-item.active i {
+            transform: translateY(-2px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Game Card Styles */
+        .game-card {
+            background: linear-gradient(145deg, #1a1a1a, #121212);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .game-card:active {
+            transform: scale(0.97);
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-black">
+<body class="pb-32">
 
-    <!-- Navigation -->
-    <nav class="fixed w-full bg-white shadow-md z-50">
-        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <a href="../index.html" class="flex items-center group">
-                <img src="../images/logo.jpeg" alt="90 Minutes or More" class="h-14 mr-3 group-hover:scale-105 transition duration-300">
-                <div class="hidden sm:block">
-                    <span class="font-anton text-2xl tracking-tight leading-none">
-                        <span class="text-red-600">90</span><span class="text-black">MINUTES</span>
-                    </span>
-                    <span class="block text-xs font-bold tracking-[0.3em] text-gray-500 uppercase -mt-1">Or More</span>
-                </div>
-            </a>
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="../index.html" class="nav-link text-sm text-black hover:text-red-600">Home</a>
-                <a href="../news/index.html" class="nav-link text-sm text-black hover:text-red-600">News</a>
-                <a href="../article/index.html" class="nav-link text-sm text-black hover:text-red-600">Articles</a>
-                <a href="index.html" class="nav-link text-sm text-red-600 font-semibold">Stadium Zone</a>
-                <a href="../services/index.html" class="nav-link text-sm text-black hover:text-red-600">Services</a>
-                <a href="../shop/index.html" class="nav-link text-sm text-black hover:text-red-600">Shop</a>
-                <a href="../podcast/index.html" class="nav-link text-sm text-black hover:text-red-600">Podcast</a>
-                <a href="../about/index.html" class="nav-link text-sm text-black hover:text-red-600">About</a>
-                <a href="../official-coverage/index.html" class="nav-link text-sm text-black hover:text-red-600">Coverage</a>
-                <a href="../world-cup-predictor/index.html" class="nav-link text-sm text-black hover:text-red-600">Predictor</a>
-                
-                <button onclick="toggleCart()" class="relative bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md text-sm transition duration-300 flex items-center">
-                    <i class="fas fa-shopping-cart mr-2"></i>
-                    <span class="hidden lg:inline">Cart</span>
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-                </button>
+    <!-- Header (App Style) -->
+    <header class="fixed top-0 w-full z-40 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/5 px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <!-- Using a generic icon for the app logo feel -->
+            <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
+                <i class="fas fa-bolt text-white text-sm"></i>
             </div>
-            <button id="mobile-menu-button" class="md:hidden text-black focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
+            <span class="font-anton text-xl tracking-wide">STADIUM ZONE</span>
         </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-white w-full px-6 pb-4">
-            <a href="../index.html" class="block text-black hover:text-red-600 py-2">Home</a>
-            <a href="../news/index.html" class="block text-black hover:text-red-600 py-2">News</a>
-            <a href="../article/index.html" class="block text-black hover:text-red-600 py-2">Articles</a>
-            <a href="index.html" class="block text-red-600 font-semibold py-2">Stadium Zone</a>
-            <a href="../services/index.html" class="block text-black hover:text-red-600 py-2">Services</a>
-            <a href="../shop/index.html" class="block text-black hover:text-red-600 py-2">Shop</a>
-            <a href="../podcast/index.html" class="block text-black hover:text-red-600 py-2">Podcast</a>
-            <a href="../about/index.html" class="block text-black hover:text-red-600 py-2">About</a>
-            <a href="../official-coverage/index.html" class="block text-black hover:text-red-600 py-2">Coverage</a>
-            <a href="../world-cup-predictor/index.html" class="block text-black hover:text-red-600 py-2">Predictor</a>
+        <div class="w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center">
+            <i class="fas fa-user text-gray-400 text-xs"></i>
         </div>
-    </nav>
+    </header>
 
-    <!-- Header -->
-    <section class="pt-32 pb-12 bg-black text-white">
-        <div class="container mx-auto px-6">
-            <h1 class="font-anton text-5xl md:text-6xl uppercase mb-4">The <span class="text-red-600">Stadium Zone</span></h1>
-            <p class="text-gray-400 text-lg max-w-2xl">Your home for interactive 90 Minutes or More features—vote, compete, and engage with the community.</p>
+    <!-- Main Content Area -->
+    <main class="pt-20 px-4 max-w-lg mx-auto">
+        
+        <!-- Hero / Greeting -->
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold mb-1">Ready to play?</h1>
+            <p class="text-gray-400 text-sm">Test your knowledge and earn rewards.</p>
         </div>
-    </section>
 
-    <!-- Stadium Zone Content -->
-    <main>
-        <div class="container mx-auto px-6 py-16 space-y-12">
-
-            <!-- Voting -->
-            <section id="voting-section" class="bg-white rounded-lg shadow-md p-8 border-l-4 border-red-600">
-                <h2 class="font-anton text-3xl uppercase mb-4">Vote: Player of the Season</h2>
-                <p class="text-gray-500 italic">[Voting form will be added here]</p>
-            </section>
-
-            <!-- Trivia -->
-            <section id="trivia-section" class="bg-white rounded-lg shadow-md p-8 border-l-4 border-red-600">
-                <h2 class="font-anton text-3xl uppercase mb-4">Weekly Trivia</h2>
-                <p class="text-gray-500 italic">[Trivia feature coming soon]</p>
-            </section>
-
-            <!-- Contests -->
-            <section id="contests-section" class="bg-white rounded-lg shadow-md p-8 border-l-4 border-red-600">
-                <h2 class="font-anton text-3xl uppercase mb-4">Contests &amp; Prizes</h2>
-                <p class="text-gray-500 italic">[Contest details coming soon]</p>
-            </section>
-
+        <!-- Featured / Hero Card -->
+        <div class="relative w-full h-48 rounded-2xl overflow-hidden mb-6 bg-gradient-to-br from-red-900 to-black border border-red-500/30 p-5 flex flex-col justify-end shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+            <div class="absolute top-4 right-4 bg-red-600 text-xs font-bold px-2 py-1 rounded-full z-10">LIVE</div>
+            <!-- Decorative background element -->
+            <i class="fas fa-futbol absolute -right-4 -top-4 text-8xl text-white/5 rotate-12"></i>
+            
+            <h2 class="font-anton text-3xl mb-1 relative z-10">Player of the Season</h2>
+            <p class="text-sm text-gray-300 mb-3 relative z-10">Cast your vote for the best player of the year.</p>
+            <button class="bg-white text-black font-bold py-2 px-5 rounded-full w-max text-sm relative z-10 hover:bg-gray-200 transition">Vote Now</button>
         </div>
+
+        <!-- Section: Quizzes -->
+        <div class="mb-6">
+            <div class="flex justify-between items-end mb-3">
+                <h2 class="text-lg font-bold">Quick Quizzes</h2>
+                <a href="#" class="text-xs text-red-500 font-semibold">See All</a>
+            </div>
+            
+            <!-- Horizontal Slider Container -->
+            <div class="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-2">
+                <!-- Quiz Card 1 -->
+                <div class="game-card min-w-[140px] h-40 rounded-xl p-4 snap-start flex flex-col justify-between">
+                    <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                        <i class="fas fa-brain text-blue-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm leading-tight mb-1">Who Am I?</h3>
+                        <p class="text-[10px] text-gray-400">Guess the player</p>
+                    </div>
+                </div>
+
+                <!-- Quiz Card 2 -->
+                <div class="game-card min-w-[140px] h-40 rounded-xl p-4 snap-start flex flex-col justify-between">
+                    <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                        <i class="fas fa-history text-green-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm leading-tight mb-1">World Cup History</h3>
+                        <p class="text-[10px] text-gray-400">10 Questions</p>
+                    </div>
+                </div>
+
+                <!-- Quiz Card 3 -->
+                <div class="game-card min-w-[140px] h-40 rounded-xl p-4 snap-start flex flex-col justify-between">
+                    <div class="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                        <i class="fas fa-trophy text-yellow-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm leading-tight mb-1">Premier League</h3>
+                        <p class="text-[10px] text-gray-400">15 Questions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Predictions -->
+        <div class="mb-6">
+            <div class="flex justify-between items-end mb-3">
+                <h2 class="text-lg font-bold">Predictions</h2>
+                <a href="#" class="text-xs text-red-500 font-semibold">See All</a>
+            </div>
+            
+            <div class="game-card w-full rounded-xl p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
+                        <i class="fas fa-crosshairs text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">Matchday Predictor</h3>
+                        <p class="text-xs text-gray-400">Predict the scores this weekend</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right text-gray-600"></i>
+            </div>
+        </div>
+        
+        <!-- Spacer for bottom dock -->
+        <div class="h-10"></div>
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-black text-white py-12">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <img src="../images/logo.jpeg" alt="90 Minutes or More" class="h-10 mb-4">
-                    <p class="text-gray-400 text-sm">Your comprehensive football media platform covering all aspects of the beautiful game.</p>
-                </div>
-                <div>
-                    <h4 class="text-lg font-bold mb-4 text-red-600">Content</h4>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li><a href="../news/index.html" class="hover:text-white">Latest News</a></li>
-                        <li><a href="../article/index.html" class="hover:text-white">Articles</a></li>
-                        <li><a href="../podcast/index.html" class="hover:text-white">Podcast</a></li>
-                        <li><a href="../shop/index.html" class="hover:text-white">Shop</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-bold mb-4 text-red-600">Company</h4>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li><a href="../about/index.html" class="hover:text-white">About Us</a></li>
-                        <li><a href="../services/index.html" class="hover:text-white">Services</a></li>
-                        <li><a href="../contact/index.html" class="hover:text-white">Contact</a></li>
-                        <li><a href="../privacy/index.html" class="hover:text-white">Privacy Policy</a></li>
-                        <li><a href="../terms/index.html" class="hover:text-white">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-bold mb-4 text-red-600">Contact</h4>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li><i class="fas fa-envelope mr-2"></i> 90minutesom@gmail.com</li>
-                        <li><i class="fas fa-phone mr-2"></i> 1-(647) 213-5462</li>
-                        <li><i class="fas fa-map-marker-alt mr-2"></i> Toronto, ON</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-400 text-sm">&copy; 2024 90 Minutes or More. All rights reserved.</p>
-                <div class="flex space-x-4 mt-4 md:mt-0">
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <!-- The Glass Navigation Dock -->
+    <nav class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md glass-dock rounded-[2rem] px-2 py-3 flex justify-between items-center z-50">
+        
+        <a href="#" class="dock-item active flex flex-col items-center justify-center w-16 text-gray-400">
+            <i class="fas fa-home text-lg mb-1"></i>
+            <span class="text-[9px] font-semibold">Home</span>
+        </a>
+        
+        <a href="#" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400">
+            <i class="fas fa-gamepad text-lg mb-1"></i>
+            <span class="text-[9px] font-semibold">Quizzes</span>
+        </a>
+        
+        <!-- Center Accent Button -->
+        <a href="#" class="flex items-center justify-center w-14 h-14 bg-red-600 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.6)] transform -translate-y-4 border-4 border-[#0a0a0a]">
+            <i class="fas fa-check-to-slot text-xl"></i>
+        </a>
+        
+        <a href="#" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400">
+            <i class="fas fa-crosshairs text-lg mb-1"></i>
+            <span class="text-[9px] font-semibold">Predict</span>
+        </a>
+        
+        <a href="#" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400">
+            <i class="fas fa-gift text-lg mb-1"></i>
+            <span class="text-[9px] font-semibold">Rewards</span>
+        </a>
+        
+    </nav>
 
-    <!-- Cart Sidebar -->
-    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl z-[60] p-6 flex flex-col translate-x-full transition-transform duration-300">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Your Cart</h2>
-            <button onclick="toggleCart()" class="text-2xl text-gray-500 hover:text-gray-800">&times;</button>
-        </div>
-        <div id="cart-items" class="flex-grow overflow-y-auto">
-            <p class="text-gray-500">Your cart is empty.</p>
-        </div>
-        <div class="border-t pt-4 mt-4">
-            <div class="flex justify-between font-bold text-lg mb-4">
-                <span>Total:</span>
-                <span id="cart-total">$0.00</span>
-            </div>
-            <button id="sidebar-checkout-button" onclick="handleCheckout()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md transition duration-300">
-                Proceed to Checkout
-            </button>
-        </div>
-    </div>
-
-    <!-- Main JavaScript - shared nav, mobile menu and cart -->
-    <script src="../main.js"></script>
+    <!-- Simple script to handle active states on the dock for demo purposes -->
+    <script>
+        const dockItems = document.querySelectorAll('.dock-item');
+        
+        dockItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent jump for demo
+                
+                // Remove active class from all
+                dockItems.forEach(i => i.classList.remove('active'));
+                
+                // Add active to clicked
+                item.classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>

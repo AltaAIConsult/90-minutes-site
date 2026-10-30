@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stats Hub | 90 Minutes or More</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #0a0a0a; 
+            color: white;
+            overflow-x: hidden;
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+        }
+        body::-webkit-scrollbar { display: none; }
+        
+        .font-anton { font-family: 'Anton', sans-serif; }
+
+        /* Glassmorphism Dock */
+        .glass-dock {
+            background: rgba(20, 20, 20, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Table Styling */
+        .standings-table { width: 100%; border-collapse: collapse; }
+        .standings-table th { text-align: left; font-size: 0.75rem; color: #9ca3af; padding: 12px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .standings-table td { padding: 12px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.9rem; }
+        
+        /* Fade Out effect */
+        .fade-out { -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%); mask-image: linear-gradient(to bottom, black 40%, transparent 100%); }
+        .extra-row { display: none; }
+        .league-card.expanded .extra-row { display: table-row; }
+        .league-card.expanded .fade-out { -webkit-mask-image: none; mask-image: none; }
+        .league-card.expanded .btn-text::after { content: ' Show Less'; }
+        .league-card:not(.expanded) .btn-text::after { content: ' See Full Table'; }
+
+        /* Match Rating Colors */
+        .rating-blue { background-color: #3b82f6; color: white; }
+        .rating-green { background-color: #22c55e; color: white; }
+        .rating-yellow { background-color: #eab308; color: black; }
+        .rating-orange { background-color: #f97316; color: white; }
+    </style>
+</head>
+<body class="pb-32">
+
+    <!-- Header (App Style) -->
+    <header class="fixed top-0 w-full z-40 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/5 px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <a href="../stadium-zone/index.html" class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition">
+                <i class="fas fa-arrow-left text-white text-sm"></i>
+            </a>
+            <span class="font-anton text-xl tracking-wide ml-2">STATS HUB</span>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center">
+            <i class="fas fa-user text-gray-400 text-xs"></i>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-20 px-4 max-w-lg md:max-w-3xl mx-auto">
+        
+        <div class="mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold mb-1">Stats Hub</h1>
+            <p class="text-gray-400 text-sm md:text-base">All major leagues. All in one place.</p>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SECTION 1: LEAGUE STANDINGS -->
+        <!-- ========================================== -->
+        <div class="mb-10">
+            <h2 class="text-xl md:text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-list-ol text-blue-500"></i> League Standings
+            </h2>
+
+            <!-- 1. Premier League -->
+            <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-purple-900/20 to-transparent">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center"><i class="fas fa-crown text-purple-400"></i></div>
+                        <h2 class="font-bold text-lg text-white">Premier League</h2>
+                    </div>
+                </div>
+                <div class="fade-out px-2">
+                    <table class="standings-table">
+                        <thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-white">Pts</th></tr></thead>
+                        <tbody>
+                            <!-- API PLACEHOLDER -->
+                            <tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load PL standings here</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-purple-400 hover:text-purple-300 transition bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
+            </div>
+
+            <!-- 2. Serie A -->
+            <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-blue-900/20 to-transparent">
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-blue-600/20 flex items-center justify-center"><i class="fas fa-shield-alt text-blue-400"></i></div><h2 class="font-bold text-lg text-white">Serie A</h2></div>
+                </div>
+                <div class="fade-out px-2">
+                    <table class="standings-table">
+                        <thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-white">Pts</th></tr></thead>
+                        <tbody><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load Serie A standings here</td></tr></tbody>
+                    </table>
+                </div>
+                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-blue-400 hover:text-blue-300 transition bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
+            </div>
+
+            <!-- 3. La Liga -->
+            <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-orange-900/20 to-transparent">
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-orange-600/20 flex items-center justify-center"><i class="fas fa-fire text-orange-400"></i></div><h2 class="font-bold text-lg text-white">La Liga</h2></div>
+                </div>
+                <div class="fade-out px-2"><table class="standings-table"><tbody><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load La Liga standings here</td></tr></tbody></table></div>
+                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-orange-400 bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
+            </div>
+
+            <!-- 4. Ligue 1 -->
+            <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-teal-900/20 to-transparent">
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-teal-600/20 flex items-center justify-center"><i class="fas fa-flag text-teal-400"></i></div><h2 class="font-bold text-lg text-white">Ligue 1</h2></div>
+                </div>
+                <div class="fade-out px-2"><table class="standings-table"><tbody><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load Ligue 1 standings here</td></tr></tbody></table></div>
+                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-teal-400 bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
+            </div>
+
+            <!-- 5. Bundesliga -->
+            <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-red-900/20 to-transparent">
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-red-600/20 flex items-center justify-center"><i class="fas fa-shield text-red-400"></i></div><h2 class="font-bold text-lg text-white">Bundesliga</h2></div>
+                </div>
+                <div class="fade-out px-2"><table class="standings-table"><tbody><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load Bundesliga standings here</td></tr></tbody></table></div>
+                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-red-400 bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
+            </div>
+
+            <!-- 6. MLS -->
+            <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-gray-700 to-transparent">
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center"><i class="fas fa-star text-gray-300"></i></div><h2 class="font-bold text-lg text-white">MLS (East & West)</h2></div>
+                </div>
+                <div class="fade-out px-2"><table class="standings-table"><tbody><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load MLS standings here</td></tr></tbody></table></div>
+                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-gray-300 bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
+            </div>
+
+            <!-- 7. CPL -->
+            <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-red-900/20 to-transparent">
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-red-600/20 flex items-center justify-center"><i class="fas fa-maple-leaf text-red-500"></i></div><h2 class="font-bold text-lg text-white">CPL</h2></div>
+                </div>
+                <div class="fade-out px-2"><table class="standings-table"><tbody><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load CPL standings here</td></tr></tbody></table></div>
+                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-red-500 bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
+            </div>
+
+            <!-- 8. Argentina Liga -->
+            <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-sky-900/20 to-transparent">
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-sky-600/20 flex items-center justify-center"><i class="fas fa-sun text-sky-400"></i></div><h2 class="font-bold text-lg text-white">Argentina Liga</h2></div>
+                </div>
+                <div class="fade-out px-2"><table class="standings-table"><tbody><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load Argentina standings here</td></tr></tbody></table></div>
+                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-sky-400 bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
+            </div>
+
+            <!-- 9. Champions League -->
+            <div class="league-card bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-indigo-900/20 to-transparent">
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-indigo-600/20 flex items-center justify-center"><i class="fas fa-trophy text-indigo-400"></i></div><h2 class="font-bold text-lg text-white">Champions League</h2></div>
+                </div>
+                <div class="fade-out px-2"><table class="standings-table"><tbody><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load UCL standings here</td></tr></tbody></table></div>
+                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-indigo-400 bg-black/20 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SECTION 2: MATCH RATINGS (Manual Updates) -->
+        <!-- ========================================== -->
+        <div class="mb-10">
+            <div class="flex justify-between items-end mb-4">
+                <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2"><i class="fas fa-star text-yellow-500"></i> Top Rated Players</h2>
+                <span class="text-[10px] text-gray-500 bg-gray-800 px-2 py-1 rounded">Updated Monthly</span>
+            </div>
+            
+            <!-- Serie A Ratings (Example of how it will look when updated manually) -->
+            <div class="bg-[#151515] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-3 bg-gradient-to-r from-blue-900/20 to-transparent flex justify-between items-center">
+                    <h3 class="font-bold text-white text-sm">Serie A</h3>
+                    <span class="text-[10px] text-gray-500 uppercase tracking-wider">Top 10</span>
+                </div>
+                <div class="p-2">
+                    <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-500 font-bold text-sm w-4">1</span>
+                            <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden"><i class="fas fa-user text-gray-400 text-xs"></i></div>
+                            <div><p class="font-semibold text-sm">Paulo Dybala</p><p class="text-[10px] text-gray-400">Roma • Forward</p></div>
+                        </div>
+                        <span class="rating-blue px-2 py-1 rounded text-xs font-bold">7.88</span>
+                    </div>
+                    <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-500 font-bold text-sm w-4">2</span>
+                            <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden"><i class="fas fa-user text-gray-400 text-xs"></i></div>
+                            <div><p class="font-semibold text-sm">Marcus Thuram</p><p class="text-[10px] text-gray-400">Inter • Forward</p></div>
+                        </div>
+                        <span class="rating-green px-2 py-1 rounded text-xs font-bold">7.75</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Other Leagues Placeholder -->
+            <div class="bg-[#151515] border border-white/5 rounded-2xl p-6 text-center text-gray-500 text-sm">
+                Premier League, La Liga, Ligue 1, Bundesliga, MLS, CPL, Argentina & Champions League ratings will be manually updated here.
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SECTION 3: TOP SCORERS -->
+        <!-- ========================================== -->
+        <div class="mb-10">
+            <h2 class="text-xl md:text-2xl font-bold mb-4 flex items-center gap-2"><i class="fas fa-futbol text-green-500"></i> Top Scorers</h2>
+            <div class="bg-[#151515] border border-white/5 rounded-2xl p-6 text-center text-gray-500 text-sm">
+                Top 10 Scorers for each league will load here via API.
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SECTION 4: TOP ASSISTS -->
+        <!-- ========================================== -->
+        <div class="mb-10">
+            <h2 class="text-xl md:text-2xl font-bold mb-4 flex items-center gap-2"><i class="fas fa-hands-helping text-blue-500"></i> Top Assists</h2>
+            <div class="bg-[#151515] border border-white/5 rounded-2xl p-6 text-center text-gray-500 text-sm">
+                Top 10 Assists for each league will load here via API.
+            </div>
+        </div>
+
+        <div class="fixed bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#0a0a0a] to-transparent pointer-events-none z-30"></div>
+        <div class="h-10"></div>
+    </main>
+
+    <!-- The Glass Navigation Dock -->
+    <nav class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md glass-dock rounded-[2rem] px-2 py-3 flex justify-between items-center z-50">
+        <a href="../stadium-zone/index.html" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400"><i class="fas fa-home text-lg mb-1"></i><span class="text-[9px] font-semibold">Home</span></a>
+        <a href="#" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400"><i class="fas fa-gamepad text-lg mb-1"></i><span class="text-[9px] font-semibold">Quizzes</span></a>
+        <a href="#" class="flex items-center justify-center w-14 h-14 bg-red-600 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.6)] transform -translate-y-4 border-4 border-[#0a0a0a]"><i class="fas fa-chart-bar text-xl"></i></a>
+        <a href="#" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400"><i class="fas fa-crosshairs text-lg mb-1"></i><span class="text-[9px] font-semibold">Predict</span></a>
+        <a href="#" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400"><i class="fas fa-gift text-lg mb-1"></i><span class="text-[9px] font-semibold">Rewards</span></a>
+    </nav>
+
+</body>
+</html>

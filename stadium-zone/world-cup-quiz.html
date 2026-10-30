@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>World Cup History | Stadium Zone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #0a0a0a; 
+            color: white;
+            overflow: hidden; 
+        }
+        .font-anton { font-family: 'Anton', sans-serif; }
+
+        .screen { display: none; height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; }
+        .screen.active { display: flex; flex-direction: column; }
+
+        #timer-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #22c55e; 
+            transition: width 0.1s linear, background-color 0.3s;
+        }
+
+        .countdown-num {
+            font-family: 'Anton', sans-serif;
+            font-size: 15rem;
+            line-height: 1;
+            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .answer-btn {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            transition: all 0.2s ease;
+        }
+        .answer-btn:active { transform: scale(0.97); }
+        
+        .answer-btn.correct { background: rgba(34, 197, 94, 0.2); border-color: #22c55e; color: #22c55e; }
+        .answer-btn.wrong { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ef4444; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            50% { transform: translateY(-50px) scale(1.2); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+        .points-anim { animation: floatUp 1.5s ease-out forwards; }
+    </style>
+</head>
+<body>
+
+    <!-- SCREEN 1: COUNTDOWN -->
+    <div id="screen-countdown" class="screen active items-center justify-center bg-black z-50">
+        <h1 id="countdown-text" class="countdown-num">3</h1>
+    </div>
+
+    <!-- SCREEN 2: THE QUIZ -->
+    <div id="screen-quiz" class="screen bg-[#0a0a0a]">
+        
+        <!-- Header -->
+        <div class="pt-12 px-6 pb-2">
+            <div class="flex justify-between items-center mb-2">
+                <span id="question-counter" class="font-bold text-lg text-gray-400">1/10</span>
+                <span id="timer-text" class="font-bold text-green-500"><i class="far fa-clock mr-1"></i> 15s</span>
+            </div>
+            <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                <div id="timer-bar"></div>
+            </div>
+        </div>
+
+        <!-- Question Area -->
+        <div class="flex-1 flex flex-col justify-center px-6 pb-20">
+            <h2 id="question-text" class="text-2xl font-bold text-center mb-10 leading-snug">
+                Loading Question...
+            </h2>
+
+            <!-- Answers Container -->
+            <div id="answers-container" class="flex flex-col gap-3"></div>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: POINTS / RESULT -->
+    <div id="screen-result" class="screen items-center justify-center bg-[#0a0a0a] z-50">
+        <div class="text-center relative">
+            <h1 id="result-points" class="font-anton text-[10rem] leading-none text-white">0</h1>
+            <p class="text-gray-400 uppercase tracking-widest font-bold mt-2">Points</p>
+            <div id="points-popup" class="absolute top-0 left-1/2 transform -translate-x-1/2 text-green-500 font-anton text-4xl hidden">
+                +15
+            </div>
+        </div>
+        <button onclick="startQuiz()" class="mt-12 bg-white text-black font-bold py-3 px-8 rounded-full">Play Again</button>
+    </div>
+
+    <script>
+        // --- 10 WORLD CUP QUESTIONS ---
+        const quizData = [
+            { 
+                question: "Which nation won the first-ever FIFA World Cup in 1930?", 
+                answers: ["Brazil", "Argentina", "Uruguay", "Italy"], 
+                correct: 2 
+            },
+            { 
+                question: "Who scored the infamous 'Hand of God' goal in 1986?", 
+                answers: ["Pelé", "Diego Maradona", "Lionel Messi", "Zinedine Zidane"], 
+                correct: 1 
+            },
+            { 
+                question: "Which country hosted the 2014 World Cup?", 
+                answers: ["South Africa", "Brazil", "Russia", "Germany"], 
+                correct: 1 
+            },
+            { 
+                question: "How many goals did Just Fontaine score in the 1958 World Cup?", 
+                answers: ["10", "11", "13", "15"], 
+                correct: 2 
+            },
+            { 
+                question: "Which team famously defeated Brazil 7-1 in the 2014 semi-final?", 
+                answers: ["Germany", "France", "Netherlands", "Argentina"], 
+                correct: 0 
+            },
+            { 
+                question: "Who won the Golden Boot at the 2022 World Cup in Qatar?", 
+                answers: ["Lionel Messi", "Kylian Mbappé", "Olivier Giroud", "Julian Alvarez"], 
+                correct: 1 
+            },
+            { 
+                question: "Which African nation was the first to reach a World Cup quarter-final?", 
+                answers: ["Nigeria", "Senegal", "Cameroon", "Ghana"], 
+                correct: 2 
+            },
+            { 
+                question: "In which year did Spain win their first World Cup?", 
+                answers: ["2006", "2008", "2010", "2012"], 
+                correct: 2 
+            },
+            { 
+                question: "Which country has won the World Cup the most times (5)?", 
+                answers: ["Germany", "Italy", "Argentina", "Brazil"], 
+                correct: 3 
+            },
+            { 
+                question: "Who captained Italy to victory in the 2006 World Cup?", 
+                answers: ["Andrea Pirlo", "Francesco Totti", "Fabio Cannavaro", "Gianluigi Buffon"], 
+                correct: 2 
+            }
+        ];
+
+        // --- VARIABLES ---
+        let currentQuestion = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 15;
+        let canAnswer = false;
+
+        // --- DOM ELEMENTS ---
+        const screenCountdown = document.getElementById('screen-countdown');
+        const screenQuiz = document.getElementById('screen-quiz');
+        const screenResult = document.getElementById('screen-result');
+        
+        const countdownText = document.getElementById('countdown-text');
+        const questionText = document.getElementById('question-text');
+        const answersContainer = document.getElementById('answers-container');
+        const questionCounter = document.getElementById('question-counter');
+        const timerText = document.getElementById('timer-text');
+        const timerBar = document.getElementById('timer-bar');
+        const resultPoints = document.getElementById('result-points');
+
+        // --- FUNCTIONS ---
+
+        function startQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            
+            screenResult.classList.remove('active');
+            screenQuiz.classList.remove('active');
+            screenCountdown.classList.add('active');
+
+            let count = 3;
+            countdownText.innerText = count;
+            
+            countdownText.style.animation = 'none';
+            countdownText.offsetHeight; 
+            countdownText.style.animation = null; 
+
+            const countInterval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownText.innerText = count;
+                    countdownText.style.animation = 'none';
+                    countdownText.offsetHeight; 
+                    countdownText.style.animation = null; 
+                } else if (count === 0) {
+                    countdownText.innerText = "GO!";
+                } else {
+                    clearInterval(countInterval);
+                    screenCountdown.classList.remove('active');
+                    screenQuiz.classList.add('active');
+                    loadQuestion();
+                }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= quizData.length) {
+                endQuiz();
+                return;
+            }
+
+            const q = quizData[currentQuestion];
+            questionCounter.innerText = `${currentQuestion + 1}/${quizData.length}`;
+            questionText.innerText = q.question;
+            
+            timeLeft = 15;
+            canAnswer = true;
+            updateTimerUI();
+            startTimer();
+
+            answersContainer.innerHTML = '';
+            q.answers.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn w-full py-4 px-6 rounded-xl text-left font-semibold text-lg';
+                btn.innerText = answer;
+                btn.onclick = () => checkAnswer(index, btn);
+                answersContainer.appendChild(btn);
+            });
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft -= 0.1;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeLeft = 0;
+                    updateTimerUI();
+                    if (canAnswer) {
+                        canAnswer = false;
+                        showResult(0); 
+                    }
+                } else {
+                    updateTimerUI();
+                }
+            }, 100);
+        }
+
+        function updateTimerUI() {
+            timerBar.style.width = `${(timeLeft / 15) * 100}%`;
+            timerText.innerHTML = `<i class="far fa-clock mr-1"></i> ${Math.ceil(timeLeft)}s`;
+            
+            if (timeLeft <= 5) {
+                timerBar.style.backgroundColor = '#ef4444';
+                timerText.classList.add('text-red-500');
+                timerText.classList.remove('text-green-500');
+            } else {
+                timerBar.style.backgroundColor = '#22c55e';
+                timerText.classList.add('text-green-500');
+                timerText.classList.remove('text-red-500');
+            }
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if (!canAnswer) return;
+            canAnswer = false;
+            clearInterval(timer);
+
+            const q = quizData[currentQuestion];
+            
+            const allButtons = answersContainer.querySelectorAll('button');
+            allButtons.forEach((btn, idx) => {
+                btn.style.pointerEvents = 'none';
+                if (idx === q.correct) {
+                    btn.classList.add('correct');
+                } else if (idx === selectedIndex) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            if (selectedIndex === q.correct) {
+                // Fixed 15 points per correct answer
+                showResult(15);
+            } else {
+                setTimeout(() => showResult(0), 1000);
+            }
+        }
+
+        function showResult(points) {
+            score += points;
+            
+            screenQuiz.classList.remove('active');
+            screenResult.classList.add('active');
+            
+            let displayPoints = 0;
+            const targetPoints = points;
+            
+            const pointsPopup = document.getElementById('points-popup');
+            if (points > 0) {
+                pointsPopup.innerText = `+${points}`;
+                pointsPopup.classList.remove('hidden');
+                pointsPopup.style.animation = 'none';
+                pointsPopup.offsetHeight; 
+                pointsPopup.style.animation = null; 
+            }
+
+            const countUp = setInterval(() => {
+                if (displayPoints < targetPoints) {
+                    displayPoints += 1; 
+                    resultPoints.innerText = displayPoints;
+                } else {
+                    clearInterval(countUp);
+                    setTimeout(() => {
+                        pointsPopup.classList.add('hidden');
+                        currentQuestion++;
+                        if (currentQuestion < quizData.length) {
+                            screenResult.classList.remove('active');
+                            screenQuiz.classList.add('active');
+                            loadQuestion();
+                        } else {
+                            endQuiz();
+                        }
+                    }, 1500);
+                }
+            }, 20); 
+        }
+
+        function endQuiz() {
+            questionText.innerText = "Quiz Complete!";
+            answersContainer.innerHTML = `
+                <div class="text-center">
+                    <p class="text-gray-400 mb-4">You scored</p>
+                    <h3 class="text-5xl font-anton text-white mb-6">${score} / 150</h3>
+                    <a href="index.html" class="inline-block bg-white text-black font-bold py-3 px-8 rounded-full">Back to Stadium Zone</a>
+                </div>
+            `;
+            // Hide timer bar for the final screen
+            timerBar.style.width = '0%'; 
+            timerText.innerText = '';
+        }
+
+        // Start on load
+        startQuiz();
+    </script>
+</body>
+</html>

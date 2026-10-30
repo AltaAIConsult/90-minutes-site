@@ -13,10 +13,9 @@
         /* Base App Styles */
         body { 
             font-family: 'Poppins', sans-serif; 
-            background-color: #0a0a0a; /* Deep, pitch black */
+            background-color: #0a0a0a; 
             color: white;
             overflow-x: hidden;
-            /* Hide default scrollbar for app feel */
             -ms-overflow-style: none; 
             scrollbar-width: none; 
         }
@@ -28,7 +27,7 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Glassmorphism Dock - The core "iPhone" feel */
+        /* Glassmorphism Dock */
         .glass-dock {
             background: rgba(20, 20, 20, 0.65);
             backdrop-filter: blur(16px);
@@ -37,9 +36,8 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        /* Active tab glow */
         .dock-item.active {
-            color: #ef4444; /* Brand Red */
+            color: #ef4444; 
             text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
         }
         
@@ -53,6 +51,7 @@
             background: linear-gradient(145deg, #1a1a1a, #121212);
             border: 1px solid rgba(255, 255, 255, 0.05);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: block; /* Important for anchor tags */
         }
         .game-card:active {
             transform: scale(0.97);
@@ -64,7 +63,6 @@
     <!-- Header (App Style) -->
     <header class="fixed top-0 w-full z-40 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/5 px-4 py-3 flex justify-between items-center">
         <div class="flex items-center gap-2">
-            <!-- Using a generic icon for the app logo feel -->
             <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
                 <i class="fas fa-bolt text-white text-sm"></i>
             </div>
@@ -75,88 +73,109 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="pt-20 px-4 max-w-lg mx-auto">
+    <!-- Main Content Area (Wider on Desktop) -->
+    <main class="pt-20 px-4 max-w-lg md:max-w-4xl mx-auto transition-all duration-300">
         
         <!-- Hero / Greeting -->
         <div class="mb-6">
-            <h1 class="text-3xl font-bold mb-1">Ready to play?</h1>
-            <p class="text-gray-400 text-sm">Test your knowledge and earn rewards.</p>
+            <h1 class="text-3xl md:text-4xl font-bold mb-1">Ready to play?</h1>
+            <p class="text-gray-400 text-sm md:text-base">Test your knowledge and earn rewards.</p>
         </div>
 
         <!-- Featured / Hero Card -->
-        <div class="relative w-full h-48 rounded-2xl overflow-hidden mb-6 bg-gradient-to-br from-red-900 to-black border border-red-500/30 p-5 flex flex-col justify-end shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+        <div class="relative w-full h-48 md:h-64 rounded-2xl overflow-hidden mb-8 bg-gradient-to-br from-red-900 to-black border border-red-500/30 p-5 md:p-8 flex flex-col justify-end shadow-[0_0_20px_rgba(239,68,68,0.2)]">
             <div class="absolute top-4 right-4 bg-red-600 text-xs font-bold px-2 py-1 rounded-full z-10">LIVE</div>
-            <!-- Decorative background element -->
-            <i class="fas fa-futbol absolute -right-4 -top-4 text-8xl text-white/5 rotate-12"></i>
+            <i class="fas fa-futbol absolute -right-4 -top-4 text-8xl md:text-9xl text-white/5 rotate-12"></i>
             
-            <h2 class="font-anton text-3xl mb-1 relative z-10">Player of the Season</h2>
-            <p class="text-sm text-gray-300 mb-3 relative z-10">Cast your vote for the best player of the year.</p>
-            <button class="bg-white text-black font-bold py-2 px-5 rounded-full w-max text-sm relative z-10 hover:bg-gray-200 transition">Vote Now</button>
+            <h2 class="font-anton text-3xl md:text-4xl mb-1 relative z-10">Player of the Season</h2>
+            <p class="text-sm md:text-base text-gray-300 mb-4 relative z-10">Cast your vote for the best player of the year.</p>
+            <a href="#vote" class="bg-white text-black font-bold py-2 px-6 rounded-full w-max text-sm relative z-10 hover:bg-gray-200 transition">Vote Now</a>
         </div>
 
         <!-- Section: Quizzes -->
-        <div class="mb-6">
+        <div class="mb-8">
             <div class="flex justify-between items-end mb-3">
-                <h2 class="text-lg font-bold">Quick Quizzes</h2>
-                <a href="#" class="text-xs text-red-500 font-semibold">See All</a>
+                <h2 class="text-lg md:text-xl font-bold">Quick Quizzes</h2>
+                <a href="#" class="text-xs md:text-sm text-red-500 font-semibold">See All</a>
             </div>
             
-            <!-- Horizontal Slider Container -->
-            <div class="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-2">
-                <!-- Quiz Card 1 -->
-                <div class="game-card min-w-[140px] h-40 rounded-xl p-4 snap-start flex flex-col justify-between">
+            <!-- Horizontal Slider (Now displays more on desktop) -->
+            <div class="flex gap-4 overflow-x-auto no-scrollbar snap-x pb-2">
+                
+                <!-- Quiz Card 1 (Who Am I) -->
+                <a href="#" class="game-card min-w-[150px] md:min-w-[200px] h-40 md:h-48 rounded-xl p-4 snap-start flex flex-col justify-between">
                     <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
                         <i class="fas fa-brain text-blue-400"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm leading-tight mb-1">Who Am I?</h3>
-                        <p class="text-[10px] text-gray-400">Guess the player</p>
+                        <h3 class="font-bold text-sm md:text-base leading-tight mb-1">Who Am I?</h3>
+                        <p class="text-[10px] md:text-xs text-gray-400">Guess the player</p>
                     </div>
-                </div>
+                </a>
 
-                <!-- Quiz Card 2 -->
-                <div class="game-card min-w-[140px] h-40 rounded-xl p-4 snap-start flex flex-col justify-between">
+                <!-- Quiz Card 2 (World Cup - LINKED) -->
+                <a href="world-cup-quiz.html" class="game-card min-w-[150px] md:min-w-[200px] h-40 md:h-48 rounded-xl p-4 snap-start flex flex-col justify-between">
                     <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
                         <i class="fas fa-history text-green-400"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm leading-tight mb-1">World Cup History</h3>
-                        <p class="text-[10px] text-gray-400">10 Questions</p>
+                        <h3 class="font-bold text-sm md:text-base leading-tight mb-1">World Cup History</h3>
+                        <p class="text-[10px] md:text-xs text-gray-400">10 Questions</p>
                     </div>
-                </div>
+                </a>
 
-                <!-- Quiz Card 3 -->
-                <div class="game-card min-w-[140px] h-40 rounded-xl p-4 snap-start flex flex-col justify-between">
+                <!-- Quiz Card 3 (Premier League) -->
+                <a href="#" class="game-card min-w-[150px] md:min-w-[200px] h-40 md:h-48 rounded-xl p-4 snap-start flex flex-col justify-between">
                     <div class="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
                         <i class="fas fa-trophy text-yellow-400"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm leading-tight mb-1">Premier League</h3>
-                        <p class="text-[10px] text-gray-400">15 Questions</p>
+                        <h3 class="font-bold text-sm md:text-base leading-tight mb-1">Premier League</h3>
+                        <p class="text-[10px] md:text-xs text-gray-400">15 Questions</p>
                     </div>
-                </div>
+                </a>
+
+                <!-- Quiz Card 4 (Champions League) -->
+                <a href="#" class="game-card min-w-[150px] md:min-w-[200px] h-40 md:h-48 rounded-xl p-4 snap-start flex flex-col justify-between">
+                    <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                        <i class="fas fa-star text-purple-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm md:text-base leading-tight mb-1">Champions League</h3>
+                        <p class="text-[10px] md:text-xs text-gray-400">12 Questions</p>
+                    </div>
+                </a>
+
             </div>
         </div>
 
         <!-- Section: Predictions -->
-        <div class="mb-6">
+        <div class="mb-8">
             <div class="flex justify-between items-end mb-3">
-                <h2 class="text-lg font-bold">Predictions</h2>
-                <a href="#" class="text-xs text-red-500 font-semibold">See All</a>
+                <h2 class="text-lg md:text-xl font-bold">Predictions</h2>
+                <a href="#" class="text-xs md:text-sm text-red-500 font-semibold">See All</a>
             </div>
             
-            <div class="game-card w-full rounded-xl p-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
-                        <i class="fas fa-crosshairs text-gray-400"></i>
+            <a href="#" class="game-card w-full rounded-xl p-4 md:p-5 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-800 flex items-center justify-center">
+                        <i class="fas fa-crosshairs text-gray-400 md:text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm">Matchday Predictor</h3>
-                        <p class="text-xs text-gray-400">Predict the scores this weekend</p>
+                        <h3 class="font-bold text-sm md:text-base">Matchday Predictor</h3>
+                        <p class="text-xs md:text-sm text-gray-400">Predict the scores this weekend</p>
                     </div>
                 </div>
                 <i class="fas fa-chevron-right text-gray-600"></i>
+            </a>
+        </div>
+
+        <!-- Voting Section Placeholder (Target for the hero button) -->
+        <div id="vote" class="mb-10 scroll-mt-24">
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 text-center">
+                <h2 class="font-anton text-2xl md:text-3xl mb-2 text-red-500">Vote Now</h2>
+                <p class="text-gray-400 mb-6">The voting form will be built here next.</p>
+                <button class="bg-red-600 text-white font-bold py-2 px-6 rounded-md opacity-50 cursor-not-allowed">Coming Soon</button>
             </div>
         </div>
         
@@ -167,7 +186,7 @@
     <!-- The Glass Navigation Dock -->
     <nav class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md glass-dock rounded-[2rem] px-2 py-3 flex justify-between items-center z-50">
         
-        <a href="#" class="dock-item active flex flex-col items-center justify-center w-16 text-gray-400">
+        <a href="index.html" class="dock-item active flex flex-col items-center justify-center w-16 text-gray-400">
             <i class="fas fa-home text-lg mb-1"></i>
             <span class="text-[9px] font-semibold">Home</span>
         </a>
@@ -179,7 +198,7 @@
         
         <!-- Center Accent Button -->
         <a href="#" class="flex items-center justify-center w-14 h-14 bg-red-600 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.6)] transform -translate-y-4 border-4 border-[#0a0a0a]">
-            <i class="fas fa-check-to-slot text-xl"></i>
+            <i class="fas fa-users text-xl"></i>
         </a>
         
         <a href="#" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400">
@@ -200,13 +219,12 @@
         
         dockItems.forEach(item => {
             item.addEventListener('click', (e) => {
-                e.preventDefault(); // Prevent jump for demo
-                
-                // Remove active class from all
-                dockItems.forEach(i => i.classList.remove('active'));
-                
-                // Add active to clicked
-                item.classList.add('active');
+                // Only prevent default if it's a # link
+                if(item.getAttribute('href') === '#') {
+                    e.preventDefault(); 
+                    dockItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                }
             });
         });
     </script>

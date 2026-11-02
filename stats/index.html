@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stats Hub | 90 Minutes or More</title>
+    <link rel="icon" href="/images/logo.JPEG" type="image/jpeg">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -55,6 +56,10 @@
         /* Rating badges: bold white number on a solid tier color (fixed width keeps scores aligned) */
         .rating-badge { flex-shrink: 0; min-width: 3.25rem; text-align: center; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 1rem; line-height: 1.5rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
 
+        /* Big matches carousel */
+        .match-carousel { scrollbar-width: none; -ms-overflow-style: none; scroll-padding-left: 1rem; -webkit-overflow-scrolling: touch; }
+        .match-carousel::-webkit-scrollbar { display: none; }
+
         html { scroll-behavior: smooth; }
         .scroll-target { scroll-margin-top: 5rem; }
     </style>
@@ -79,8 +84,24 @@
         
         <div class="mb-6">
             <h1 class="text-3xl md:text-4xl font-bold mb-1">Stats Hub</h1>
-            <p class="text-gray-600 text-sm md:text-base">All major leagues. All in one place.</p>
+            <p class="text-gray-600 text-sm md:text-base">All major leagues. All in one place. No ads, no paywalls. Built for the love of the game.</p>
         </div>
+
+        <!-- ========================================== -->
+        <!-- UPCOMING BIG MATCHES CAROUSEL -->
+        <!-- ========================================== -->
+        <section class="mb-10" aria-labelledby="big-matches-heading">
+            <div class="flex justify-between items-end mb-4">
+                <h2 id="big-matches-heading" class="text-xl md:text-2xl font-bold flex items-center gap-2"><i class="fas fa-fire-flame-curved text-red-500"></i> Upcoming Big Matches</h2>
+                <div class="hidden md:flex gap-2">
+                    <button type="button" data-carousel-dir="-1" aria-label="Previous matches" class="w-8 h-8 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-700 hover:bg-gray-100 transition"><i class="fas fa-chevron-left text-xs"></i></button>
+                    <button type="button" data-carousel-dir="1" aria-label="Next matches" class="w-8 h-8 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-700 hover:bg-gray-100 transition"><i class="fas fa-chevron-right text-xs"></i></button>
+                </div>
+            </div>
+            <div id="big-matches-carousel" class="match-carousel flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4">
+                <div class="bg-[#151515] border border-white/5 rounded-xl p-4 w-full text-center text-gray-400 text-sm">Loading fixtures…</div>
+            </div>
+        </section>
 
         <!-- ========================================== -->
         <!-- SECTION 1: LEAGUE STANDINGS -->
@@ -94,7 +115,7 @@
             <div class="league-card bg-white shadow-md border border-gray-200 rounded-2xl mb-4 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-gradient-to-r from-purple-50 to-transparent">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center"><i class="fas fa-crown text-purple-600"></i></div>
+                        <div class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/PL.png" alt="Premier League logo" class="w-6 h-6 object-contain" loading="lazy"></div>
                         <h2 class="font-bold text-lg text-gray-900">Premier League</h2>
                     </div>
                 </div>
@@ -113,7 +134,7 @@
             <!-- 2. Serie A -->
             <div class="league-card bg-white shadow-md border border-gray-200 rounded-2xl mb-4 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-gradient-to-r from-blue-50 to-transparent">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center"><i class="fas fa-shield-alt text-blue-600"></i></div><h2 class="font-bold text-lg text-gray-900">Serie A</h2></div>
+                    <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/SA.png" alt="Serie A logo" class="w-6 h-6 object-contain" loading="lazy"></div><h2 class="font-bold text-lg text-gray-900">Serie A</h2></div>
                 </div>
                 <div class="fade-out px-2">
                     <table class="standings-table">
@@ -127,7 +148,7 @@
             <!-- 3. La Liga -->
             <div class="league-card bg-white shadow-md border border-gray-200 rounded-2xl mb-4 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-gradient-to-r from-orange-50 to-transparent">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center"><i class="fas fa-fire text-orange-600"></i></div><h2 class="font-bold text-lg text-gray-900">La Liga</h2></div>
+                    <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/PD.png" alt="La Liga logo" class="w-6 h-6 object-contain" loading="lazy"></div><h2 class="font-bold text-lg text-gray-900">La Liga</h2></div>
                 </div>
                 <div class="fade-out px-2"><table class="standings-table"><thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-gray-900">Pts</th></tr></thead><tbody id="pd-standings"><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load La Liga standings here</td></tr></tbody></table></div>
                 <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-orange-600 bg-gray-100 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
@@ -136,7 +157,7 @@
             <!-- 4. Ligue 1 -->
             <div class="league-card bg-white shadow-md border border-gray-200 rounded-2xl mb-4 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-gradient-to-r from-teal-50 to-transparent">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center"><i class="fas fa-flag text-teal-600"></i></div><h2 class="font-bold text-lg text-gray-900">Ligue 1</h2></div>
+                    <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/FL1.png" alt="Ligue 1 logo" class="w-6 h-6 object-contain" loading="lazy"></div><h2 class="font-bold text-lg text-gray-900">Ligue 1</h2></div>
                 </div>
                 <div class="fade-out px-2"><table class="standings-table"><thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-gray-900">Pts</th></tr></thead><tbody id="fl1-standings"><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load Ligue 1 standings here</td></tr></tbody></table></div>
                 <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-teal-600 bg-gray-100 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
@@ -145,7 +166,7 @@
             <!-- 5. Bundesliga -->
             <div class="league-card bg-white shadow-md border border-gray-200 rounded-2xl mb-4 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-gradient-to-r from-red-50 to-transparent">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center"><i class="fas fa-shield text-red-600"></i></div><h2 class="font-bold text-lg text-gray-900">Bundesliga</h2></div>
+                    <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/BL1.png" alt="Bundesliga logo" class="w-6 h-6 object-contain" loading="lazy"></div><h2 class="font-bold text-lg text-gray-900">Bundesliga</h2></div>
                 </div>
                 <div class="fade-out px-2"><table class="standings-table"><thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-gray-900">Pts</th></tr></thead><tbody id="bl1-standings"><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load Bundesliga standings here</td></tr></tbody></table></div>
                 <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-red-600 bg-gray-100 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
@@ -154,16 +175,16 @@
             <!-- 6. MLS -->
             <div class="league-card bg-white shadow-md border border-gray-200 rounded-2xl mb-4 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-gradient-to-r from-gray-100 to-transparent">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"><i class="fas fa-star text-gray-600"></i></div><h2 class="font-bold text-lg text-gray-900">MLS (East & West)</h2></div>
+                    <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/leaguelogos/soccer/500/19.png" alt="MLS logo" class="w-6 h-6 object-contain" loading="lazy"></div><h2 class="font-bold text-lg text-gray-900">MLS (East & West)</h2></div>
                 </div>
-                <div class="fade-out px-2"><table class="standings-table"><tbody><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load MLS standings here</td></tr></tbody></table></div>
+                <div class="fade-out px-2"><table class="standings-table"><thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-gray-900">Pts</th></tr></thead><tbody id="mls-standings"><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">Loading MLS standings…</td></tr></tbody></table></div>
                 <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-gray-600 bg-gray-100 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
             </div>
 
             <!-- 8. Argentina Liga -->
             <div class="league-card bg-white shadow-md border border-gray-200 rounded-2xl mb-4 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-gradient-to-r from-sky-50 to-transparent">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center"><i class="fas fa-sun text-sky-600"></i></div><h2 class="font-bold text-lg text-gray-900">Argentina Liga</h2></div>
+                    <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/leaguelogos/soccer/500/1.png" alt="Liga Profesional Argentina logo" class="w-6 h-6 object-contain" loading="lazy"></div><h2 class="font-bold text-lg text-gray-900">Argentina Liga</h2></div>
                 </div>
                 <div class="fade-out px-2"><table class="standings-table"><thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-gray-900">Pts</th></tr></thead><tbody id="asl-standings"><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load Argentina standings here</td></tr></tbody></table></div>
                 <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-sky-600 bg-gray-100 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
@@ -172,7 +193,7 @@
             <!-- 9. Champions League -->
             <div class="league-card bg-white shadow-md border border-gray-200 rounded-2xl mb-4 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-gradient-to-r from-indigo-50 to-transparent">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center"><i class="fas fa-trophy text-indigo-600"></i></div><h2 class="font-bold text-lg text-gray-900">Champions League</h2></div>
+                    <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/CL.png" alt="Champions League logo" class="w-6 h-6 object-contain" loading="lazy"></div><h2 class="font-bold text-lg text-gray-900">Champions League</h2></div>
                 </div>
                 <div class="fade-out px-2"><table class="standings-table"><thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-gray-900">Pts</th></tr></thead><tbody id="cl-standings"><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load UCL standings here</td></tr></tbody></table></div>
                 <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-indigo-600 bg-gray-100 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
@@ -180,10 +201,19 @@
             <!-- 10. Europa League -->
             <div class="league-card bg-white shadow-md border border-gray-200 rounded-2xl mb-4 overflow-hidden">
                 <div class="p-4 flex justify-between items-center bg-gradient-to-r from-amber-50 to-transparent">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center"><i class="fas fa-medal text-amber-600"></i></div><h2 class="font-bold text-lg text-gray-900">Europa League</h2></div>
+                    <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://crests.football-data.org/EL.png" alt="Europa League logo" class="w-6 h-6 object-contain" loading="lazy"></div><h2 class="font-bold text-lg text-gray-900">Europa League</h2></div>
                 </div>
                 <div class="fade-out px-2"><table class="standings-table"><thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-gray-900">Pts</th></tr></thead><tbody id="uel-standings"><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">API will load Europa League standings here</td></tr></tbody></table></div>
                 <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-amber-600 bg-gray-100 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
+            </div>
+
+            <!-- 10b. Conference League -->
+            <div class="league-card bg-white shadow-md border border-gray-200 rounded-2xl mb-4 overflow-hidden">
+                <div class="p-4 flex justify-between items-center bg-gradient-to-r from-green-50 to-transparent">
+                    <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"><img src="https://a.espncdn.com/i/leaguelogos/soccer/500/20296.png" alt="Conference League logo" class="w-6 h-6 object-contain" loading="lazy"></div><h2 class="font-bold text-lg text-gray-900">Conference League</h2></div>
+                </div>
+                <div class="fade-out px-2"><table class="standings-table"><thead><tr><th width="40">#</th><th>Team</th><th class="text-center">P</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center font-bold text-gray-900">Pts</th></tr></thead><tbody id="uecl-standings"><tr><td colspan="7" class="text-center text-gray-500 py-4 text-sm">Loading Conference League standings…</td></tr></tbody></table></div>
+                <button onclick="this.parentElement.classList.toggle('expanded')" class="w-full py-3 text-sm font-semibold text-green-600 bg-gray-100 flex justify-center items-center gap-2"><span class="btn-text">View Table</span><i class="fas fa-chevron-down text-xs"></i></button>
             </div>
 
             <!-- 11. CPL -->
@@ -1085,7 +1115,10 @@
         <a href="#ratings-section" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400 hover:text-white transition"><i class="fas fa-star text-lg mb-1"></i><span class="text-[9px] font-semibold">Ratings</span></a>
         <a href="#standings-section" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400 hover:text-white transition"><i class="fas fa-list-ol text-lg mb-1"></i><span class="text-[9px] font-semibold">Tables</span></a>
         <a href="#scorers-section" class="dock-item flex flex-col items-center justify-center w-16 text-gray-400 hover:text-white transition"><i class="fas fa-futbol text-lg mb-1"></i><span class="text-[9px] font-semibold">Goals</span></a>
-        <a href="/stadium-zone/index.html" aria-label="Stadium Zone" class="flex items-center justify-center w-14 h-14 bg-red-600 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.6)] transform -translate-y-4 border-4 border-[#0a0a0a]"><i class="fas fa-gamepad text-xl"></i></a>
+        <a href="/stadium-zone/index.html" class="flex-shrink-0 flex flex-col items-center justify-center w-14 h-14 bg-red-600 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.6)] transform -translate-y-4 border-4 border-[#0a0a0a]">
+            <i class="fas fa-gamepad text-lg"></i>
+            <span class="text-[8px] font-bold mt-0.5 leading-none text-center">Stadium Zone</span>
+        </a>
     </nav>
 
     <script>
@@ -1195,16 +1228,256 @@
             ]);
         }
 
+        // ------------------------------------------------------------------
+        // StrikerAPI standings (MLS, Argentina, Europa League, Conference League)
+        // Served from a Netlify Blobs cache that refreshes twice a day, so page
+        // loads never spend StrikerAPI credits.
+        // ------------------------------------------------------------------
+        const STRIKER_TABLES = {
+            mls: 'mls-standings',
+            argentina: 'asl-standings',
+            'europa-league': 'uel-standings',
+            'conference-league': 'uecl-standings'
+        };
+
+        function strikerGroupLabel(name) {
+            // Drop trailing season text like "2026" or "2026-2027" from group names
+            return String(name || '').replace(/\s*\d{4}(\s*[-\/]\s*\d{2,4})?\s*$/, '').trim();
+        }
+
+        function renderStrikerStandings(tbody, entry) {
+            const rows = entry && Array.isArray(entry.standings) ? entry.standings : [];
+            if (!rows.length) {
+                tbody.innerHTML = messageRow('Standings not available yet.');
+                return;
+            }
+            // Keep groups (e.g. MLS East/West) in API order, sorted by rank within each group
+            const groups = new Map();
+            rows.forEach(row => {
+                const key = row.group_name || '';
+                if (!groups.has(key)) groups.set(key, []);
+                groups.get(key).push(row);
+            });
+            const showGroupHeaders = groups.size > 1;
+            let rowIndex = 0;
+            let html = '';
+            for (const [groupName, groupRows] of groups) {
+                groupRows.sort((a, b) => (Number(a.rank) || 0) - (Number(b.rank) || 0));
+                if (showGroupHeaders) {
+                    html += `<tr${rowIndex >= VISIBLE_ROWS ? ' class="extra-row"' : ''}><td colspan="7" class="bg-gray-50 text-[11px] font-semibold uppercase tracking-wider text-gray-500">${escapeHtml(strikerGroupLabel(groupName) || 'Group')}</td></tr>`;
+                }
+                groupRows.forEach(row => {
+                    html += `
+                    <tr${rowIndex >= VISIBLE_ROWS ? ' class="extra-row"' : ''}>
+                        <td>${escapeHtml(row.rank)}</td>
+                        <td><span>${escapeHtml(row.display_name || row.abbrev)}</span></td>
+                        <td class="text-center">${escapeHtml(row.played)}</td>
+                        <td class="text-center">${escapeHtml(row.wins)}</td>
+                        <td class="text-center">${escapeHtml(row.draws)}</td>
+                        <td class="text-center">${escapeHtml(row.losses)}</td>
+                        <td class="text-center font-bold text-gray-900">${escapeHtml(row.points)}</td>
+                    </tr>`;
+                    rowIndex++;
+                });
+            }
+            tbody.innerHTML = html;
+        }
+
+        async function loadStrikerStandings() {
+            const tbodies = Object.fromEntries(Object.entries(STRIKER_TABLES).map(([key, id]) => [key, document.getElementById(id)]));
+            try {
+                const res = await fetch('/.netlify/functions/get-striker-cached');
+                if (!res.ok) throw new Error(`get-striker-cached failed (${res.status})`);
+                const { leagues = {} } = await res.json();
+                for (const [key, tbody] of Object.entries(tbodies)) {
+                    if (!tbody) continue;
+                    if (leagues[key]) renderStrikerStandings(tbody, leagues[key]);
+                    else tbody.innerHTML = messageRow('Standings are unavailable right now. Please try again later.');
+                }
+            } catch (err) {
+                console.error(err);
+                Object.values(tbodies).forEach(tbody => {
+                    if (tbody) tbody.innerHTML = messageRow('Standings are unavailable right now. Please try again later.');
+                });
+            }
+        }
+
+        // ------------------------------------------------------------------
+        // Upcoming Big Matches carousel
+        // ------------------------------------------------------------------
+        const COMPETITIONS = {
+            PL: { name: 'Premier League', logo: 'https://crests.football-data.org/PL.png' },
+            SA: { name: 'Serie A', logo: 'https://crests.football-data.org/SA.png' },
+            LL: { name: 'La Liga', logo: 'https://crests.football-data.org/PD.png' },
+            UCL: { name: 'Champions League', logo: 'https://crests.football-data.org/CL.png' }
+        };
+
+        // football-data.org crest IDs
+        const TEAM_CRESTS = {
+            'Arsenal': 57, 'Aston Villa': 58, 'Chelsea': 61, 'Everton': 62, 'Liverpool': 64, 'Man City': 65,
+            'Man United': 66, 'Newcastle': 67, 'Tottenham': 73, 'Brighton': 397, 'Leeds': 341,
+            'Napoli': 113, 'Lazio': 110, 'Inter': 108, 'Como': 7397, 'Fiorentina': 99, 'Juventus': 109,
+            'AC Milan': 98, 'Roma': 100, 'Atalanta': 102, 'Torino': 586,
+            'Atlético Madrid': 78, 'Barcelona': 81, 'Real Madrid': 86, 'Real Betis': 90, 'Villarreal': 94,
+            'Dortmund': 4, 'Bayern Munich': 5, 'Leipzig': 721, 'PSG': 524, 'PSV': 674, 'Club Brugge': 851, 'Sporting': 498
+        };
+
+        // Dates are YYYY-MM-DD (Nov–Dec 2026, Jan 2027)
+        const BIG_MATCHES = [
+            { date: '2026-11-08', home: 'Napoli', away: 'Lazio', comp: 'SA' },
+            { date: '2026-11-08', home: 'Inter', away: 'Como', comp: 'SA' },
+            { date: '2026-11-08', home: 'Fiorentina', away: 'Juventus', comp: 'SA' },
+            { date: '2026-11-08', home: 'Atlético Madrid', away: 'Barcelona', comp: 'LL' },
+            { date: '2026-11-21', home: 'Arsenal', away: 'Newcastle', comp: 'PL' },
+            { date: '2026-11-21', home: 'Chelsea', away: 'Leeds', comp: 'PL' },
+            { date: '2026-11-22', home: 'Inter', away: 'Atalanta', comp: 'SA' },
+            { date: '2026-11-22', home: 'Liverpool', away: 'Man United', comp: 'PL' },
+            { date: '2026-11-24', home: 'Man City', away: 'Napoli', comp: 'UCL' },
+            { date: '2026-11-24', home: 'Arsenal', away: 'Dortmund', comp: 'UCL' },
+            { date: '2026-11-24', home: 'Real Madrid', away: 'PSV', comp: 'UCL' },
+            { date: '2026-11-25', home: 'PSG', away: 'Roma', comp: 'UCL' },
+            { date: '2026-11-25', home: 'Liverpool', away: 'Club Brugge', comp: 'UCL' },
+            { date: '2026-11-25', home: 'Sporting', away: 'Man United', comp: 'UCL' },
+            { date: '2026-11-29', home: 'Juventus', away: 'Como', comp: 'SA' },
+            { date: '2026-11-29', home: 'Everton', away: 'Liverpool', comp: 'PL' },
+            { date: '2026-11-29', home: 'Arsenal', away: 'Man City', comp: 'PL' },
+            { date: '2026-12-05', home: 'Chelsea', away: 'Liverpool', comp: 'PL' },
+            { date: '2026-12-06', home: 'Tottenham', away: 'Arsenal', comp: 'PL' },
+            { date: '2026-12-08', home: 'Roma', away: 'Sporting', comp: 'UCL' },
+            { date: '2026-12-08', home: 'Man United', away: 'Leipzig', comp: 'UCL' },
+            { date: '2026-12-08', home: 'Barcelona', away: 'Man City', comp: 'UCL' },
+            { date: '2026-12-08', home: 'Aston Villa', away: 'PSG', comp: 'UCL' },
+            { date: '2026-12-09', home: 'Inter', away: 'Dortmund', comp: 'UCL' },
+            { date: '2026-12-09', home: 'Arsenal', away: 'Real Madrid', comp: 'UCL' },
+            { date: '2026-12-12', home: 'Man City', away: 'Chelsea', comp: 'PL' },
+            { date: '2026-12-13', home: 'Roma', away: 'Lazio', comp: 'SA' },
+            { date: '2026-12-13', home: 'Napoli', away: 'AC Milan', comp: 'SA' },
+            { date: '2026-12-19', home: 'Roma', away: 'Juventus', comp: 'SA' },
+            { date: '2026-12-19', home: 'Como', away: 'AC Milan', comp: 'SA' },
+            { date: '2026-12-19', home: 'Liverpool', away: 'Tottenham', comp: 'PL' },
+            { date: '2026-12-20', home: 'Arsenal', away: 'Man United', comp: 'PL' },
+            { date: '2026-12-21', home: 'Aston Villa', away: 'Chelsea', comp: 'PL' },
+            { date: '2026-12-29', home: 'Tottenham', away: 'Brighton', comp: 'PL' },
+            { date: '2026-12-29', home: 'Man City', away: 'Everton', comp: 'PL' },
+            { date: '2026-12-30', home: 'Liverpool', away: 'Aston Villa', comp: 'PL' },
+            { date: '2027-01-02', home: 'Man United', away: 'Brighton', comp: 'PL' },
+            { date: '2027-01-03', home: 'Chelsea', away: 'Newcastle', comp: 'PL' },
+            { date: '2027-01-03', home: 'Man City', away: 'Tottenham', comp: 'PL' },
+            { date: '2027-01-05', home: 'AC Milan', away: 'Fiorentina', comp: 'SA' },
+            { date: '2027-01-06', home: 'Juventus', away: 'Torino', comp: 'SA' },
+            { date: '2027-01-06', home: 'Lazio', away: 'Inter', comp: 'SA' },
+            { date: '2027-01-09', home: 'Roma', away: 'AC Milan', comp: 'SA' },
+            { date: '2027-01-10', home: 'Inter', away: 'Juventus', comp: 'SA' },
+            { date: '2027-01-10', home: 'Como', away: 'Lazio', comp: 'SA' },
+            { date: '2027-01-19', home: 'Inter', away: 'Liverpool', comp: 'UCL' },
+            { date: '2027-01-20', home: 'Arsenal', away: 'Real Betis', comp: 'UCL' },
+            { date: '2027-01-20', home: 'Man United', away: 'Bayern Munich', comp: 'UCL' },
+            { date: '2027-01-20', home: 'Como', away: 'PSG', comp: 'UCL' },
+            { date: '2027-01-20', home: 'Sporting', away: 'Barcelona', comp: 'UCL' },
+            { date: '2027-01-23', home: 'Brighton', away: 'Man City', comp: 'PL' },
+            { date: '2027-01-23', home: 'Arsenal', away: 'Newcastle', comp: 'PL' },
+            { date: '2027-01-23', home: 'Liverpool', away: 'Man United', comp: 'PL' },
+            { date: '2027-01-24', home: 'Como', away: 'Napoli', comp: 'SA' },
+            { date: '2027-01-27', home: 'Man City', away: 'Sporting', comp: 'UCL' },
+            { date: '2027-01-27', home: 'Villarreal', away: 'Man United', comp: 'UCL' },
+            { date: '2027-01-27', home: 'Barcelona', away: 'Como', comp: 'UCL' },
+            { date: '2027-01-27', home: 'Bayern Munich', away: 'Real Betis', comp: 'UCL' },
+            { date: '2027-01-30', home: 'Liverpool', away: 'Everton', comp: 'PL' },
+            { date: '2027-01-30', home: 'Arsenal', away: 'Man City', comp: 'PL' },
+            { date: '2027-01-31', home: 'Napoli', away: 'Inter', comp: 'SA' }
+        ];
+        const BIG_MATCHES_SHOWN = 5;
+
+        function matchDate(isoDate) {
+            const [y, m, d] = isoDate.split('-').map(Number);
+            return new Date(y, m - 1, d); // local midnight
+        }
+
+        function teamBadge(team) {
+            const id = TEAM_CRESTS[team];
+            const initials = escapeHtml(team.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase());
+            const fallback = `<span class="text-[10px] font-bold text-gray-300">${initials}</span>`;
+            return `<div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">${
+                id ? `<img src="https://crests.football-data.org/${id}.png" alt="${escapeHtml(team)} crest" class="w-8 h-8 object-contain" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'text-[10px] font-bold text-gray-300',textContent:'${initials}'}))">` : fallback
+            }</div>`;
+        }
+
+        function renderBigMatches() {
+            const carousel = document.getElementById('big-matches-carousel');
+            if (!carousel) return;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            // A match stays "upcoming" for its whole matchday
+            const upcoming = BIG_MATCHES
+                .filter(m => matchDate(m.date) >= today)
+                .sort((a, b) => matchDate(a.date) - matchDate(b.date))
+                .slice(0, BIG_MATCHES_SHOWN);
+
+            if (!upcoming.length) {
+                carousel.innerHTML = '<div class="bg-[#151515] border border-white/5 rounded-xl p-4 w-full text-center text-gray-400 text-sm">No big matches scheduled right now. Check back soon.</div>';
+                return;
+            }
+
+            const dateFmt = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            carousel.innerHTML = upcoming.map(m => {
+                const comp = COMPETITIONS[m.comp] || { name: m.comp };
+                const isToday = matchDate(m.date).getTime() === today.getTime();
+                return `
+                <article class="snap-start flex-shrink-0 w-64 md:w-72 bg-[#151515] border border-white/5 rounded-xl p-4 text-white shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2 min-w-0">
+                            ${comp.logo ? `<span class="w-6 h-6 rounded-full bg-white flex items-center justify-center flex-shrink-0"><img src="${comp.logo}" alt="" class="w-4 h-4 object-contain" loading="lazy"></span>` : ''}
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-gray-400 truncate">${escapeHtml(comp.name)}</span>
+                        </div>
+                        ${isToday ? '<span class="text-[10px] font-bold uppercase bg-red-600 text-white px-2 py-0.5 rounded-full">Today</span>' : ''}
+                    </div>
+                    <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+                        <div class="flex flex-col items-center text-center gap-2 min-w-0">
+                            ${teamBadge(m.home)}
+                            <span class="text-sm font-semibold leading-tight">${escapeHtml(m.home)}</span>
+                        </div>
+                        <span class="font-anton text-lg text-gray-500">VS</span>
+                        <div class="flex flex-col items-center text-center gap-2 min-w-0">
+                            ${teamBadge(m.away)}
+                            <span class="text-sm font-semibold leading-tight">${escapeHtml(m.away)}</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-center gap-2 text-xs text-gray-400">
+                        <i class="far fa-calendar"></i>
+                        <time datetime="${m.date}">${dateFmt.format(matchDate(m.date))}</time>
+                    </div>
+                </article>`;
+            }).join('');
+        }
+
+        function setupCarouselButtons() {
+            const carousel = document.getElementById('big-matches-carousel');
+            document.querySelectorAll('[data-carousel-dir]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const card = carousel.querySelector('article');
+                    const step = card ? card.offsetWidth + 12 : 280;
+                    carousel.scrollBy({ left: step * Number(btn.dataset.carouselDir), behavior: 'smooth' });
+                });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            renderBigMatches();
+            setupCarouselButtons();
+
             fetchLeagueData('PL', 'pl-standings', 'pl-scorers');
             fetchLeagueData('SA', 'sa-standings', 'sa-scorers');
             fetchLeagueData('PD', 'pd-standings', 'pd-scorers');
             fetchLeagueData('FL1', 'fl1-standings', 'fl1-scorers');
             fetchLeagueData('BL1', 'bl1-standings', 'bl1-scorers');
             fetchLeagueData('CL', 'cl-standings', 'cl-scorers');
-            fetchLeagueData('ASL', 'asl-standings', 'asl-scorers');
-            fetchLeagueData('UEL', 'uel-standings', 'uel-scorers');
             fetchLeagueData('CPL', 'cpl-standings', 'cpl-scorers');
+
+            // MLS, Argentina, Europa League and Conference League standings come from the StrikerAPI cache
+            loadStrikerStandings();
+            // Top scorers for these leagues are unchanged and still come from football-data.org
+            loadScorers('ASL', 'asl-scorers');
+            loadScorers('UEL', 'uel-scorers');
         });
 
         function toggleRatings(button) {

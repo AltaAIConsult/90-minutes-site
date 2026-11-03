@@ -31,7 +31,7 @@
         /* Taller cards to fit the full paragraphs */
         .flip-card { 
             perspective: 1200px; 
-            height: 460px; 
+            height: 480px; 
         }
         .flip-card-inner {
             position: relative;
@@ -66,6 +66,17 @@
             padding: 1.25rem;
             text-align: left;
             overflow-y: auto; /* Allows scrolling if text is long */
+        }
+
+        /* THE FIX: Full opacity, full size photo */
+        .player-photo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
         }
 
         /* Screen Transitions */
@@ -357,15 +368,17 @@
                 <div class="flip-card" id="card-${index}" onclick="toggleFlip(${index}, event)">
                     <div class="flip-card-inner">
                         
-                        <!-- FRONT: CLUB LOGO PLACEHOLDER (Until Agent fixes photos) -->
+                        <!-- FRONT: FULL PHOTO & GRADIENT OVERLAY -->
                         <div class="flip-card-front flex flex-col justify-end p-4">
-                            <div class="absolute inset-0 flex items-center justify-center opacity-20">
-                                <img src="${p.img}" alt="${p.name}" class="w-32 h-32 object-contain">
-                            </div>
+                            <img src="${p.img}" alt="${p.name}" class="player-photo" onerror="this.style.display='none'">
+                            
+                            <!-- Dark gradient at the bottom so the text is readable -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent pointer-events-none"></div>
+                            
                             <div class="relative z-10 text-left">
-                                <span class="text-[10px] font-bold text-yellow-500/60 mb-1 block">#${index + 1}</span>
+                                <span class="text-[10px] font-bold text-yellow-500/80 mb-1 block">#${index + 1}</span>
                                 <h3 class="font-elegant text-lg md:text-xl text-white leading-tight mb-1">${p.name}</h3>
-                                <p class="text-yellow-500/80 text-[10px] font-medium tracking-wide uppercase">${p.club}</p>
+                                <p class="text-yellow-500/90 text-[10px] font-semibold tracking-wide uppercase">${p.club}</p>
                             </div>
                         </div>
 

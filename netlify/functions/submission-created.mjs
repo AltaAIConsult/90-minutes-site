@@ -51,7 +51,7 @@ export const handler = async (event, context) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: '"Stadium Zone" <stadiumzone@90minutesormore.com>',
+        from: '"Stadium Zone" <stadiumzone@send.90minutesormore.com>',
         to: [email],
         reply_to: "hello@90minutesormore.com",
         subject: `Thank you for voting, ${player}!`,

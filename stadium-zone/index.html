@@ -72,9 +72,9 @@
             </div>
             <span class="font-anton text-xl tracking-wide">STADIUM ZONE</span>
         </div>
-        <div class="w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center">
-            <i class="fas fa-user text-gray-400 text-xs"></i>
-        </div>
+        <button type="button" onclick="openClubhouseModal()" aria-label="Join the 90M Clubhouse" title="Join the 90M Clubhouse" class="w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center hover:bg-gray-700 transition">
+            <i class="fas fa-shield-alt text-gray-400 text-xs"></i>
+        </button>
     </header>
 
     <!-- Main Content Area (Wider on Desktop) -->
@@ -644,6 +644,107 @@
                 }
             });
         });
+    </script>
+
+    <!-- Clubhouse Registration Popup -->
+    <div id="clubhouse-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="clubhouse-modal-title">
+        <div class="relative w-full max-w-sm rounded-2xl p-6 shadow-2xl bg-[#151515] border border-white/10 text-white">
+            <button type="button" onclick="closeClubhouseModal()" aria-label="Close" class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition text-gray-400 hover:text-white hover:bg-white/10"><i class="fas fa-times"></i></button>
+            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-red-600 text-white"><i class="fas fa-shield-alt text-lg"></i></div>
+            <h2 id="clubhouse-modal-title" class="font-anton text-2xl tracking-wide mb-1">Join the 90M Clubhouse</h2>
+            <p class="text-sm mb-5 text-gray-400">Pick your club and get closer to the game.</p>
+            <form id="clubhouse-form" name="clubhouse-registration" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="space-y-4">
+                <input type="hidden" name="form-name" value="clubhouse-registration">
+                <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
+                <div>
+                    <label for="clubhouse-email" class="block text-xs font-semibold uppercase tracking-wider mb-1 text-gray-400">Email</label>
+                    <input id="clubhouse-email" type="email" name="email" required placeholder="you@example.com" class="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition bg-black/40 border border-white/15 text-white placeholder-gray-500 focus:border-red-500">
+                </div>
+                <div>
+                    <label for="clubhouse-club" class="block text-xs font-semibold uppercase tracking-wider mb-1 text-gray-400">Favorite Club</label>
+                    <select id="clubhouse-club" name="favorite-club" class="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition bg-black/40 border border-white/15 text-white placeholder-gray-500 focus:border-red-500">
+                        <option value="">Choose your club</option>
+                        <option value="Arsenal">Arsenal</option>
+                        <option value="Chelsea">Chelsea</option>
+                        <option value="Liverpool">Liverpool</option>
+                        <option value="Man City">Man City</option>
+                        <option value="Man United">Man United</option>
+                        <option value="Tottenham">Tottenham</option>
+                        <option value="Newcastle">Newcastle</option>
+                        <option value="Aston Villa">Aston Villa</option>
+                        <option value="Inter">Inter</option>
+                        <option value="Milan">Milan</option>
+                        <option value="Juventus">Juventus</option>
+                        <option value="Napoli">Napoli</option>
+                        <option value="Roma">Roma</option>
+                        <option value="Real Madrid">Real Madrid</option>
+                        <option value="Barcelona">Barcelona</option>
+                        <option value="Atlético Madrid">Atlético Madrid</option>
+                        <option value="Bayern Munich">Bayern Munich</option>
+                        <option value="Dortmund">Dortmund</option>
+                        <option value="PSG">PSG</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <label class="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" name="newsletter" value="yes" class="w-4 h-4 accent-red-600">
+                    <span>Sign me up for the 90M Newsletter</span>
+                </label>
+                <button type="submit" class="clubhouse-submit w-full font-bold py-3 rounded-full text-sm transition bg-red-600 hover:bg-red-500 text-white">Register My Clubhouse</button>
+                <p class="clubhouse-error hidden text-center text-red-500 text-xs">Something went wrong. Please try again.</p>
+            </form>
+            <div id="clubhouse-success" class="hidden text-center py-6">
+                <i class="fas fa-check-circle text-green-500 text-4xl mb-3"></i>
+                <p class="font-anton text-2xl tracking-wide">Welcome to the Clubhouse!</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const modal = document.getElementById('clubhouse-modal');
+            const form = document.getElementById('clubhouse-form');
+            const success = document.getElementById('clubhouse-success');
+            window.openClubhouseModal = function () {
+                form.reset();
+                form.classList.remove('hidden');
+                success.classList.add('hidden');
+                form.querySelector('.clubhouse-error').classList.add('hidden');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => document.getElementById('clubhouse-email').focus(), 50);
+            };
+            window.closeClubhouseModal = function () {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            };
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeClubhouseModal(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeClubhouseModal(); });
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = form.querySelector('.clubhouse-submit');
+                const error = form.querySelector('.clubhouse-error');
+                btn.disabled = true;
+                btn.textContent = 'Registering…';
+                error.classList.add('hidden');
+                try {
+                    const res = await fetch('/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams(new FormData(form)).toString()
+                    });
+                    if (!res.ok) throw new Error(`Registration failed (${res.status})`);
+                    form.classList.add('hidden');
+                    success.classList.remove('hidden');
+                    setTimeout(closeClubhouseModal, 2500);
+                } catch (err) {
+                    console.error(err);
+                    error.classList.remove('hidden');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Register My Clubhouse';
+                }
+            });
+        })();
     </script>
 </body>
 </html>

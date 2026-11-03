@@ -72,9 +72,12 @@
             </div>
             <span class="font-anton text-xl tracking-wide">STADIUM ZONE</span>
         </div>
-        <button type="button" onclick="openClubhouseModal()" aria-label="Join the 90M Clubhouse" title="Join the 90M Clubhouse" class="w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center hover:bg-gray-700 transition">
-            <i class="fas fa-shield-alt text-gray-400 text-xs"></i>
-        </button>
+        <a href="/stadium-zone/clubhouse.html" onclick="window.location.href = '/stadium-zone/clubhouse.html'; return false;" aria-label="Clubs: join your club's Clubhouse" title="Join your Clubhouse" class="flex flex-col items-center gap-0.5 group">
+            <span class="w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center group-hover:bg-gray-700 transition">
+                <i class="fas fa-shield-alt text-gray-400 text-xs"></i>
+            </span>
+            <span class="text-[10px] font-semibold leading-none text-gray-400">Clubs</span>
+        </a>
     </header>
 
     <!-- Main Content Area (Wider on Desktop) -->
@@ -217,7 +220,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <form name="poll-serie-a-2026" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5">
+                <form name="poll-serie-a-2026" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5" data-poll-title="Serie A 2026">
                     <input type="hidden" name="form-name" value="poll-serie-a-2026">
                     <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
                     <div class="flex items-center gap-3 mb-3">
@@ -235,14 +238,6 @@
                             <span class="truncate">Inter</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Milan" class="accent-red-600" required>
-                            <span class="truncate">Milan</span>
-                        </label>
-                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Juventus" class="accent-red-600" required>
-                            <span class="truncate">Juventus</span>
-                        </label>
-                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Napoli" class="accent-red-600" required>
                             <span class="truncate">Napoli</span>
                         </label>
@@ -251,16 +246,28 @@
                             <span class="truncate">Roma</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Lazio" class="accent-red-600" required>
-                            <span class="truncate">Lazio</span>
+                            <input type="radio" name="vote" value="Como" class="accent-red-600" required>
+                            <span class="truncate">Como</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Milan" class="accent-red-600" required>
+                            <span class="truncate">Milan</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Juventus" class="accent-red-600" required>
+                            <span class="truncate">Juventus</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Atalanta" class="accent-red-600" required>
                             <span class="truncate">Atalanta</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Fiorentina" class="accent-red-600" required>
-                            <span class="truncate">Fiorentina</span>
+                            <input type="radio" name="vote" value="Bologna" class="accent-red-600" required>
+                            <span class="truncate">Bologna</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Lazio" class="accent-red-600" required>
+                            <span class="truncate">Lazio</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Other" class="accent-red-600" required>
@@ -268,10 +275,10 @@
                         </label>
                     </div>
                     <button type="submit" class="poll-submit w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 rounded-full text-sm transition">Vote</button>
-                    <p class="poll-success hidden text-center text-green-400 font-bold text-sm py-2"><i class="fas fa-check-circle mr-1"></i> Vote recorded!</p>
                     <p class="poll-error hidden text-center text-red-400 text-xs mt-2">Couldn't record your vote. Please try again.</p>
+                    <div class="poll-results hidden" aria-live="polite"></div>
                 </form>
-                <form name="poll-premier-league-2026" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5">
+                <form name="poll-premier-league-2026" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5" data-poll-title="Premier League 2026">
                     <input type="hidden" name="form-name" value="poll-premier-league-2026">
                     <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
                     <div class="flex items-center gap-3 mb-3">
@@ -289,10 +296,6 @@
                             <span class="truncate">Arsenal</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Liverpool" class="accent-red-600" required>
-                            <span class="truncate">Liverpool</span>
-                        </label>
-                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Man City" class="accent-red-600" required>
                             <span class="truncate">Man City</span>
                         </label>
@@ -305,16 +308,24 @@
                             <span class="truncate">Aston Villa</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Chelsea" class="accent-red-600" required>
-                            <span class="truncate">Chelsea</span>
+                            <input type="radio" name="vote" value="Liverpool" class="accent-red-600" required>
+                            <span class="truncate">Liverpool</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Newcastle" class="accent-red-600" required>
-                            <span class="truncate">Newcastle</span>
+                            <input type="radio" name="vote" value="Bournemouth" class="accent-red-600" required>
+                            <span class="truncate">Bournemouth</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Tottenham" class="accent-red-600" required>
-                            <span class="truncate">Tottenham</span>
+                            <input type="radio" name="vote" value="Sunderland" class="accent-red-600" required>
+                            <span class="truncate">Sunderland</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Brighton" class="accent-red-600" required>
+                            <span class="truncate">Brighton</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Brentford" class="accent-red-600" required>
+                            <span class="truncate">Brentford</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Other" class="accent-red-600" required>
@@ -322,10 +333,10 @@
                         </label>
                     </div>
                     <button type="submit" class="poll-submit w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 rounded-full text-sm transition">Vote</button>
-                    <p class="poll-success hidden text-center text-green-400 font-bold text-sm py-2"><i class="fas fa-check-circle mr-1"></i> Vote recorded!</p>
                     <p class="poll-error hidden text-center text-red-400 text-xs mt-2">Couldn't record your vote. Please try again.</p>
+                    <div class="poll-results hidden" aria-live="polite"></div>
                 </form>
-                <form name="poll-la-liga-2026" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5">
+                <form name="poll-la-liga-2026" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5" data-poll-title="La Liga 2026">
                     <input type="hidden" name="form-name" value="poll-la-liga-2026">
                     <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
                     <div class="flex items-center gap-3 mb-3">
@@ -343,32 +354,36 @@
                             <span class="truncate">Barcelona</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Atlético Madrid" class="accent-red-600" required>
-                            <span class="truncate">Atlético Madrid</span>
-                        </label>
-                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Real Madrid" class="accent-red-600" required>
                             <span class="truncate">Real Madrid</span>
-                        </label>
-                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Real Betis" class="accent-red-600" required>
-                            <span class="truncate">Real Betis</span>
-                        </label>
-                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Real Sociedad" class="accent-red-600" required>
-                            <span class="truncate">Real Sociedad</span>
-                        </label>
-                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Sevilla" class="accent-red-600" required>
-                            <span class="truncate">Sevilla</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Villarreal" class="accent-red-600" required>
                             <span class="truncate">Villarreal</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Athletic Club" class="accent-red-600" required>
-                            <span class="truncate">Athletic Club</span>
+                            <input type="radio" name="vote" value="Atlético Madrid" class="accent-red-600" required>
+                            <span class="truncate">Atlético Madrid</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Real Betis" class="accent-red-600" required>
+                            <span class="truncate">Real Betis</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Celta" class="accent-red-600" required>
+                            <span class="truncate">Celta</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Getafe" class="accent-red-600" required>
+                            <span class="truncate">Getafe</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Rayo Vallecano" class="accent-red-600" required>
+                            <span class="truncate">Rayo Vallecano</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Valencia" class="accent-red-600" required>
+                            <span class="truncate">Valencia</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Other" class="accent-red-600" required>
@@ -376,10 +391,10 @@
                         </label>
                     </div>
                     <button type="submit" class="poll-submit w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 rounded-full text-sm transition">Vote</button>
-                    <p class="poll-success hidden text-center text-green-400 font-bold text-sm py-2"><i class="fas fa-check-circle mr-1"></i> Vote recorded!</p>
                     <p class="poll-error hidden text-center text-red-400 text-xs mt-2">Couldn't record your vote. Please try again.</p>
+                    <div class="poll-results hidden" aria-live="polite"></div>
                 </form>
-                <form name="poll-champions-league-2026-27" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5">
+                <form name="poll-champions-league-2026-27" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5" data-poll-title="Champions League 2026/27">
                     <input type="hidden" name="form-name" value="poll-champions-league-2026-27">
                     <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
                     <div class="flex items-center gap-3 mb-3">
@@ -397,32 +412,60 @@
                             <span class="truncate">Arsenal</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Liverpool" class="accent-red-600" required>
-                            <span class="truncate">Liverpool</span>
+                            <input type="radio" name="vote" value="Bayern Munich" class="accent-red-600" required>
+                            <span class="truncate">Bayern Munich</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Man City" class="accent-red-600" required>
                             <span class="truncate">Man City</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Man United" class="accent-red-600" required>
-                            <span class="truncate">Man United</span>
+                            <input type="radio" name="vote" value="Barcelona" class="accent-red-600" required>
+                            <span class="truncate">Barcelona</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Aston Villa" class="accent-red-600" required>
-                            <span class="truncate">Aston Villa</span>
+                            <input type="radio" name="vote" value="PSG" class="accent-red-600" required>
+                            <span class="truncate">PSG</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Bayern Munich" class="accent-red-600" required>
-                            <span class="truncate">Bayern Munich</span>
+                            <input type="radio" name="vote" value="Liverpool" class="accent-red-600" required>
+                            <span class="truncate">Liverpool</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Real Madrid" class="accent-red-600" required>
+                            <span class="truncate">Real Madrid</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Inter" class="accent-red-600" required>
                             <span class="truncate">Inter</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Real Madrid" class="accent-red-600" required>
-                            <span class="truncate">Real Madrid</span>
+                            <input type="radio" name="vote" value="Atlético Madrid" class="accent-red-600" required>
+                            <span class="truncate">Atlético Madrid</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Napoli" class="accent-red-600" required>
+                            <span class="truncate">Napoli</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Juventus" class="accent-red-600" required>
+                            <span class="truncate">Juventus</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Dortmund" class="accent-red-600" required>
+                            <span class="truncate">Dortmund</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Chelsea" class="accent-red-600" required>
+                            <span class="truncate">Chelsea</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Aston Villa" class="accent-red-600" required>
+                            <span class="truncate">Aston Villa</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Man United" class="accent-red-600" required>
+                            <span class="truncate">Man United</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Other" class="accent-red-600" required>
@@ -430,10 +473,10 @@
                         </label>
                     </div>
                     <button type="submit" class="poll-submit w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 rounded-full text-sm transition">Vote</button>
-                    <p class="poll-success hidden text-center text-green-400 font-bold text-sm py-2"><i class="fas fa-check-circle mr-1"></i> Vote recorded!</p>
                     <p class="poll-error hidden text-center text-red-400 text-xs mt-2">Couldn't record your vote. Please try again.</p>
+                    <div class="poll-results hidden" aria-live="polite"></div>
                 </form>
-                <form name="poll-europa-league-2026-27" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5">
+                <form name="poll-europa-league-2026-27" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5" data-poll-title="Europa League 2026/27">
                     <input type="hidden" name="form-name" value="poll-europa-league-2026-27">
                     <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
                     <div class="flex items-center gap-3 mb-3">
@@ -447,36 +490,56 @@
                     </div>
                     <div class="poll-options grid grid-cols-2 gap-2 mb-3">
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Milan" class="accent-red-600" required>
-                            <span class="truncate">Milan</span>
+                            <input type="radio" name="vote" value="Aston Villa" class="accent-red-600" required>
+                            <span class="truncate">Aston Villa</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Juventus" class="accent-red-600" required>
-                            <span class="truncate">Juventus</span>
-                        </label>
-                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Leverkusen" class="accent-red-600" required>
-                            <span class="truncate">Leverkusen</span>
-                        </label>
-                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Real Sociedad" class="accent-red-600" required>
-                            <span class="truncate">Real Sociedad</span>
+                            <input type="radio" name="vote" value="Roma" class="accent-red-600" required>
+                            <span class="truncate">Roma</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Lyon" class="accent-red-600" required>
                             <span class="truncate">Lyon</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Marseille" class="accent-red-600" required>
-                            <span class="truncate">Marseille</span>
+                            <input type="radio" name="vote" value="Porto" class="accent-red-600" required>
+                            <span class="truncate">Porto</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Benfica" class="accent-red-600" required>
-                            <span class="truncate">Benfica</span>
+                            <input type="radio" name="vote" value="Real Betis" class="accent-red-600" required>
+                            <span class="truncate">Real Betis</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
-                            <input type="radio" name="vote" value="Roma" class="accent-red-600" required>
-                            <span class="truncate">Roma</span>
+                            <input type="radio" name="vote" value="Stuttgart" class="accent-red-600" required>
+                            <span class="truncate">Stuttgart</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Feyenoord" class="accent-red-600" required>
+                            <span class="truncate">Feyenoord</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Celtic" class="accent-red-600" required>
+                            <span class="truncate">Celtic</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Lille" class="accent-red-600" required>
+                            <span class="truncate">Lille</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Nottingham Forest" class="accent-red-600" required>
+                            <span class="truncate">Nottingham Forest</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Bologna" class="accent-red-600" required>
+                            <span class="truncate">Bologna</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Celta" class="accent-red-600" required>
+                            <span class="truncate">Celta</span>
+                        </label>
+                        <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
+                            <input type="radio" name="vote" value="Braga" class="accent-red-600" required>
+                            <span class="truncate">Braga</span>
                         </label>
                         <label class="poll-option flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm cursor-pointer">
                             <input type="radio" name="vote" value="Other" class="accent-red-600" required>
@@ -484,10 +547,10 @@
                         </label>
                     </div>
                     <button type="submit" class="poll-submit w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 rounded-full text-sm transition">Vote</button>
-                    <p class="poll-success hidden text-center text-green-400 font-bold text-sm py-2"><i class="fas fa-check-circle mr-1"></i> Vote recorded!</p>
                     <p class="poll-error hidden text-center text-red-400 text-xs mt-2">Couldn't record your vote. Please try again.</p>
+                    <div class="poll-results hidden" aria-live="polite"></div>
                 </form>
-                <form name="poll-copa-libertadores" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5">
+                <form name="poll-copa-libertadores" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5" data-poll-title="Copa Libertadores">
                     <input type="hidden" name="form-name" value="poll-copa-libertadores">
                     <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
                     <div class="flex items-center gap-3 mb-3">
@@ -510,10 +573,10 @@
                         </label>
                     </div>
                     <button type="submit" class="poll-submit w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 rounded-full text-sm transition">Vote</button>
-                    <p class="poll-success hidden text-center text-green-400 font-bold text-sm py-2"><i class="fas fa-check-circle mr-1"></i> Vote recorded!</p>
                     <p class="poll-error hidden text-center text-red-400 text-xs mt-2">Couldn't record your vote. Please try again.</p>
+                    <div class="poll-results hidden" aria-live="polite"></div>
                 </form>
-                <form name="poll-copa-sudamericana" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5">
+                <form name="poll-copa-sudamericana" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="poll-form game-card rounded-xl p-4 md:p-5" data-poll-title="Copa Sudamericana">
                     <input type="hidden" name="form-name" value="poll-copa-sudamericana">
                     <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
                     <div class="flex items-center gap-3 mb-3">
@@ -536,8 +599,8 @@
                         </label>
                     </div>
                     <button type="submit" class="poll-submit w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 rounded-full text-sm transition">Vote</button>
-                    <p class="poll-success hidden text-center text-green-400 font-bold text-sm py-2"><i class="fas fa-check-circle mr-1"></i> Vote recorded!</p>
                     <p class="poll-error hidden text-center text-red-400 text-xs mt-2">Couldn't record your vote. Please try again.</p>
+                    <div class="poll-results hidden" aria-live="polite"></div>
                 </form>
             </div>
         </div>
@@ -567,7 +630,7 @@
         </a>
         
         <!-- Center Accent Button -->
-        <a href="#" class="flex-shrink-0 flex flex-col items-center justify-center w-14 h-14 bg-red-600 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.6)] transform -translate-y-4 border-4 border-[#0a0a0a]">
+        <a href="clubhouse.html" class="flex-shrink-0 flex flex-col items-center justify-center w-14 h-14 bg-red-600 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.6)] transform -translate-y-4 border-4 border-[#0a0a0a]">
             <i class="fas fa-shield-alt text-lg"></i>
             <span class="text-[8px] font-bold mt-0.5 leading-none">Clubs</span>
         </a>
@@ -601,26 +664,124 @@
                 }
             });
         });
-        // Fan polls: submit to Netlify Forms via AJAX and confirm on the card
+        // ---- Fan polls: Netlify Forms vote + live percentage results ----
         const POLL_STORAGE_KEY = 'stadiumZonePollVotes';
-        const savedVotes = JSON.parse(localStorage.getItem(POLL_STORAGE_KEY) || '{}');
+        let savedVotes = {};
+        try { savedVotes = JSON.parse(localStorage.getItem(POLL_STORAGE_KEY) || '{}') || {}; } catch (e) { savedVotes = {}; }
+        const votedChoice = (name) => {
+            const v = savedVotes[name];
+            return typeof v === 'string' ? v : (v && v.choice) || null;
+        };
 
-        function markVoted(form, choice) {
-            form.querySelectorAll('input[type="radio"]').forEach(r => {
-                r.disabled = true;
-                if (r.value === choice) r.checked = true;
-            });
-            form.querySelector('.poll-submit').classList.add('hidden');
-            form.querySelector('.poll-error').classList.add('hidden');
-            form.querySelector('.poll-success').classList.remove('hidden');
+        const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+        async function fetchPollResults(formName) {
+            const url = formName ? `/api/poll-results?form=${encodeURIComponent(formName)}` : '/api/poll-results';
+            const res = await fetch(url, { cache: 'no-store' });
+            if (!res.ok) throw new Error(`Results failed (${res.status})`);
+            return (await res.json()).polls || {};
         }
 
-        document.querySelectorAll('.poll-form').forEach(form => {
-            const name = form.getAttribute('name');
-            if (savedVotes[name]) markVoted(form, savedVotes[name]);
+        // Swap the radio buttons for a percentage bar chart plus the two CTAs
+        function renderResults(form, choice, poll, includeOwnVote) {
+            const options = [...form.querySelectorAll('input[name="vote"]')].map(r => r.value);
+            const counts = Object.fromEntries(options.map(o => [o, 0]));
+            Object.entries((poll && poll.counts) || {}).forEach(([k, n]) => { counts[k] = (counts[k] || 0) + n; });
+            let total = Object.values(counts).reduce((a, b) => a + b, 0);
+            // A brand-new vote may not be tallied yet (votes are recorded asynchronously)
+            if (choice && (includeOwnVote || total === 0)) { counts[choice] = (counts[choice] || 0) + 1; total++; }
 
+            const rows = Object.entries(counts)
+                .map(([option, n]) => ({ option, n, pct: total ? Math.round((n / total) * 100) : 0 }))
+                .sort((a, b) => b.n - a.n || options.indexOf(a.option) - options.indexOf(b.option));
+
+            const bars = rows.map(({ option, pct }) => {
+                const mine = option === choice;
+                return `<div class="mb-2">
+                    <div class="flex justify-between text-xs md:text-sm mb-1 ${mine ? 'text-white font-bold' : 'text-gray-300'}">
+                        <span class="truncate pr-2">${escapeHtml(option)}${mine ? ' <i class="fas fa-check-circle text-red-500 ml-1" title="Your vote"></i>' : ''}</span>
+                        <span class="font-bold tabular-nums">${pct}%</span>
+                    </div>
+                    <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div class="poll-bar h-full rounded-full ${mine ? 'bg-red-600' : 'bg-gray-500'}" style="width:0%;transition:width .8s cubic-bezier(.2,.8,.2,1)" data-pct="${pct}"></div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            const box = form.querySelector('.poll-results');
+            box.innerHTML = `
+                <div class="flex justify-between items-center mb-3 text-[10px] md:text-xs uppercase tracking-wider font-bold">
+                    <span class="text-green-400"><i class="fas fa-check-circle mr-1"></i>You voted ${escapeHtml(choice || '')}</span>
+                    <span class="text-gray-500">${total} vote${total === 1 ? '' : 's'}</span>
+                </div>
+                ${bars}
+                <div class="grid grid-cols-2 gap-2 mt-4">
+                    <a href="clubhouse.html" class="text-center bg-white hover:bg-gray-200 text-black font-bold py-2 rounded-full text-xs md:text-sm transition"><i class="fas fa-envelope mr-1"></i> Sign up for news</a>
+                    <button type="button" class="poll-share bg-red-600 hover:bg-red-500 text-white font-bold py-2 rounded-full text-xs md:text-sm transition"><i class="fas fa-share-nodes mr-1"></i> Share with a friend</button>
+                </div>
+                <p class="poll-share-toast hidden text-center text-green-400 text-xs mt-2">Link copied. Send it to a friend!</p>`;
+
+            form.querySelector('.poll-options').classList.add('hidden');
+            form.querySelector('.poll-submit').classList.add('hidden');
+            form.querySelector('.poll-error').classList.add('hidden');
+            box.classList.remove('hidden');
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                box.querySelectorAll('.poll-bar').forEach(b => { b.style.width = b.dataset.pct + '%'; });
+            }));
+
+            box.querySelector('.poll-share').addEventListener('click', () => sharePoll(form, choice));
+        }
+
+        function renderResultsError(form, choice) {
+            const box = form.querySelector('.poll-results');
+            renderResults(form, choice, null, true);
+            box.insertAdjacentHTML('afterbegin', '<p class="text-center text-gray-500 text-[10px] mb-2">Live results are temporarily unavailable.</p>');
+        }
+
+        async function sharePoll(form, choice) {
+            const title = form.dataset.pollTitle || 'Fan Poll';
+            const url = `${location.origin}/stadium-zone/index.html#polls-section`;
+            const text = `I picked ${choice} in the ${title} fan poll on 90 Minutes or More. Who's your pick?`;
+            if (navigator.share) {
+                try { await navigator.share({ title: `${title} Fan Poll`, text, url }); } catch (e) { /* cancelled */ }
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(`${text} ${url}`);
+                form.querySelector('.poll-share-toast').classList.remove('hidden');
+            } catch (e) {
+                window.prompt('Copy this link:', `${text} ${url}`);
+            }
+        }
+
+        const pollForms = [...document.querySelectorAll('.poll-form')];
+
+        // Already voted (remembered in localStorage): show results instead of the voting form
+        const alreadyVoted = pollForms.filter(form => votedChoice(form.getAttribute('name')));
+        if (alreadyVoted.length) {
+            alreadyVoted.forEach(form => {
+                form.querySelector('.poll-options').classList.add('hidden');
+                form.querySelector('.poll-submit').classList.add('hidden');
+                const box = form.querySelector('.poll-results');
+                box.innerHTML = '<p class="text-center text-gray-500 text-xs py-6"><i class="fas fa-spinner fa-spin mr-1"></i> Loading results…</p>';
+                box.classList.remove('hidden');
+            });
+            fetchPollResults()
+                .then(polls => alreadyVoted.forEach(form => {
+                    const name = form.getAttribute('name');
+                    renderResults(form, votedChoice(name), polls[name], false);
+                }))
+                .catch(err => {
+                    console.error(err);
+                    alreadyVoted.forEach(form => renderResultsError(form, votedChoice(form.getAttribute('name'))));
+                });
+        }
+
+        pollForms.forEach(form => {
+            const name = form.getAttribute('name');
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                if (votedChoice(name)) return;
                 const btn = form.querySelector('.poll-submit');
                 const choice = new FormData(form).get('vote');
                 if (!choice) return;
@@ -633,118 +794,24 @@
                         body: new URLSearchParams(new FormData(form)).toString()
                     });
                     if (!res.ok) throw new Error(`Vote failed (${res.status})`);
-                    savedVotes[name] = choice;
-                    localStorage.setItem(POLL_STORAGE_KEY, JSON.stringify(savedVotes));
-                    markVoted(form, choice);
                 } catch (err) {
                     console.error(err);
                     form.querySelector('.poll-error').classList.remove('hidden');
                     btn.disabled = false;
                     btn.textContent = 'Vote';
+                    return;
+                }
+                savedVotes[name] = { choice, at: Date.now() };
+                localStorage.setItem(POLL_STORAGE_KEY, JSON.stringify(savedVotes));
+                try {
+                    const polls = await fetchPollResults(name);
+                    renderResults(form, choice, polls[name], true);
+                } catch (err) {
+                    console.error(err);
+                    renderResultsError(form, choice);
                 }
             });
         });
-    </script>
-
-    <!-- Clubhouse Registration Popup -->
-    <div id="clubhouse-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="clubhouse-modal-title">
-        <div class="relative w-full max-w-sm rounded-2xl p-6 shadow-2xl bg-[#151515] border border-white/10 text-white">
-            <button type="button" onclick="closeClubhouseModal()" aria-label="Close" class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition text-gray-400 hover:text-white hover:bg-white/10"><i class="fas fa-times"></i></button>
-            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-red-600 text-white"><i class="fas fa-shield-alt text-lg"></i></div>
-            <h2 id="clubhouse-modal-title" class="font-anton text-2xl tracking-wide mb-1">Join the 90M Clubhouse</h2>
-            <p class="text-sm mb-5 text-gray-400">Pick your club and get closer to the game.</p>
-            <form id="clubhouse-form" name="clubhouse-registration" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="space-y-4">
-                <input type="hidden" name="form-name" value="clubhouse-registration">
-                <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
-                <div>
-                    <label for="clubhouse-email" class="block text-xs font-semibold uppercase tracking-wider mb-1 text-gray-400">Email</label>
-                    <input id="clubhouse-email" type="email" name="email" required placeholder="you@example.com" class="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition bg-black/40 border border-white/15 text-white placeholder-gray-500 focus:border-red-500">
-                </div>
-                <div>
-                    <label for="clubhouse-club" class="block text-xs font-semibold uppercase tracking-wider mb-1 text-gray-400">Favorite Club</label>
-                    <select id="clubhouse-club" name="favorite-club" class="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition bg-black/40 border border-white/15 text-white placeholder-gray-500 focus:border-red-500">
-                        <option value="">Choose your club</option>
-                        <option value="Arsenal">Arsenal</option>
-                        <option value="Chelsea">Chelsea</option>
-                        <option value="Liverpool">Liverpool</option>
-                        <option value="Man City">Man City</option>
-                        <option value="Man United">Man United</option>
-                        <option value="Tottenham">Tottenham</option>
-                        <option value="Newcastle">Newcastle</option>
-                        <option value="Aston Villa">Aston Villa</option>
-                        <option value="Inter">Inter</option>
-                        <option value="Milan">Milan</option>
-                        <option value="Juventus">Juventus</option>
-                        <option value="Napoli">Napoli</option>
-                        <option value="Roma">Roma</option>
-                        <option value="Real Madrid">Real Madrid</option>
-                        <option value="Barcelona">Barcelona</option>
-                        <option value="Atlético Madrid">Atlético Madrid</option>
-                        <option value="Bayern Munich">Bayern Munich</option>
-                        <option value="Dortmund">Dortmund</option>
-                        <option value="PSG">PSG</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <label class="flex items-center gap-2 text-sm cursor-pointer">
-                    <input type="checkbox" name="newsletter" value="yes" class="w-4 h-4 accent-red-600">
-                    <span>Sign me up for the 90M Newsletter</span>
-                </label>
-                <button type="submit" class="clubhouse-submit w-full font-bold py-3 rounded-full text-sm transition bg-red-600 hover:bg-red-500 text-white">Register My Clubhouse</button>
-                <p class="clubhouse-error hidden text-center text-red-500 text-xs">Something went wrong. Please try again.</p>
-            </form>
-            <div id="clubhouse-success" class="hidden text-center py-6">
-                <i class="fas fa-check-circle text-green-500 text-4xl mb-3"></i>
-                <p class="font-anton text-2xl tracking-wide">Welcome to the Clubhouse!</p>
-            </div>
-        </div>
-    </div>
-    <script>
-        (function () {
-            const modal = document.getElementById('clubhouse-modal');
-            const form = document.getElementById('clubhouse-form');
-            const success = document.getElementById('clubhouse-success');
-            window.openClubhouseModal = function () {
-                form.reset();
-                form.classList.remove('hidden');
-                success.classList.add('hidden');
-                form.querySelector('.clubhouse-error').classList.add('hidden');
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                setTimeout(() => document.getElementById('clubhouse-email').focus(), 50);
-            };
-            window.closeClubhouseModal = function () {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            };
-            modal.addEventListener('click', (e) => { if (e.target === modal) closeClubhouseModal(); });
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeClubhouseModal(); });
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = form.querySelector('.clubhouse-submit');
-                const error = form.querySelector('.clubhouse-error');
-                btn.disabled = true;
-                btn.textContent = 'Registering…';
-                error.classList.add('hidden');
-                try {
-                    const res = await fetch('/', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams(new FormData(form)).toString()
-                    });
-                    if (!res.ok) throw new Error(`Registration failed (${res.status})`);
-                    form.classList.add('hidden');
-                    success.classList.remove('hidden');
-                    setTimeout(closeClubhouseModal, 2500);
-                } catch (err) {
-                    console.error(err);
-                    error.classList.remove('hidden');
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = 'Register My Clubhouse';
-                }
-            });
-        })();
     </script>
 </body>
 </html>

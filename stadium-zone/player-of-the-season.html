@@ -46,7 +46,6 @@
             transform: rotateY(180deg); 
         }
         
-        /* THE FIX: backface-visibility on both sides to stop ghost text overlap */
         .flip-card-front, .flip-card-back {
             position: absolute;
             width: 100%;
@@ -59,7 +58,6 @@
             overflow: hidden;
         }
         
-        /* Front fades out completely when flipped */
         .flip-card.flipped .flip-card-front { 
             opacity: 0; 
             transition: opacity 0.1s 0.35s;
@@ -108,6 +106,91 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Popup Overlay */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .popup-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .popup-content {
+            background: #0a0a0a;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            border-radius: 1.25rem;
+            max-width: 420px;
+            width: 100%;
+            padding: 2rem;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.1);
+        }
+        .popup-overlay.active .popup-content {
+            transform: translateY(0);
+        }
+
+        /* Mobile specific fixes */
+        @media (max-width: 768px) {
+            .flip-card {
+                height: 380px; /* Reduced height on mobile */
+            }
+            .flip-card-back {
+                flex-direction: column;
+                padding: 1rem;
+                display: flex;
+                justify-content: flex-start;
+            }
+            .mobile-vote-btn {
+                order: -1; /* Moves the button to the top */
+                margin-bottom: 0.75rem;
+            }
+            .description-container {
+                max-height: 140px;
+                overflow-y: auto;
+                padding-right: 0.25rem;
+            }
+        }
+
+        /* Checkbox styling */
+        .custom-checkbox {
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            border-radius: 0.25rem;
+            background-color: transparent;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .custom-checkbox:checked {
+            background-color: #fbbf24;
+            border-color: #fbbf24;
+        }
+        .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
     </style>
 </head>
 <body>
@@ -144,230 +227,94 @@
             <i class="fas fa-check text-2xl text-yellow-500"></i>
         </div>
         <h2 class="font-elegant text-3xl md:text-4xl text-white mb-4">Vote Received</h2>
-        <p class="text-gray-400 text-sm mb-8">Your vote for <span id="selected-player-name" class="text-yellow-500 font-semibold"></span> has been recorded.</p>
+        <p class="text-gray-400 text-sm mb-2">Your vote for <span id="selected-player-name" class="text-yellow-500 font-semibold"></span> has been recorded.</p>
+        <p class="text-gray-400 text-sm mb-8">Need the latest 90 Minutes or More gear? <a href="../shop/index.html" class="text-yellow-500 underline">Shop right here.</a></p>
         <a href="../stadium-zone/index.html" class="bg-transparent border border-yellow-500/50 text-yellow-500 hover:bg-yellow-500 hover:text-black font-semibold py-2 px-6 rounded-full text-xs tracking-widest uppercase transition duration-300">
             Back to Stadium Zone
         </a>
     </div>
 
-    <form name="poty-vote" netlify netlify-honeypot="bot-field" hidden>
-        <input type="text" name="player" id="form-player-name" />
-        <input type="email" name="email" id="form-player-email" />
-    </form>
+    <!-- Popup for email capture -->
+    <div id="vote-popup" class="popup-overlay">
+        <div class="popup-content">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="font-elegant text-2xl text-yellow-500">Lock in your vote</h3>
+                <button onclick="closePopup()" class="text-gray-500 hover:text-white transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <p class="text-gray-300 text-sm mb-6">Submit your email to cast your vote for <span id="popup-player-name" class="text-yellow-500 font-bold"></span>.</p>
+            
+            <form id="vote-form" name="poty-vote" netlify netlify-honeypot="bot-field" class="space-y-4">
+                <input type="hidden" name="form-name" value="poty-vote" />
+                <input type="hidden" name="player" id="hidden-player-name" />
+                <input type="hidden" name="bot-field" />
+                
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Your Email</label>
+                    <input type="email" name="email" required placeholder="you@example.com" class="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-yellow-500 transition">
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">What would you like to receive?</p>
+                    
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" name="newsletters" class="custom-checkbox">
+                        <span class="text-sm text-gray-300 group-hover:text-white transition">Monthly Newsletters</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" name="rewards" class="custom-checkbox">
+                        <span class="text-sm text-gray-300 group-hover:text-white transition">Upcoming Votes, Trivia & Rewards</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" name="shop" class="custom-checkbox">
+                        <span class="text-sm text-gray-300 group-hover:text-white transition">Exclusive Shop Offers & Discounts</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-lg hover:bg-yellow-400 transition text-sm uppercase tracking-wider mt-4">
+                    Submit Vote
+                </button>
+                <p class="text-center text-[10px] text-gray-600 mt-2">Your data is safe with us.</p>
+            </form>
+        </div>
+    </div>
 
     <script>
-        // --- FULL 30 PLAYER DATA WITH EXPANDED DESCRIPTIONS AND ALL-COMPS STATS ---
+        // --- FULL 30 PLAYER DATA (REORDERED & UPDATED STATS) ---
         const players = [
-            { 
-                name: "Jude Bellingham", 
-                club: "Real Madrid / England", 
-                stats: "15 goals, 6 assists, all competitions", 
-                description: "Jude Bellingham combined midfield influence with decisive attacking moments and played a pivotal role in England's World Cup campaign. He scored seven goals in the tournament, including the quarter-final winner against Norway, and added a goal in the group stage. He also contributed eight goals and five assists for Real Madrid across La Liga and the Champions League, earning England Player of the Year honors.",
-                img: "../images/poty/bellingham.jpg" 
-            },
-            { 
-                name: "Ousmane Dembélé", 
-                club: "PSG / France", 
-                stats: "28 goals, 14 assists, all competitions", 
-                description: "Ousmane Dembélé was a key attacking force in PSG's treble-winning campaign, including their UEFA Champions League triumph. He contributed eight goals in the Champions League, including a goal in the final to secure the title. He also played a key part in France's World Cup campaign, scoring at least three goals. Dembélé was named the 2025 Ballon d'Or winner, capping a spectacular back-to-back Champions League season.",
-                img: "../images/poty/dembele.jpg" 
-            },
-            { 
-                name: "Luis Díaz", 
-                club: "Bayern Munich / Colombia", 
-                stats: "30 goals, 23 assists, all competitions", 
-                description: "Luis Díaz brought pace, directness, and consistent end product to Bayern Munich's attack, helping the club secure domestic honors while delivering in Europe. He was also Colombia's attacking leader throughout their World Cup campaign, contributing crucial goals and assists on the international stage. His performances established him as one of the most dangerous wingers in world football this season.",
-                img: "../images/poty/diaz.jpg" 
-            },
-            { 
-                name: "Erling Haaland", 
-                club: "Man City / Norway", 
-                stats: "45 goals, 9 assists, all competitions", 
-                description: "Erling Haaland continued to produce elite scoring numbers for Manchester City, winning the Premier League Golden Boot. He then carried his extraordinary goalscoring form onto the world stage, scoring seven goals at the World Cup, making him one of the tournament's leading scorers. His performances also led Norway to their best-ever finish in a World Cup.",
-                img: "../images/poty/haaland.jpg" 
-            },
-            { 
-                name: "Harry Kane", 
-                club: "Bayern Munich / England", 
-                stats: "67 goals, 8 assists, all competitions", 
-                description: "Harry Kane was the 2026 Ballon d'Or winner, capping a phenomenal season. He won the Bundesliga, DFB-Pokal, and Franz Beckenbauer Supercup with Bayern Munich, while also claiming the European Golden Shoe. He finished as the DFB-Pokal's leading scorer and helped England reach the World Cup podium with six goals and one assist at the tournament.",
-                img: "../images/poty/kane.jpg" 
-            },
-            { 
-                name: "Khvicha Kvaratskhelia", 
-                club: "PSG / Georgia", 
-                stats: "19 goals, 10 assists, all competitions", 
-                description: "Khvicha Kvaratskhelia's dribbling, creativity, and ability to decide major matches made him a central part of PSG's European success. He was decisive throughout the knockout stages, leading PSG to their UEFA Champions League title. His Champions League production was particularly impressive, demonstrating his influence at the highest level of the game.",
-                img: "../images/poty/kvaratskhelia.png" 
-            },
-            { 
-                name: "Lamine Yamal", 
-                club: "Barcelona / Spain", 
-                stats: "24 goals, 17 assists, all competitions", 
-                description: "Lamine Yamal continued to deliver extraordinary numbers for Barcelona, combining goals, assists, and chance creation with the ability to take on defenders and change matches. He won the World Cup with Spain, playing a key role in their title-winning campaign, and also won the Kopa Trophy and La Liga MVP award. His performances further established him among the world's elite attackers.",
-                img: "../images/poty/yamal.jpg" 
-            },
-            { 
-                name: "Lautaro Martínez", 
-                club: "Inter / Argentina", 
-                stats: "25 goals, 7 assists, all competitions", 
-                description: "Lautaro Martínez helped Inter win both Serie A and the Coppa Italia, completing the domestic double in Italy. He was the Serie A Capocannoniere, finishing as the league's top scorer. He remained a consistent attacking leader for the club and contributed to Argentina's World Cup campaign as a finalist, adding another major achievement to an outstanding season.",
-                img: "../images/poty/lautaro.jpg" 
-            },
-            { 
-                name: "Kylian Mbappé", 
-                club: "Real Madrid / France", 
-                stats: "52 goals, 10 assists, all competitions", 
-                description: "Kylian Mbappé delivered one of the most prolific seasons in world football, combining elite club scoring with an extraordinary World Cup. He won the World Cup Golden Boot with 10 goals and four assists, becoming the World Cup's all-time leading scorer. He also led France to their third consecutive semi-final and finished as the top scorer in both La Liga and the Champions League.",
-                img: "../images/poty/mbappe.jpg" 
-            },
-            { 
-                name: "Lionel Messi", 
-                club: "Inter Miami / Argentina", 
-                stats: "48 goals, 27 assists, all competitions", 
-                description: "Lionel Messi produced exceptional attacking numbers, recording over 75 goal contributions at the age of 39. He scored eight goals at the World Cup, leading Argentina to the final as a finalist. He is also an MLS MVP, MLS Golden Boot winner, and MLS Cup winner with Inter Miami, further cementing his status as the most decorated player in football history.",
-                img: "../images/poty/messi.jpg" 
-            },
-            { 
-                name: "Nuno Mendes", 
-                club: "PSG / Portugal", 
-                stats: "6 goals, 7 assists, all competitions", 
-                description: "Nuno Mendes played a major role in PSG's domestic and Champions League success, offering exceptional pace, defensive recovery, and attacking support from the left side. His influence extended well beyond traditional full-back statistics, as he was a key component of PSG's treble-winning campaign. He also featured prominently for Portugal in their World Cup campaign.",
-                img: "../images/poty/nuno-mendes.jpg" 
-            },
-            { 
-                name: "Michael Olise", 
-                club: "Bayern Munich / France", 
-                stats: "23 goals, 31 assists, all competitions", 
-                description: "Michael Olise produced one of the most impressive creative seasons in Europe, combining 15 Bundesliga goals with 21 league assists for Bayern Munich. He broke the World Cup assist record in a single tournament, showcasing his vision, delivery, and one-on-one ability. His performances made him one of Bayern's most influential players and earned him Bundesliga Player of the Season honors.",
-                img: "../images/poty/olise.jpg" 
-            },
-            { 
-                name: "Willian Pacho", 
-                club: "PSG / Ecuador", 
-                stats: "2 goals, 3 assists, all competitions", 
-                description: "Willian Pacho established himself as one of the most composed and reliable centre-backs in the game, combining physical strength, recovery speed, and intelligent positioning. He was a key part of PSG's Champions League success, becoming the first Ecuadorian to win the competition. He also recorded a 100% pass completion rate in the UEFA Super Cup, demonstrating his technical quality.",
-                img: "../images/poty/pacho.jpg" 
-            },
-            { 
-                name: "Fabián Ruiz", 
-                club: "PSG / Spain", 
-                stats: "2 goals, 5 assists, all competitions", 
-                description: "Fabián Ruiz provided technical quality, ball progression, and control in the middle of the pitch, helping PSG compete across domestic and European competitions. He was part of Spain's World Cup-winning midfield, dictating tempo and maintaining possession at the highest level. His ability to operate under pressure made him an important part of both teams.",
-                img: "../images/poty/fabian-ruiz.jpg" 
-            },
-            { 
-                name: "Achraf Hakimi", 
-                club: "PSG / Morocco", 
-                stats: "3 goals, 8 assists, all competitions", 
-                description: "Achraf Hakimi continued to demonstrate why he is among the world's best attacking full-backs, combining speed, defensive recovery, and dangerous forward runs. He was a key part of PSG's Champions League success and finished as the UCL assist leader. He also remained a leading figure for Morocco throughout their World Cup campaign.",
-                img: "../images/poty/hakimi.jpg" 
-            },
-            { 
-                name: "Gabriel Magalhães", 
-                club: "Arsenal / Brazil", 
-                stats: "5 goals, 2 assists, all competitions", 
-                description: "Gabriel Magalhães delivered another commanding campaign at centre-back, bringing aerial dominance, physicality, and leadership to Arsenal's defence. He was a key part of Arsenal's Premier League-winning squad and added a threat from set pieces. His consistency made him one of the leading defensive candidates this season.",
-                img: "../images/poty/gabriel.jpg" 
-            },
-            { 
-                name: "Nico Paz", 
-                club: "Como / Argentina", 
-                stats: "12 goals, 6 assists, all competitions", 
-                description: "Nico Paz enjoyed a breakout season, becoming one of Serie A's most exciting young creative players. He led Como to their first Champions League qualification in club history, driving their progress with his technical quality and vision. His performances earned him recognition with Argentina's national team and a call-up for the World Cup.",
-                img: "../images/poty/nico-paz.jpg" 
-            },
-            { 
-                name: "Enzo Fernández", 
-                club: "Chelsea / Argentina", 
-                stats: "16 goals, 10 assists, all competitions", 
-                description: "Enzo Fernández combined midfield work rate with attacking production, while his passing range and ability to arrive in dangerous areas made him an influential figure. He scored a crucial winning goal against Egypt and an iconic goal against England during Argentina's World Cup campaign. He was a key contributor to their run to the World Cup final.",
-                img: "../images/poty/enzo.jpg" 
-            },
-            { 
-                name: "Federico Dimarco", 
-                club: "Inter / Italy", 
-                stats: "7 goals, 18 assists, all competitions", 
-                description: "Federico Dimarco produced an exceptional campaign from the left flank, combining precise crossing, set-piece delivery, and consistent chance creation. He recorded the most assists in Serie A history for a defender and led Inter to the domestic double. His attacking output was outstanding for a defender and he remained one of the most influential players in Inter's squad.",
-                img: "../images/poty/dimarco.jpg" 
-            },
-            { 
-                name: "Cristian Romero", 
-                club: "Tottenham / Argentina", 
-                stats: "1 goal, 1 assist, all competitions", 
-                description: "Cristian Romero was a commanding presence at the back, bringing aggression, anticipation, and leadership to Tottenham. He played a major role in the club's Europa League triumph, adding a significant European honour to his season. He also scored decisive knockout goals for Argentina in the World Cup and was a finalist with his national team.",
-                img: "../images/poty/romero.jpg" 
-            },
-            { 
-                name: "Julián Álvarez", 
-                club: "Atlético Madrid / Argentina", 
-                stats: "20 goals, 9 assists, all competitions", 
-                description: "Julián Álvarez delivered another productive season, contributing goals, pressing, and intelligent movement for Atlético Madrid. He won the Copa del Rey and produced memorable moments, including a stunning free kick against Barcelona. He was also part of Argentina's attacking group as a World Cup finalist.",
-                img: "../images/poty/alvarez.jpg" 
-            },
-            { 
-                name: "Raphinha", 
-                club: "Barcelona / Brazil", 
-                stats: "21 goals, 8 assists, all competitions", 
-                description: "Raphinha delivered consistent attacking production for Barcelona, contributing in La Liga, the Champions League, and domestic cup competitions. His work rate, directness, and ability to create chances made him one of the club's most important attacking players. He was also a key attacking option for Brazil during their World Cup campaign.",
-                img: "../images/poty/raphinha.jpg" 
-            },
-            { 
-                name: "Désiré Doué", 
-                club: "PSG / France", 
-                stats: "15 goals, 10 assists, all competitions", 
-                description: "Désiré Doué enjoyed a breakout campaign, showcasing his versatility, close control, and ability to make decisive contributions in major matches. His role in PSG's domestic and Champions League success strengthened his reputation as one of Europe's most exciting young talents. He was also part of France's attacking group at the World Cup.",
-                img: "../images/poty/doue.jpg" 
-            },
-            { 
-                name: "Declan Rice", 
-                club: "Arsenal / England", 
-                stats: "5 goals, 11 assists, all competitions", 
-                description: "Declan Rice combined defensive discipline, ball progression, and attacking contribution throughout the season. His ability to control transitions, win possession, and influence the game in both directions made him one of Arsenal's most important players. He was also an important part of England's midfield during their World Cup campaign.",
-                img: "../images/poty/rice.jpg" 
-            },
-            { 
-                name: "Rodri", 
-                club: "Man City / Spain", 
-                stats: "2 goals, 1 assist, all competitions", 
-                description: "Rodri was recognised as the best player of the World Cup after playing a central role in Spain's triumph, winning the Golden Ball. His ability to dictate tempo, control possession, and organise the midfield made him one of the tournament's most influential performers. He also remains a key part of Manchester City's midfield.",
-                img: "../images/poty/rodri.jpg" 
-            },
-            { 
-                name: "Pedri", 
-                club: "Barcelona / Spain", 
-                stats: "2 goals, 12 assists, all competitions", 
-                description: "Pedri's season was defined by his technical quality, composure, and ability to dictate matches. His passing, movement, and control under pressure helped Barcelona and Spain maintain their rhythm. He was a key part of Spain's World Cup-winning midfield, making him one of the most influential midfielders in the candidate pool.",
-                img: "../images/poty/pedri.jpg" 
-            },
-            { 
-                name: "Emiliano Martínez", 
-                club: "Aston Villa / Argentina", 
-                stats: "25 clean sheets, all competitions", 
-                description: "Emiliano Martínez continued to demonstrate his shot-stopping ability and command of the penalty area, recording 16 Premier League clean sheets and nine in the Europa League. He also recorded the most saves in a World Cup final, reinforcing his reputation as one of the world's leading goalkeepers. He was a finalist with Argentina.",
-                img: "../images/poty/emi-martinez.jpg" 
-            },
-            { 
-                name: "Bruno Fernandes", 
-                club: "Man United / Portugal", 
-                stats: "31 goals and assists, all competitions", 
-                description: "Bruno Fernandes delivered outstanding creative numbers, leading Manchester United through his chance creation, passing, and leadership as captain. He recorded nine goals and 22 assists in the Premier League, a statistically incredible year. He was also Portugal's creative midfield leader during their World Cup campaign.",
-                img: "../images/poty/bruno.jpg" 
-            },
-            { 
-                name: "Vitinha", 
-                club: "PSG / Portugal", 
-                stats: "5 goals, 8 assists, all competitions", 
-                description: "Vitinha was central to PSG's success, providing composure, technical quality, and control in possession. His ability to dictate the rhythm of matches, progress the ball, and operate under pressure made him one of the most important midfielders in PSG's Champions League-winning campaign. He was also a key part of Portugal's midfield.",
-                img: "../images/poty/vitinha.jpg" 
-            },
-            { 
-                name: "David Raya", 
-                club: "Arsenal / Spain", 
-                stats: "19 clean sheets, all competitions", 
-                description: "David Raya delivered another impressive campaign through his shot-stopping, distribution, and command of the penalty area. He recorded 19 Premier League clean sheets, winning the Premier League Golden Glove, and was part of Spain's World Cup-winning goalkeeping group. His consistency made him a major part of Arsenal's defensive structure.",
-                img: "../images/poty/raya.jpg" 
-            }
+            { name: "Jude Bellingham", club: "Real Madrid / England", stats: "15 G, 6 A (All Comps)", description: "Jude Bellingham combined midfield influence with decisive attacking moments and played a pivotal role in England's World Cup campaign. He scored seven goals in the tournament, including the quarter-final winner against Norway, and added a goal in the group stage. He also contributed eight goals and five assists for Real Madrid across La Liga and the Champions League, earning England Player of the Year honors.", img: "../images/poty/bellingham.jpg" },
+            { name: "Ousmane Dembélé", club: "PSG / France", stats: "28 G, 14 A (All Comps)", description: "Ousmane Dembélé was a key attacking force in PSG's treble-winning campaign, including their UEFA Champions League triumph. He contributed eight goals in the Champions League, including a goal in the final to secure the title. He also played a key part in France's World Cup campaign, scoring at least three goals. Dembélé was named the 2025 Ballon d'Or winner, capping a spectacular back-to-back Champions League season.", img: "../images/poty/dembele.jpg" },
+            { name: "Raphinha", club: "Barcelona / Brazil", stats: "25 G, 10 A (All Comps)", description: "Raphinha delivered consistent attacking production for Barcelona, contributing in La Liga, the Champions League, and domestic cup competitions. His work rate, directness, and ability to create chances made him one of the club's most important attacking players. He was also a key attacking option for Brazil during their World Cup campaign, adding goals and assists on the international stage.", img: "../images/poty/raphinha.jpg" },
+            { name: "Luis Díaz", club: "Bayern Munich / Colombia", stats: "30 G, 23 A (All Comps)", description: "Luis Díaz brought pace, directness, and consistent end product to Bayern Munich's attack, helping the club secure domestic honors while delivering in Europe. He was also Colombia's attacking leader throughout their World Cup campaign, contributing crucial goals and assists on the international stage. His performances established him as one of the most dangerous wingers in world football this season.", img: "../images/poty/diaz.jpg" },
+            { name: "Erling Haaland", club: "Man City / Norway", stats: "45 G, 9 A (All Comps)", description: "Erling Haaland continued to produce elite scoring numbers for Manchester City, winning the Premier League Golden Boot. He then carried his extraordinary goalscoring form onto the world stage, scoring seven goals at the World Cup, making him one of the tournament's leading scorers. His performances also led Norway to their best-ever finish in a World Cup.", img: "../images/poty/haaland.jpg" },
+            { name: "Harry Kane", club: "Bayern Munich / England", stats: "67 G, 8 A (All Comps)", description: "Harry Kane was the 2026 Ballon d'Or winner, capping a phenomenal season. He won the Bundesliga, DFB-Pokal, and Franz Beckenbauer Supercup with Bayern Munich, while also claiming the European Golden Shoe. He finished as the DFB-Pokal's leading scorer and helped England reach the World Cup podium with six goals and one assist at the tournament.", img: "../images/poty/kane.jpg" },
+            { name: "Khvicha Kvaratskhelia", club: "PSG / Georgia", stats: "19 G, 10 A (All Comps)", description: "Khvicha Kvaratskhelia's dribbling, creativity, and ability to decide major matches made him a central part of PSG's European success. He was decisive throughout the knockout stages, leading PSG to their UEFA Champions League title. His Champions League production was particularly impressive, demonstrating his influence at the highest level of the game.", img: "../images/poty/kvaratskhelia.png" },
+            { name: "Lamine Yamal", club: "Barcelona / Spain", stats: "24 G, 17 A (All Comps)", description: "Lamine Yamal continued to deliver extraordinary numbers for Barcelona, combining goals, assists, and chance creation with the ability to take on defenders and change matches. He won the World Cup with Spain, playing a key role in their title-winning campaign, and also won the Kopa Trophy and La Liga MVP award. His performances further established him among the world's elite attackers.", img: "../images/poty/yamal.jpg" },
+            { name: "Lautaro Martínez", club: "Inter / Argentina", stats: "25 G, 7 A (All Comps)", description: "Lautaro Martínez helped Inter win both Serie A and the Coppa Italia, completing the domestic double in Italy. He was the Serie A Capocannoniere, finishing as the league's top scorer. He remained a consistent attacking leader for the club and contributed to Argentina's World Cup campaign as a finalist, adding another major achievement to an outstanding season.", img: "../images/poty/lautaro.jpg" },
+            { name: "Kylian Mbappé", club: "Real Madrid / France", stats: "52 G, 10 A (All Comps)", description: "Kylian Mbappé delivered one of the most prolific seasons in world football, combining elite club scoring with an extraordinary World Cup. He won the World Cup Golden Boot with 10 goals and four assists, becoming the World Cup's all-time leading scorer. He also led France to their third consecutive semi-final and finished as the top scorer in both La Liga and the Champions League.", img: "../images/poty/mbappe.jpg" },
+            { name: "Lionel Messi", club: "Inter Miami / Argentina", stats: "48 G, 27 A (All Comps)", description: "Lionel Messi produced exceptional attacking numbers, recording over 75 goal contributions at the age of 39. He scored eight goals at the World Cup, leading Argentina to the final as a finalist. He is also an MLS MVP, MLS Golden Boot winner, and MLS Cup winner with Inter Miami, further cementing his status as the most decorated player in football history.", img: "../images/poty/messi.jpg" },
+            { name: "Nuno Mendes", club: "PSG / Portugal", stats: "6 G, 7 A (All Comps)", description: "Nuno Mendes played a major role in PSG's domestic and Champions League success, offering exceptional pace, defensive recovery, and attacking support from the left side. His influence extended well beyond traditional full-back statistics, as he was a key component of PSG's treble-winning campaign. He also featured prominently for Portugal in their World Cup campaign.", img: "../images/poty/nuno-mendes.jpg" },
+            { name: "Enzo Fernández", club: "Chelsea / Argentina", stats: "16 G, 10 A (All Comps)", description: "Enzo Fernández combined midfield work rate with attacking production, while his passing range and ability to arrive in dangerous areas made him an influential figure. He scored a crucial winning goal against Egypt and an iconic goal against England during Argentina's World Cup campaign. He was a key contributor to their run to the World Cup final.", img: "../images/poty/enzo.jpg" },
+            { name: "Michael Olise", club: "Bayern Munich / France", stats: "23 G, 31 A (All Comps)", description: "Michael Olise produced one of the most impressive creative seasons in Europe, combining 15 Bundesliga goals with 21 league assists for Bayern Munich. He broke the World Cup assist record in a single tournament, showcasing his vision, delivery, and one-on-one ability. His performances made him one of Bayern's most influential players and earned him Bundesliga Player of the Season honors.", img: "../images/poty/olise.jpg" },
+            { name: "Fabián Ruiz", club: "PSG / Spain", stats: "2 G, 5 A (All Comps)", description: "Fabián Ruiz provided technical quality, ball progression, and control in the middle of the pitch, helping PSG compete across domestic and European competitions. He was part of Spain's World Cup-winning midfield, dictating tempo and maintaining possession at the highest level. His ability to operate under pressure made him an important part of both teams.", img: "../images/poty/fabian-ruiz.jpg" },
+            { name: "Achraf Hakimi", club: "PSG / Morocco", stats: "3 G, 8 A (All Comps)", description: "Achraf Hakimi continued to demonstrate why he is among the world's best attacking full-backs, combining speed, defensive recovery, and dangerous forward runs. He was a key part of PSG's Champions League success and finished as the UCL assist leader. He also remained a leading figure for Morocco throughout their World Cup campaign.", img: "../images/poty/hakimi.jpg" },
+            { name: "Gabriel Magalhães", club: "Arsenal / Brazil", stats: "5 G, 2 A (All Comps)", description: "Gabriel Magalhães delivered another commanding campaign at centre-back, bringing aerial dominance, physicality, and leadership to Arsenal's defence. He was a key part of Arsenal's Premier League-winning squad and added a threat from set pieces. His consistency made him one of the leading defensive candidates this season.", img: "../images/poty/gabriel.jpg" },
+            { name: "Willian Pacho", club: "PSG / Ecuador", stats: "2 G, 3 A (All Comps)", description: "Willian Pacho established himself as one of the most composed and reliable centre-backs in the game, combining physical strength, recovery speed, and intelligent positioning. He was a key part of PSG's Champions League success, becoming the first Ecuadorian to win the competition. He also recorded a 100% pass completion rate in the UEFA Super Cup, demonstrating his technical quality.", img: "../images/poty/pacho.jpg" },
+            { name: "Nico Paz", club: "Como / Argentina", stats: "15 G, 9 A (All Comps)", description: "Nico Paz enjoyed a breakout season, becoming one of Serie A's most exciting young creative players. He led Como to their first Champions League qualification in club history, driving their progress with his technical quality and vision. His performances earned him recognition with Argentina's national team and a call-up for the World Cup.", img: "../images/poty/nico-paz.jpg" },
+            { name: "Rodri", club: "Man City / Spain", stats: "2 G, 1 A (All Comps)", description: "Rodri was recognised as the best player of the World Cup after playing a central role in Spain's triumph, winning the Golden Ball. His ability to dictate tempo, control possession, and organise the midfield made him one of the tournament's most influential performers. He also remains a key part of Manchester City's midfield.", img: "../images/poty/rodri.jpg" },
+            { name: "Federico Dimarco", club: "Inter / Italy", stats: "9 G, 20+ A (All Comps)", description: "Federico Dimarco produced an exceptional campaign from the left flank, combining precise crossing, set-piece delivery, and consistent chance creation. He recorded the most assists in Serie A history for a defender and led Inter to the domestic double. His attacking output was outstanding for a defender and he remained one of the most influential players in Inter's squad.", img: "../images/poty/dimarco.jpg" },
+            { name: "Julián Álvarez", club: "Atlético Madrid / Argentina", stats: "20 G, 9 A (All Comps)", description: "Julián Álvarez delivered another productive season, contributing goals, pressing, and intelligent movement for Atlético Madrid. He won the Copa del Rey and produced memorable moments, including a stunning free kick against Barcelona. He was also part of Argentina's attacking group as a World Cup finalist.", img: "../images/poty/alvarez.jpg" },
+            { name: "Désiré Doué", club: "PSG / France", stats: "15 G, 10 A (All Comps)", description: "Désiré Doué enjoyed a breakout campaign, showcasing his versatility, close control, and ability to make decisive contributions in major matches. His role in PSG's domestic and Champions League success strengthened his reputation as one of Europe's most exciting young talents. He was also part of France's attacking group at the World Cup.", img: "../images/poty/doue.jpg" },
+            { name: "Declan Rice", club: "Arsenal / England", stats: "5 G, 11 A (All Comps)", description: "Declan Rice combined defensive discipline, ball progression, and attacking contribution throughout the season. His ability to control transitions, win possession, and influence the game in both directions made him one of Arsenal's most important players. He was also an important part of England's midfield during their World Cup campaign.", img: "../images/poty/rice.jpg" },
+            { name: "Cristian Romero", club: "Tottenham / Argentina", stats: "8 G, 5 A (All Comps)", description: "Cristian Romero was a commanding presence at the back, bringing aggression, anticipation, and leadership to Tottenham. He played a major role in the club's Europa League triumph, adding a significant European honour to his season. He also scored decisive knockout goals for Argentina in the World Cup and was a finalist with his national team.", img: "../images/poty/romero.jpg" },
+            { name: "Pedri", club: "Barcelona / Spain", stats: "2 G, 12 A (All Comps)", description: "Pedri's season was defined by his technical quality, composure, and ability to dictate matches. His passing, movement, and control under pressure helped Barcelona and Spain maintain their rhythm. He was a key part of Spain's World Cup-winning midfield, making him one of the most influential midfielders in the candidate pool.", img: "../images/poty/pedri.jpg" },
+            { name: "Emiliano Martínez", club: "Aston Villa / Argentina", stats: "25 Clean Sheets (All Comps)", description: "Emiliano Martínez continued to demonstrate his shot-stopping ability and command of the penalty area, recording 16 Premier League clean sheets and nine in the Europa League. He also recorded the most saves in a World Cup final, reinforcing his reputation as one of the world's leading goalkeepers. He was a finalist with Argentina.", img: "../images/poty/emi-martinez.jpg" },
+            { name: "Bruno Fernandes", club: "Man United / Portugal", stats: "9 G, 22 A (All Comps)", description: "Bruno Fernandes delivered outstanding creative numbers, leading Manchester United through his chance creation, passing, and leadership as captain. He recorded nine goals and 22 assists in the Premier League, a statistically incredible year. He was also Portugal's creative midfield leader during their World Cup campaign.", img: "../images/poty/bruno.jpg" },
+            { name: "Vitinha", club: "PSG / Portugal", stats: "5 G, 8 A (All Comps)", description: "Vitinha was central to PSG's success, providing composure, technical quality, and control in possession. His ability to dictate the rhythm of matches, progress the ball, and operate under pressure made him one of the most important midfielders in PSG's Champions League-winning campaign. He was also a key part of Portugal's midfield.", img: "../images/poty/vitinha.jpg" },
+            { name: "David Raya", club: "Arsenal / Spain", stats: "19 Clean Sheets (All Comps)", description: "David Raya delivered another impressive campaign through his shot-stopping, distribution, and command of the penalty area. He recorded 19 Premier League clean sheets, winning the Premier League Golden Glove, and was part of Spain's World Cup-winning goalkeeping group. His consistency made him a major part of Arsenal's defensive structure.", img: "../images/poty/raya.jpg" }
         ];
 
         // --- RENDER CARDS ---
@@ -377,13 +324,9 @@
                 <div class="flip-card" id="card-${index}" onclick="toggleFlip(${index}, event)">
                     <div class="flip-card-inner">
                         
-                        <!-- FRONT: FULL PHOTO & GRADIENT OVERLAY -->
                         <div class="flip-card-front flex flex-col justify-end p-4">
                             <img src="${p.img}" alt="${p.name}" class="player-photo" onerror="this.style.display='none'">
-                            
-                            <!-- Dark gradient at the bottom so the text is readable -->
                             <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent pointer-events-none"></div>
-                            
                             <div class="relative z-10 text-left">
                                 <span class="text-[10px] font-bold text-yellow-500/80 mb-1 block">#${index + 1}</span>
                                 <h3 class="font-elegant text-xl md:text-2xl text-white leading-tight mb-1">${p.name}</h3>
@@ -391,16 +334,24 @@
                             </div>
                         </div>
 
-                        <!-- BACK: FULL DESCRIPTION -->
                         <div class="flip-card-back">
-                            <div>
-                                <h3 class="font-elegant text-xl text-yellow-500 mb-2">${p.name}</h3>
-                                <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 mb-4">
+                            <!-- Mobile vote button (order -1) -->
+                            <button onclick="openPopup('${p.name}', event)" class="mobile-vote-btn w-full bg-yellow-500 text-black font-bold py-2.5 rounded-lg hover:bg-yellow-400 transition text-sm uppercase tracking-wider md:hidden mb-2">
+                                Cast Vote
+                            </button>
+                            
+                            <div class="flex-grow">
+                                <h3 class="font-elegant text-lg md:text-xl text-yellow-500 mb-1">${p.name}</h3>
+                                <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-2 mb-2">
                                     <p class="text-yellow-500 font-bold text-sm">${p.stats}</p>
                                 </div>
-                                <p class="text-gray-300 text-sm leading-relaxed">${p.description}</p>
+                                <div class="description-container">
+                                    <p class="text-gray-300 text-sm leading-relaxed">${p.description}</p>
+                                </div>
                             </div>
-                            <button onclick="castVote('${p.name}', event)" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-lg hover:bg-yellow-400 transition text-sm uppercase tracking-wider mt-4">
+                            
+                            <!-- Desktop vote button (order default) -->
+                            <button onclick="openPopup('${p.name}', event)" class="hidden md:block w-full bg-yellow-500 text-black font-bold py-3 rounded-lg hover:bg-yellow-400 transition text-sm uppercase tracking-wider mt-4">
                                 Cast Vote
                             </button>
                         </div>
@@ -425,22 +376,37 @@
             card.classList.toggle('flipped');
         }
 
-        function castVote(playerName, event) {
-            event.stopPropagation(); 
+        function openPopup(playerName, event) {
+            event.stopPropagation();
+            document.getElementById('popup-player-name').innerText = playerName;
+            document.getElementById('hidden-player-name').value = playerName;
+            document.getElementById('vote-popup').classList.add('active');
+        }
+
+        function closePopup() {
+            document.getElementById('vote-popup').classList.remove('active');
+        }
+
+        // Handle form submission via AJAX
+        document.getElementById('vote-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const playerName = formData.get('player');
+            
+            // Show loading screen
+            closePopup();
             document.getElementById('screen-voting').classList.remove('active');
             document.getElementById('screen-loading').classList.add('active');
 
-            const formData = new FormData();
-            formData.append('form-name', 'poty-vote');
-            formData.append('player', playerName);
-            formData.append('email', "pending_email_capture@90minutes.com"); 
-
+            // Submit to Netlify
             fetch('/', {
                 method: 'POST',
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams(formData).toString()
             })
             .then(() => {
+                // After Netlify captures, trigger Resend email (placeholder for now)
                 setTimeout(() => {
                     document.getElementById('selected-player-name').innerText = playerName;
                     document.getElementById('screen-loading').classList.remove('active');
@@ -453,7 +419,7 @@
                 document.getElementById('screen-loading').classList.remove('active');
                 document.getElementById('screen-voting').classList.add('active');
             });
-        }
+        });
     </script>
 </body>
 </html>

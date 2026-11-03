@@ -6,7 +6,7 @@
     <title>Player of the Season | 90 Minutes or More</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -20,21 +20,18 @@
         }
         body::-webkit-scrollbar { display: none; }
         
-        /* Elegant Serif for Headings, Clean Sans for Body */
         .font-elegant { font-family: 'Playfair Display', serif; }
 
-        /* Smooth Gold Gradient Text */
         .gold-text {
             background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 40%, #b38728 60%, #fbf5b7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-size: 200% auto;
         }
 
-        /* 3D Flip Card */
+        /* Taller cards to fit the full paragraphs */
         .flip-card { 
             perspective: 1200px; 
-            height: 380px; /* Taller for photos */
+            height: 460px; 
         }
         .flip-card-inner {
             position: relative;
@@ -68,31 +65,20 @@
             justify-content: space-between;
             padding: 1.25rem;
             text-align: left;
-        }
-
-        /* Photo styling */
-        .player-photo {
-            width: 100%;
-            height: 65%;
-            object-fit: cover;
-            object-position: top center;
-            mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+            overflow-y: auto; /* Allows scrolling if text is long */
         }
 
         /* Screen Transitions */
         .screen { display: none; height: 100vh; width: 100vw; position: fixed; top: 0; left: 0; z-index: 50; flex-direction: column; align-items: center; justify-content: center; }
         .screen.active { display: flex; }
 
-        /* Intro Pulse */
+        .pulse-circle { animation: pulse-gold 2.5s infinite; }
         @keyframes pulse-gold {
             0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.3); }
             70% { box-shadow: 0 0 0 25px rgba(251, 191, 36, 0); }
             100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
         }
-        .pulse-circle { animation: pulse-gold 2.5s infinite; }
 
-        /* Loader */
         .loader {
             border: 3px solid rgba(251, 191, 36, 0.1);
             border-left-color: #fbbf24;
@@ -106,7 +92,6 @@
 </head>
 <body>
 
-    <!-- INTRO SCREEN -->
     <div id="screen-intro" class="screen active bg-[#050505] text-center px-6">
         <div class="pulse-circle w-24 h-24 md:w-32 md:h-32 rounded-full border border-yellow-500/50 flex items-center justify-center mb-8">
             <i class="fas fa-crown text-4xl md:text-5xl text-yellow-500"></i>
@@ -118,27 +103,22 @@
         </button>
     </div>
 
-    <!-- VOTING GRID -->
     <div id="screen-voting" class="screen bg-[#050505] w-full justify-start overflow-y-auto">
-        <!-- Header -->
         <div class="w-full p-4 flex justify-between items-center z-10 bg-gradient-to-b from-[#050505] to-transparent sticky top-0">
             <div class="font-elegant text-xl text-yellow-500">90M POTY</div>
             <div class="text-[10px] text-yellow-500/70 border border-yellow-500/20 px-3 py-1 rounded-full bg-yellow-500/5 uppercase tracking-wider">Tap to view</div>
         </div>
 
-        <!-- Grid: 2 cols mobile, 4 cols desktop for better visibility of photos -->
-        <div id="player-grid" class="w-full max-w-7xl mx-auto px-4 pb-20 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-2">
+        <div id="player-grid" class="w-full max-w-7xl mx-auto px-4 pb-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mt-2">
             <!-- Cards injected by JS -->
         </div>
     </div>
 
-    <!-- LOADING SCREEN -->
     <div id="screen-loading" class="screen bg-[#050505]">
         <div class="loader mb-6"></div>
         <h2 class="font-elegant text-2xl text-yellow-500">Casting Your Vote...</h2>
     </div>
 
-    <!-- SUCCESS SCREEN -->
     <div id="screen-success" class="screen bg-[#050505] text-center px-6">
         <div class="w-16 h-16 rounded-full bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center mb-6">
             <i class="fas fa-check text-2xl text-yellow-500"></i>
@@ -150,224 +130,223 @@
         </a>
     </div>
 
-    <!-- HIDDEN NETLIFY FORM -->
     <form name="poty-vote" netlify netlify-honeypot="bot-field" hidden>
         <input type="text" name="player" id="form-player-name" />
         <input type="email" name="email" id="form-player-email" />
     </form>
 
     <script>
-        // --- FULL 30 PLAYER DATA WITH PHOTOS & KEY MOMENTS ---
+        // --- FULL 30 PLAYER DATA WITH YOUR EXACT DESCRIPTIONS ---
         const players = [
             { 
                 name: "Jude Bellingham", 
                 club: "Real Madrid / England", 
-                stats: "8G, 5A (Club)<br>7G, 1A (World Cup)", 
-                moments: "Scored the quarter-final winner vs Norway. England Player of the Year.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Jude_Bellingham_2023.jpg/400px-Jude_Bellingham_2023.jpg" 
+                stats: "8G, 5A (Club)", 
+                description: "Bellingham combined midfield influence with decisive attacking moments, playing a major role in England’s World Cup campaign and scoring the quarter-final winner against Norway.",
+                img: "https://crests.football-data.org/86.png" 
             },
             { 
                 name: "Ousmane Dembélé", 
                 club: "PSG / France", 
-                stats: "22G, 12A (Club)<br>6G, 2A (World Cup)", 
-                moments: "Ligue 1 Player of the Season. Key force in PSG's trophy-winning campaign.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Ousmane_Demb%C3%A9l%C3%A9_2023.jpg/400px-Ousmane_Demb%C3%A9l%C3%A9_2023.jpg" 
+                stats: "22G, 12A (Club)", 
+                description: "Dembélé was a key attacking force in PSG’s trophy-winning campaign, contributing eight Champions League goals. He carried that form onto the international stage, helping France reach the latter stages of the World Cup.",
+                img: "https://crests.football-data.org/524.png" 
             },
             { 
                 name: "Luis Díaz", 
                 club: "Bayern Munich / Colombia", 
                 stats: "26G, 21A (Club)", 
-                moments: "Colombia's attacking leader. Brought pace and end product to Bayern's domestic double.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Luis_D%C3%ADaz_2022.jpg/400px-Luis_D%C3%ADaz_2022.jpg" 
+                description: "Díaz brought pace, directness and consistent end product to Bayern’s attack, helping the club secure domestic honours while delivering in Europe. He was Colombia’s attacking leader.",
+                img: "https://crests.football-data.org/5.png" 
             },
             { 
                 name: "Erling Haaland", 
                 club: "Man City / Norway", 
-                stats: "38G, 9A (Club)<br>7G (World Cup)", 
-                moments: "Premier League Golden Boot. One of the World Cup's leading scorers.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Erling_Haaland_2023_%28cropped%29.jpg/400px-Erling_Haaland_2023_%28cropped%29.jpg" 
+                stats: "38G, 9A (Club)", 
+                description: "Haaland continued to produce elite scoring numbers for Manchester City before carrying his goalscoring form onto the world stage. His seven World Cup goals made him one of the tournament’s leading scorers.",
+                img: "https://crests.football-data.org/65.png" 
             },
             { 
                 name: "Harry Kane", 
                 club: "Bayern Munich / England", 
-                stats: "61G, 7A (Club)<br>6G, 1A (World Cup)", 
-                moments: "2026 Ballon d'Or Winner. Bundesliga, DFB-Pokal, European Golden Shoe.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Harry_Kane_2023.jpg/400px-Harry_Kane_2023.jpg" 
+                stats: "61G, 7A (Club)", 
+                description: "Kane won the Bundesliga, DFB-Pokal and Franz Beckenbauer Supercup, while claiming the European Golden Shoe. He helped England reach the World Cup podium and finished as the DFB-Pokal’s leading scorer.",
+                img: "https://crests.football-data.org/5.png" 
             },
             { 
                 name: "Khvicha Kvaratskhelia", 
                 club: "PSG / Georgia", 
                 stats: "19G, 10A (Club)", 
-                moments: "UCL Player of the Season. Decisive throughout the knockout stages to lead PSG to the UCL title.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Khvicha_Kvaratskhelia_2023.jpg/400px-Khvicha_Kvaratskhelia_2023.jpg" 
+                description: "Kvaratskhelia’s dribbling, creativity and ability to decide major matches made him a central part of PSG’s European success. He was decisive throughout the knockout stages to lead PSG to their UCL title.",
+                img: "https://crests.football-data.org/524.png" 
             },
             { 
                 name: "Lamine Yamal", 
                 club: "Barcelona / Spain", 
                 stats: "24G, 17A (Club)", 
-                moments: "World Cup Winner. Incredible season for Barcelona. La Liga MVP & Kopa Trophy.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Lamine_Yamal_2023.jpg/400px-Lamine_Yamal_2023.jpg" 
+                description: "Yamal continued to deliver extraordinary numbers, combining goals, assists and chance creation with the ability to take on defenders. He won the World Cup with Spain and had an incredible season for Barcelona, winning La Liga MVP.",
+                img: "https://crests.football-data.org/81.png" 
             },
             { 
                 name: "Lautaro Martínez", 
                 club: "Inter / Argentina", 
-                stats: "22G, 6A (Club)<br>3G, 1A (World Cup)", 
-                moments: "World Cup Finalist. Serie A & Coppa Italia double. Serie A Capocannoniere.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Lautaro_Mart%C3%ADnez_2022.jpg/400px-Lautaro_Mart%C3%ADnez_2022.jpg" 
+                stats: "22G, 6A (Club)", 
+                description: "Martínez helped Inter win both Serie A and the Coppa Italia, completing the domestic double. He remained a consistent attacking leader for the club and was a World Cup finalist with Argentina.",
+                img: "https://crests.football-data.org/108.png" 
             },
             { 
                 name: "Kylian Mbappé", 
                 club: "Real Madrid / France", 
-                stats: "42G, 6A (Club)<br>10G, 4A (World Cup)", 
-                moments: "World Cup Golden Boot. Top scorer in La Liga, UCL, and World Cup. World Cup all-time leading scorer.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Kylian_Mbapp%C3%A9_2018.jpg/400px-Kylian_Mbapp%C3%A9_2018.jpg" 
+                stats: "42G, 6A (Club)", 
+                description: "Mbappé delivered one of the most prolific seasons in world football, combining elite club scoring with an extraordinary World Cup. He won the World Cup Golden Boot and is the World Cup all-time leading scorer.",
+                img: "https://crests.football-data.org/86.png" 
             },
             { 
                 name: "Lionel Messi", 
                 club: "Inter Miami / Argentina", 
-                stats: "40G, 23A (Club)<br>8G, 4A (World Cup)", 
-                moments: "World Cup Finalist. MLS MVP, MLS Golden Boot & MLS Cup Winner. Over 75 G/A at age 39. Standout World Cup performance.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Lionel-Messi-Argentina-2022-FIFA-World-Cup_%28cropped%29.jpg/400px-Lionel-Messi-Argentina-2022-FIFA-World-Cup_%28cropped%29.jpg" 
+                stats: "40G, 23A (Club)", 
+                description: "Messi produced exceptional attacking numbers (over 75 G/A at the age of 39) while leading Argentina’s international campaign. He is an MLS MVP, MLS Golden Boot and MLS Cup winner, and a World Cup finalist.",
+                img: "https://a.espncdn.com/i/teamlogos/soccer/500/20232.png" 
             },
             { 
                 name: "Nuno Mendes", 
                 club: "PSG / Portugal", 
                 stats: "6G, 7A (Club)", 
-                moments: "Ligue 1 & UCL Winner. Exceptional pace and defensive recovery from left-back.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Nuno_Mendes_2022.jpg/400px-Nuno_Mendes_2022.jpg" 
+                description: "Mendes played a major role in PSG’s domestic and Champions League success, offering exceptional pace, defensive recovery and attacking support from the left side.",
+                img: "https://crests.football-data.org/524.png" 
             },
             { 
                 name: "Michael Olise", 
                 club: "Bayern Munich / France", 
                 stats: "23G, 31A (Club)", 
-                moments: "Broke the World Cup assist record in a single tournament. Bundesliga Player of the Season.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Michael_Olise_2023.jpg/400px-Michael_Olise_2023.jpg" 
+                description: "Olise produced one of the most impressive creative seasons in Europe, combining 15 Bundesliga goals with 21 league assists. He broke the World Cup assist record in a single tournament.",
+                img: "https://crests.football-data.org/5.png" 
             },
             { 
                 name: "Willian Pacho", 
                 club: "PSG / Ecuador", 
-                stats: "Defensive Key Contributor<br>UCL Winner", 
-                moments: "First Ecuadorian to win the UCL. 100% pass completion in the UEFA Super Cup.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Willian_Pacho_2023.jpg/400px-Willian_Pacho_2023.jpg" 
+                stats: "Defensive Key Contributor", 
+                description: "Pacho established himself as one of the most composed centre-backs in the game, combining physical strength and intelligent positioning. He was a key part of PSG’s UCL success.",
+                img: "https://crests.football-data.org/524.png" 
             },
             { 
                 name: "Fabián Ruiz", 
                 club: "PSG / Spain", 
                 stats: "2G, 5A (Club)", 
-                moments: "World Cup Winner. Technical quality and control in Spain & PSG's midfield.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Fabi%C3%A1n_Ruiz_2023.jpg/400px-Fabi%C3%A1n_Ruiz_2023.jpg" 
+                description: "Ruiz provided technical quality, ball progression and control in the middle of the pitch, helping PSG compete across all competitions. He is a World Cup winner with Spain.",
+                img: "https://crests.football-data.org/524.png" 
             },
             { 
                 name: "Achraf Hakimi", 
                 club: "PSG / Morocco", 
                 stats: "3G, 8A (Club)", 
-                moments: "Ligue 1 & UCL Winner. UCL Assist Leader. Morocco's leading figure.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Achraf_Hakimi_2022.jpg/400px-Achraf_Hakimi_2022.jpg" 
+                description: "Hakimi continued to demonstrate why he is among the world’s best attacking full-backs, combining speed, defensive recovery and dangerous forward runs. He was a key part of PSG’s UCL success.",
+                img: "https://crests.football-data.org/524.png" 
             },
             { 
                 name: "Gabriel Magalhães", 
                 club: "Arsenal / Brazil", 
                 stats: "5G, 2A (Club)", 
-                moments: "Premier League Winner. Aerial dominance and leadership in Arsenal's defence.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Gabriel_Magalh%C3%A3es_2023.jpg/400px-Gabriel_Magalh%C3%A3es_2023.jpg" 
+                description: "Gabriel delivered another commanding campaign at centre-back, bringing aerial dominance, physicality and leadership to Arsenal’s defence. He is a Premier League winner.",
+                img: "https://crests.football-data.org/57.png" 
             },
             { 
                 name: "Nico Paz", 
                 club: "Como / Argentina", 
                 stats: "12G, 6A (Club)", 
-                moments: "Breakout season. Serie A Young Player of the Season. Helped Como qualify for the UCL.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Nico_Paz_2023.jpg/400px-Nico_Paz_2023.jpg" 
+                description: "Paz enjoyed a breakout season, becoming one of Serie A’s most exciting young creative players. His technical quality and vision helped drive Como’s progress and earned him recognition with Argentina.",
+                img: "https://crests.football-data.org/7397.png" 
             },
             { 
                 name: "Enzo Fernández", 
                 club: "Chelsea / Argentina", 
                 stats: "16G, 10A (Club)", 
-                moments: "World Cup Finalist. Crucial World Cup knockout goals. Midfield work rate + attacking production.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Enzo_Fern%C3%A1ndez_2022.jpg/400px-Enzo_Fern%C3%A1ndez_2022.jpg" 
+                description: "Fernández combined midfield work rate with attacking production, while his passing range made him an influential figure. He scored crucial World Cup knockout goals and was a finalist.",
+                img: "https://crests.football-data.org/61.png" 
             },
             { 
                 name: "Federico Dimarco", 
                 club: "Inter / Italy", 
                 stats: "7G, 18A (Club)", 
-                moments: "Most assists in Serie A history for a defender. Led Inter to the domestic double.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Federico_Dimarco_2023.jpg/400px-Federico_Dimarco_2023.jpg" 
+                description: "Dimarco produced an exceptional campaign from the left flank, combining precise crossing and set-piece delivery. He recorded the most assists in Serie A history for a defender and led Inter to the trophy.",
+                img: "https://crests.football-data.org/108.png" 
             },
             { 
                 name: "Cristian Romero", 
                 club: "Tottenham / Argentina", 
                 stats: "1G, 1A (Club)", 
-                moments: "World Cup Finalist. Decisive knockout goals for Argentina. Europa League Winner.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Cristian_Romero_2022.jpg/400px-Cristian_Romero_2022.jpg" 
+                description: "Romero was a commanding presence at the back, bringing aggression and leadership to Tottenham. He scored decisive knockout goals for Argentina in the World Cup and was a finalist.",
+                img: "https://crests.football-data.org/73.png" 
             },
             { 
                 name: "Julián Álvarez", 
                 club: "Atlético Madrid / Argentina", 
                 stats: "20G, 9A (Club)", 
-                moments: "World Cup Finalist. Copa del Rey Winner. Memorable free kick vs Barcelona.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Juli%C3%A1n_%C3%81lvarez_2022.jpg/400px-Juli%C3%A1n_%C3%81lvarez_2022.jpg" 
+                description: "Álvarez delivered another productive season, contributing goals, pressing and intelligent movement. He won the Copa del Rey and produced memorable moments for Argentina as a World Cup finalist.",
+                img: "https://crests.football-data.org/78.png" 
             },
             { 
                 name: "Raphinha", 
                 club: "Barcelona / Brazil", 
                 stats: "21G, 8A (Club)", 
-                moments: "La Liga Winner. Consistent attacking production for Barcelona across all competitions.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Raphinha_2023.jpg/400px-Raphinha_2023.jpg" 
+                description: "Raphinha delivered consistent attacking production for Barcelona, contributing in La Liga and the Champions League. His work rate and directness made him one of the club’s most important players.",
+                img: "https://crests.football-data.org/81.png" 
             },
             { 
                 name: "Désiré Doué", 
                 club: "PSG / France", 
                 stats: "15G, 10A (Club)", 
-                moments: "Breakout season. Versatility and decisive contributions in PSG's UCL success.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/D%C3%A9sir%C3%A9_Dou%C3%A9_2023.jpg/400px-D%C3%A9sir%C3%A9_Dou%C3%A9_2023.jpg" 
+                description: "Doué enjoyed a breakout campaign, showcasing his versatility, close control and ability to make decisive contributions in major matches. His role in PSG’s UCL success strengthened his reputation.",
+                img: "https://crests.football-data.org/524.png" 
             },
             { 
                 name: "Declan Rice", 
                 club: "Arsenal / England", 
                 stats: "5G, 11A (Club)", 
-                moments: "Premier League Winner. Arsenal Player of the Season. UCL Team of the Season.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Declan_Rice_2023.jpg/400px-Declan_Rice_2023.jpg" 
+                description: "Rice combined defensive discipline, ball progression and attacking contribution throughout the season. His ability to control transitions made him one of Arsenal’s most important players.",
+                img: "https://crests.football-data.org/57.png" 
             },
             { 
                 name: "Rodri", 
                 club: "Man City / Spain", 
                 stats: "2G (Club)", 
-                moments: "World Cup Winner & Golden Ball Winner. Dictated tempo and control for Spain.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Rodri_2023.jpg/400px-Rodri_2023.jpg" 
+                description: "Rodri was recognised as the best player of the World Cup after playing a central role in Spain’s triumph. His ability to dictate tempo and organise the midfield made him one of the tournament’s most influential performers.",
+                img: "https://crests.football-data.org/65.png" 
             },
             { 
                 name: "Pedri", 
                 club: "Barcelona / Spain", 
                 stats: "2G, 12A (Club)", 
-                moments: "World Cup Winner. Technical quality and composure in Spain's winning midfield.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Pedri_2023.jpg/400px-Pedri_2023.jpg" 
+                description: "Pedri’s season was defined by his technical quality, composure and ability to dictate matches. His passing and movement helped Barcelona and Spain maintain their rhythm as a World Cup winner.",
+                img: "https://crests.football-data.org/81.png" 
             },
             { 
                 name: "Emiliano Martínez", 
                 club: "Aston Villa / Argentina", 
-                stats: "16 PL Clean Sheets<br>9 UEL Clean Sheets", 
-                moments: "World Cup Finalist. Recorded the most saves in a World Cup final. Elite shot-stopper.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emiliano_Mart%C3%ADnez_2022.jpg/400px-Emiliano_Mart%C3%ADnez_2022.jpg" 
+                stats: "16 PL Clean Sheets", 
+                description: "Martínez continued to demonstrate his shot-stopping ability and command of the penalty area. He recorded the most saves in a World Cup final and was a finalist with Argentina.",
+                img: "https://crests.football-data.org/58.png" 
             },
             { 
                 name: "Bruno Fernandes", 
                 club: "Man United / Portugal", 
                 stats: "9G, 22A (Club)", 
-                moments: "Statistical year. Portugal's creative leader. Carried Man United as captain.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Bruno_Fernandes_2023.jpg/400px-Bruno_Fernandes_2023.jpg" 
+                description: "Fernandes delivered outstanding creative numbers, leading Manchester United through his chance creation and leadership as captain. He had a statistically incredible year for Portugal.",
+                img: "https://crests.football-data.org/66.png" 
             },
             { 
                 name: "Vitinha", 
                 club: "PSG / Portugal", 
                 stats: "5G, 8A (Club)", 
-                moments: "Ligue 1 & UCL Winner. Composure, technical quality, and control in PSG's midfield.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Vitinha_2023.jpg/400px-Vitinha_2023.jpg" 
+                description: "Vitinha was central to PSG’s success, providing composure, technical quality and control in possession. His ability to dictate the rhythm of matches made him one of the most important midfielders in Europe.",
+                img: "https://crests.football-data.org/524.png" 
             },
             { 
                 name: "David Raya", 
                 club: "Arsenal / Spain", 
                 stats: "19 PL Clean Sheets", 
-                moments: "World Cup Winner. Premier League Golden Glove. Command of the penalty area.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/David_Raya_2023.jpg/400px-David_Raya_2023.jpg" 
+                description: "Raya delivered another impressive campaign through his shot-stopping, distribution and command of the penalty area. He is a World Cup winner and Premier League Golden Glove winner.",
+                img: "https://crests.football-data.org/57.png" 
             }
         ];
 
@@ -378,9 +357,11 @@
                 <div class="flip-card" id="card-${index}" onclick="toggleFlip(${index}, event)">
                     <div class="flip-card-inner">
                         
-                        <!-- FRONT: PHOTO & ELEGANT TEXT -->
+                        <!-- FRONT: CLUB LOGO PLACEHOLDER (Until Agent fixes photos) -->
                         <div class="flip-card-front flex flex-col justify-end p-4">
-                            <img src="${p.img}" alt="${p.name}" class="player-photo absolute top-0 left-0" onerror="this.style.display='none'">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-20">
+                                <img src="${p.img}" alt="${p.name}" class="w-32 h-32 object-contain">
+                            </div>
                             <div class="relative z-10 text-left">
                                 <span class="text-[10px] font-bold text-yellow-500/60 mb-1 block">#${index + 1}</span>
                                 <h3 class="font-elegant text-lg md:text-xl text-white leading-tight mb-1">${p.name}</h3>
@@ -388,17 +369,14 @@
                             </div>
                         </div>
 
-                        <!-- BACK: STATS & MOMENTS -->
+                        <!-- BACK: FULL DESCRIPTION -->
                         <div class="flip-card-back">
                             <div>
                                 <h3 class="font-elegant text-lg text-yellow-500 mb-1">${p.name}</h3>
-                                <p class="text-[10px] text-gray-500 mb-3">${p.club}</p>
-                                
                                 <div class="bg-yellow-500/5 border border-yellow-500/10 rounded-lg p-2 mb-3">
                                     <p class="text-yellow-500 font-semibold text-[11px] leading-tight">${p.stats}</p>
                                 </div>
-                                
-                                <p class="text-gray-400 text-[11px] leading-relaxed">${p.moments}</p>
+                                <p class="text-gray-400 text-[11px] leading-relaxed">${p.description}</p>
                             </div>
                             <button onclick="castVote('${p.name}', event)" class="w-full bg-yellow-500 text-black font-bold py-2.5 rounded-lg hover:bg-yellow-400 transition text-xs uppercase tracking-wider mt-3">
                                 Cast Vote
@@ -409,7 +387,6 @@
             `).join('');
         }
 
-        // --- LOGIC ---
         function startExperience() {
             document.getElementById('screen-intro').classList.remove('active');
             document.getElementById('screen-voting').classList.add('active');
@@ -418,19 +395,15 @@
 
         function toggleFlip(index, event) {
             if (event.target.tagName === 'BUTTON') return;
-            
             const card = document.getElementById(`card-${index}`);
-            
             document.querySelectorAll('.flip-card').forEach(c => {
                 if (c.id !== `card-${index}`) c.classList.remove('flipped');
             });
-            
             card.classList.toggle('flipped');
         }
 
         function castVote(playerName, event) {
             event.stopPropagation(); 
-            
             document.getElementById('screen-voting').classList.remove('active');
             document.getElementById('screen-loading').classList.add('active');
 

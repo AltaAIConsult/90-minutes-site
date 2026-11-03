@@ -12,7 +12,7 @@
     <style>
         body { 
             font-family: 'Poppins', sans-serif; 
-            background-color: #000; 
+            background-color: #050505; 
             color: #fbbf24; /* Amber/Gold */
             overflow-x: hidden;
             -ms-overflow-style: none; 
@@ -29,30 +29,42 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Card Flip CSS */
-        .flip-card { perspective: 1000px; }
+        /* The 3D Card Flip Magic */
+        .flip-card { 
+            perspective: 1000px; 
+            height: 280px; /* Fixed height so the grid doesn't break when flipping */
+        }
         .flip-card-inner {
             position: relative;
             width: 100%;
             height: 100%;
             text-align: center;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
+            cursor: pointer;
         }
-        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card.flipped .flip-card-inner { 
+            transform: rotateY(180deg); 
+        }
         .flip-card-front, .flip-card-back {
             position: absolute;
             width: 100%;
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            border-radius: 1.5rem;
-            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 1rem;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            background: #111;
+            overflow: hidden;
         }
         .flip-card-back {
             transform: rotateY(180deg);
             background: #0a0a0a;
             border: 1px solid #fbbf24;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1rem;
         }
 
         /* Screen Transitions */
@@ -66,18 +78,6 @@
             100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
         }
         .pulse-circle { animation: pulse-gold 2s infinite; }
-
-        /* Carousel */
-        .carousel-container {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            gap: 1.5rem;
-            padding: 2rem;
-            -webkit-overflow-scrolling: touch;
-        }
-        .carousel-container::-webkit-scrollbar { display: none; }
-        .carousel-item { scroll-snap-align: center; flex-shrink: 0; }
 
         /* Loading Spinner */
         .loader {
@@ -94,9 +94,9 @@
 <body>
 
     <!-- SCREEN 1: THE UNVEILING -->
-    <div id="screen-intro" class="screen active bg-black text-center">
-        <div class="pulse-circle w-32 h-32 rounded-full border-2 border-yellow-500 flex items-center justify-center mb-8">
-            <i class="fas fa-crown text-5xl text-yellow-500"></i>
+    <div id="screen-intro" class="screen active bg-[#050505] text-center px-6">
+        <div class="pulse-circle w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-yellow-500 flex items-center justify-center mb-8">
+            <i class="fas fa-crown text-4xl md:text-5xl text-yellow-500"></i>
         </div>
         <h1 class="font-anton text-4xl md:text-6xl uppercase tracking-widest gold-text mb-4">Player of the Season</h1>
         <p class="text-gray-400 text-sm md:text-base max-w-md mx-auto mb-10">30 Candidates. One Crown.<br>Presented by 90 Minutes or More.</p>
@@ -105,28 +105,29 @@
         </button>
     </div>
 
-    <!-- SCREEN 2: THE VOTING CAROUSEL -->
-    <div id="screen-voting" class="screen bg-black w-full">
+    <!-- SCREEN 2: THE GRID -->
+    <div id="screen-voting" class="screen bg-[#050505] w-full justify-start overflow-y-auto">
         <!-- Header -->
-        <div class="absolute top-0 w-full p-4 flex justify-between items-center z-10 bg-gradient-to-b from-black to-transparent">
+        <div class="w-full p-4 flex justify-between items-center z-10 bg-gradient-to-b from-[#050505] to-transparent sticky top-0">
             <div class="font-anton text-xl gold-text">90M POTY</div>
-            <div class="text-xs text-yellow-500 border border-yellow-500/30 px-3 py-1 rounded-full bg-yellow-500/10">Swipe to browse</div>
+            <div class="text-xs text-yellow-500 border border-yellow-500/30 px-3 py-1 rounded-full bg-yellow-500/10 hidden md:block">Click a card to view stats</div>
+            <div class="text-xs text-yellow-500 border border-yellow-500/30 px-3 py-1 rounded-full bg-yellow-500/10 md:hidden">Tap to view</div>
         </div>
 
-        <!-- Carousel -->
-        <div id="player-carousel" class="carousel-container w-full h-full items-center">
+        <!-- The Responsive Grid: 2 cols on mobile, 5 on desktop -->
+        <div id="player-grid" class="w-full max-w-7xl mx-auto px-4 pb-20 grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mt-2">
             <!-- Cards injected by JS -->
         </div>
     </div>
 
     <!-- SCREEN 3: SUBMISSION LOADING -->
-    <div id="screen-loading" class="screen bg-black">
+    <div id="screen-loading" class="screen bg-[#050505]">
         <div class="loader mb-6"></div>
         <h2 class="font-anton text-2xl gold-text uppercase tracking-widest">Casting Your Vote...</h2>
     </div>
 
     <!-- SCREEN 4: THANK YOU -->
-    <div id="screen-success" class="screen bg-black text-center px-6">
+    <div id="screen-success" class="screen bg-[#050505] text-center px-6">
         <div class="w-20 h-20 rounded-full bg-yellow-500/20 border-2 border-yellow-500 flex items-center justify-center mb-6">
             <i class="fas fa-check text-3xl text-yellow-500"></i>
         </div>
@@ -146,90 +147,71 @@
     <script>
         // --- PLAYER DATA (From your research) ---
         const players = [
-            { name: "Jude Bellingham", club: "Real Madrid / England", stats: "8 Goals, 5 Assists (Club)<br>7 Goals, 1 Assist (World Cup)", img: "https://crests.football-data.org/86.png" },
-            { name: "Ousmane Dembélé", club: "PSG / France", stats: "22 Goals, 12 Assists (Club)<br>6 Goals, 2 Assists (World Cup)", img: "https://crests.football-data.org/524.png" },
-            { name: "Luis Díaz", club: "Bayern Munich / Colombia", stats: "26 Goals, 21 Assists (Club)", img: "https://crests.football-data.org/5.png" },
-            { name: "Erling Haaland", club: "Man City / Norway", stats: "38 Goals, 9 Assists (Club)<br>7 Goals (World Cup)", img: "https://crests.football-data.org/65.png" },
-            { name: "Harry Kane", club: "Bayern Munich / England", stats: "61 Goals, 7 Assists (Club)<br>6 Goals, 1 Assist (World Cup)", img: "https://crests.football-data.org/5.png" },
-            { name: "Khvicha Kvaratskhelia", club: "PSG / Georgia", stats: "19 Goals, 10 Assists (Club)", img: "https://crests.football-data.org/524.png" },
-            { name: "Lamine Yamal", club: "Barcelona / Spain", stats: "24 Goals, 17 Assists (Club)<br>World Cup Winner", img: "https://crests.football-data.org/81.png" },
-            { name: "Lautaro Martínez", club: "Inter / Argentina", stats: "22 Goals, 6 Assists (Club)<br>3 Goals, 1 Assist (World Cup)", img: "https://crests.football-data.org/108.png" },
-            { name: "Kylian Mbappé", club: "Real Madrid / France", stats: "42 Goals, 6 Assists (Club)<br>10 Goals, 4 Assists (World Cup)", img: "https://crests.football-data.org/86.png" },
-            { name: "Lionel Messi", club: "Inter Miami / Argentina", stats: "40 Goals, 23 Assists (Club)<br>8 Goals, 4 Assists (World Cup)", img: "https://a.espncdn.com/i/teamlogos/soccer/500/20232.png" },
-            // Add the remaining 20 players here using the exact same format
-            { name: "Nuno Mendes", club: "PSG / Portugal", stats: "6 Goals, 7 Assists (Club)", img: "https://crests.football-data.org/524.png" },
-            { name: "Michael Olise", club: "Bayern Munich / France", stats: "23 Goals, 31 Assists (Club)", img: "https://crests.football-data.org/5.png" },
-            { name: "Willian Pacho", club: "PSG / Ecuador", stats: "Defensive Key Contributor<br>UCL Winner", img: "https://crests.football-data.org/524.png" },
-            { name: "Fabián Ruiz", club: "PSG / Spain", stats: "2 Goals, 5 Assists (Club)<br>World Cup Winner", img: "https://crests.football-data.org/524.png" },
-            { name: "Achraf Hakimi", club: "PSG / Morocco", stats: "3 Goals, 8 Assists (Club)", img: "https://crests.football-data.org/524.png" },
-            { name: "Gabriel Magalhães", club: "Arsenal / Brazil", stats: "5 Goals, 2 Assists (Club)", img: "https://crests.football-data.org/57.png" },
-            { name: "Nico Paz", club: "Como / Argentina", stats: "12 Goals, 6 Assists (Club)", img: "https://crests.football-data.org/7397.png" },
-            { name: "Enzo Fernández", club: "Chelsea / Argentina", stats: "16 Goals, 10 Assists (Club)", img: "https://crests.football-data.org/61.png" },
-            { name: "Federico Dimarco", club: "Inter / Italy", stats: "7 Goals, 18 Assists (Club)", img: "https://crests.football-data.org/108.png" },
-            { name: "Cristian Romero", club: "Tottenham / Argentina", stats: "1 Goal, 1 Assist (Club)", img: "https://crests.football-data.org/73.png" },
-            { name: "Julián Álvarez", club: "Atlético Madrid / Argentina", stats: "20 Goals, 9 Assists (Club)", img: "https://crests.football-data.org/78.png" },
-            { name: "Raphinha", club: "Barcelona / Brazil", stats: "21 Goals, 8 Assists (Club)", img: "https://crests.football-data.org/81.png" },
-            { name: "Désiré Doué", club: "PSG / France", stats: "15 Goals, 10 Assists (Club)", img: "https://crests.football-data.org/524.png" },
-            { name: "Declan Rice", club: "Arsenal / England", stats: "5 Goals, 11 Assists (Club)", img: "https://crests.football-data.org/57.png" },
-            { name: "Rodri", club: "Man City / Spain", stats: "2 Goals (Club)<br>World Cup Golden Ball", img: "https://crests.football-data.org/65.png" },
-            { name: "Pedri", club: "Barcelona / Spain", stats: "2 Goals, 12 Assists (Club)", img: "https://crests.football-data.org/81.png" },
-            { name: "Emiliano Martínez", club: "Aston Villa / Argentina", stats: "16 PL Clean Sheets<br>World Cup Finalist", img: "https://crests.football-data.org/58.png" },
-            { name: "Bruno Fernandes", club: "Man United / Portugal", stats: "9 Goals, 22 Assists (Club)", img: "https://crests.football-data.org/66.png" },
-            { name: "Vitinha", club: "PSG / Portugal", stats: "5 Goals, 8 Assists (Club)", img: "https://crests.football-data.org/524.png" },
-            { name: "David Raya", club: "Arsenal / Spain", stats: "19 PL Clean Sheets<br>World Cup Winner", img: "https://crests.football-data.org/57.png" }
+            { name: "Jude Bellingham", club: "Real Madrid", stats: "8 Goals, 5 Assists (Club)<br>7 Goals, 1 Assist (World Cup)", img: "https://crests.football-data.org/86.png" },
+            { name: "Ousmane Dembélé", club: "PSG", stats: "22 Goals, 12 Assists (Club)<br>6 Goals, 2 Assists (World Cup)", img: "https://crests.football-data.org/524.png" },
+            { name: "Luis Díaz", club: "Bayern Munich", stats: "26 Goals, 21 Assists (Club)", img: "https://crests.football-data.org/5.png" },
+            { name: "Erling Haaland", club: "Man City", stats: "38 Goals, 9 Assists (Club)<br>7 Goals (World Cup)", img: "https://crests.football-data.org/65.png" },
+            { name: "Harry Kane", club: "Bayern Munich", stats: "61 Goals, 7 Assists (Club)<br>6 Goals, 1 Assist (World Cup)", img: "https://crests.football-data.org/5.png" },
+            { name: "Khvicha Kvaratskhelia", club: "PSG", stats: "19 Goals, 10 Assists (Club)", img: "https://crests.football-data.org/524.png" },
+            { name: "Lamine Yamal", club: "Barcelona", stats: "24 Goals, 17 Assists (Club)<br>World Cup Winner", img: "https://crests.football-data.org/81.png" },
+            { name: "Lautaro Martínez", club: "Inter", stats: "22 Goals, 6 Assists (Club)<br>3 Goals, 1 Assist (World Cup)", img: "https://crests.football-data.org/108.png" },
+            { name: "Kylian Mbappé", club: "Real Madrid", stats: "42 Goals, 6 Assists (Club)<br>10 Goals, 4 Assists (World Cup)", img: "https://crests.football-data.org/86.png" },
+            { name: "Lionel Messi", club: "Inter Miami", stats: "40 Goals, 23 Assists (Club)<br>8 Goals, 4 Assists (World Cup)", img: "https://a.espncdn.com/i/teamlogos/soccer/500/20232.png" },
+            { name: "Nuno Mendes", club: "PSG", stats: "6 Goals, 7 Assists (Club)", img: "https://crests.football-data.org/524.png" },
+            { name: "Michael Olise", club: "Bayern Munich", stats: "23 Goals, 31 Assists (Club)", img: "https://crests.football-data.org/5.png" },
+            { name: "Willian Pacho", club: "PSG", stats: "Defensive Key Contributor<br>UCL Winner", img: "https://crests.football-data.org/524.png" },
+            { name: "Fabián Ruiz", club: "PSG", stats: "2 Goals, 5 Assists (Club)<br>World Cup Winner", img: "https://crests.football-data.org/524.png" },
+            { name: "Achraf Hakimi", club: "PSG", stats: "3 Goals, 8 Assists (Club)", img: "https://crests.football-data.org/524.png" },
+            { name: "Gabriel Magalhães", club: "Arsenal", stats: "5 Goals, 2 Assists (Club)", img: "https://crests.football-data.org/57.png" },
+            { name: "Nico Paz", club: "Como", stats: "12 Goals, 6 Assists (Club)", img: "https://crests.football-data.org/7397.png" },
+            { name: "Enzo Fernández", club: "Chelsea", stats: "16 Goals, 10 Assists (Club)", img: "https://crests.football-data.org/61.png" },
+            { name: "Federico Dimarco", club: "Inter", stats: "7 Goals, 18 Assists (Club)", img: "https://crests.football-data.org/108.png" },
+            { name: "Cristian Romero", club: "Tottenham", stats: "1 Goal, 1 Assist (Club)", img: "https://crests.football-data.org/73.png" },
+            { name: "Julián Álvarez", club: "Atlético Madrid", stats: "20 Goals, 9 Assists (Club)", img: "https://crests.football-data.org/78.png" },
+            { name: "Raphinha", club: "Barcelona", stats: "21 Goals, 8 Assists (Club)", img: "https://crests.football-data.org/81.png" },
+            { name: "Désiré Doué", club: "PSG", stats: "15 Goals, 10 Assists (Club)", img: "https://crests.football-data.org/524.png" },
+            { name: "Declan Rice", club: "Arsenal", stats: "5 Goals, 11 Assists (Club)", img: "https://crests.football-data.org/57.png" },
+            { name: "Rodri", club: "Man City", stats: "2 Goals (Club)<br>World Cup Golden Ball", img: "https://crests.football-data.org/65.png" },
+            { name: "Pedri", club: "Barcelona", stats: "2 Goals, 12 Assists (Club)", img: "https://crests.football-data.org/81.png" },
+            { name: "Emiliano Martínez", club: "Aston Villa", stats: "16 PL Clean Sheets<br>World Cup Finalist", img: "https://crests.football-data.org/58.png" },
+            { name: "Bruno Fernandes", club: "Man United", stats: "9 Goals, 22 Assists (Club)", img: "https://crests.football-data.org/66.png" },
+            { name: "Vitinha", club: "PSG", stats: "5 Goals, 8 Assists (Club)", img: "https://crests.football-data.org/524.png" },
+            { name: "David Raya", club: "Arsenal", stats: "19 PL Clean Sheets<br>World Cup Winner", img: "https://crests.football-data.org/57.png" }
         ];
 
         // --- RENDER CARDS ---
         function renderCards() {
-            const carousel = document.getElementById('player-carousel');
-            carousel.innerHTML = players.map((p, index) => `
-                <div class="carousel-item flip-card w-72 h-[480px]" id="card-${index}">
-                    <div class="flip-card-inner shadow-[0_0_30px_rgba(251,191,36,0.1)]">
+            const grid = document.getElementById('player-grid');
+            grid.innerHTML = players.map((p, index) => `
+                <div class="flip-card" id="card-${index}" onclick="toggleFlip(${index}, event)">
+                    <div class="flip-card-inner shadow-[0_0_20px_rgba(251,191,36,0.05)]">
                         
                         <!-- FRONT OF CARD -->
-                        <div class="flip-card-front bg-[#111] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-                            <!-- Gold Glow Background -->
-                            <div class="absolute top-0 w-full h-1/2 bg-gradient-to-b from-yellow-500/20 to-transparent"></div>
+                        <div class="flip-card-front flex flex-col items-center justify-center p-3">
+                            <span class="absolute top-2 left-3 text-[10px] font-bold text-yellow-500/50">#${index + 1}</span>
                             
-                            <span class="absolute top-4 left-4 text-xs font-bold text-yellow-500/50">#${index + 1}</span>
-                            
-                            <div class="w-32 h-32 rounded-full bg-black border-2 border-yellow-500 flex items-center justify-center mb-6 z-10 overflow-hidden">
-                                <img src="${p.img}" alt="${p.name}" class="w-20 h-20 object-contain">
+                            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-black border border-yellow-500 flex items-center justify-center mb-3 overflow-hidden">
+                                <img src="${p.img}" alt="${p.name}" class="w-10 h-10 md:w-12 md:h-12 object-contain">
                             </div>
                             
-                            <h3 class="font-anton text-3xl text-white uppercase text-center leading-tight mb-2 z-10">${p.name}</h3>
-                            <p class="text-yellow-500 text-sm font-semibold tracking-wider z-10">${p.club}</p>
-                            
-                            <div class="absolute bottom-6 animate-pulse text-gray-500 text-xs flex flex-col items-center">
-                                <i class="fas fa-hand-pointer mb-1"></i> Tap to view stats
-                            </div>
+                            <h3 class="font-anton text-sm md:text-lg text-white uppercase text-center leading-tight mb-1">${p.name}</h3>
+                            <p class="text-yellow-500 text-[10px] md:text-xs font-semibold tracking-wider text-center">${p.club}</p>
                         </div>
 
                         <!-- BACK OF CARD -->
-                        <div class="flip-card-back p-6 flex flex-col justify-between">
+                        <div class="flip-card-back">
                             <div>
-                                <h3 class="font-anton text-xl text-yellow-500 uppercase mb-4 border-b border-yellow-500/30 pb-2">${p.name}</h3>
-                                <p class="text-gray-400 text-sm leading-relaxed mb-4">${p.stats}</p>
+                                <h3 class="font-anton text-sm md:text-lg text-yellow-500 uppercase mb-2 border-b border-yellow-500/30 pb-1 truncate">${p.name}</h3>
+                                <p class="text-gray-300 text-[10px] md:text-xs leading-relaxed">${p.stats}</p>
                             </div>
                             
-                            <button onclick="castVote('${p.name}', event)" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-bold py-3 rounded-xl hover:scale-105 transition transform">
+                            <button onclick="castVote('${p.name}', event)" class="w-full bg-yellow-500 text-black font-bold py-2 rounded-lg hover:bg-yellow-400 transition text-xs md:text-sm mt-2">
                                 Cast Vote
                             </button>
                         </div>
                     </div>
                 </div>
             `).join('');
-
-            // Add click listeners to flip cards
-            players.forEach((_, index) => {
-                const card = document.getElementById(`card-${index}`);
-                card.addEventListener('click', (e) => {
-                    // Don't flip if they clicked the vote button
-                    if (e.target.tagName !== 'BUTTON') {
-                        card.classList.toggle('flipped');
-                    }
-                });
-            });
         }
 
         // --- LOGIC ---
@@ -239,22 +221,32 @@
             renderCards();
         }
 
+        function toggleFlip(index, event) {
+            // Prevent the click on the button from triggering the flip again
+            if (event.target.tagName === 'BUTTON') return;
+            
+            const card = document.getElementById(`card-${index}`);
+            
+            // Optional: Close other flipped cards when a new one is clicked
+            document.querySelectorAll('.flip-card').forEach(c => {
+                if (c.id !== `card-${index}`) c.classList.remove('flipped');
+            });
+            
+            card.classList.toggle('flipped');
+        }
+
         function castVote(playerName, event) {
-            event.stopPropagation(); // Prevent the card from flipping back
+            event.stopPropagation(); // Stop the card from flipping back
             
             // Show loading screen
             document.getElementById('screen-voting').classList.remove('active');
             document.getElementById('screen-loading').classList.add('active');
 
-            // Populate hidden form
-            document.getElementById('form-player-name').value = playerName;
-            document.getElementById('form-player-email').value = "pending_email_capture@90minutes.com"; // We will integrate the actual email capture here later
-
             // Submit the Netlify Form via AJAX
             const formData = new FormData();
             formData.append('form-name', 'poty-vote');
             formData.append('player', playerName);
-            formData.append('email', "pending_email_capture@90minutes.com");
+            formData.append('email', "pending_email_capture@90minutes.com"); // Placeholder for now
 
             fetch('/', {
                 method: 'POST',
@@ -262,12 +254,12 @@
                 body: new URLSearchParams(formData).toString()
             })
             .then(() => {
-                // Simulate a 2-second delay for dramatic effect
+                // Simulate a 1.5-second delay for dramatic effect
                 setTimeout(() => {
                     document.getElementById('selected-player-name').innerText = playerName;
                     document.getElementById('screen-loading').classList.remove('active');
                     document.getElementById('screen-success').classList.add('active');
-                }, 2000);
+                }, 1500);
             })
             .catch(error => {
                 console.error('Form submission error:', error);

@@ -1,5 +1,7 @@
 // Netlify event-triggered function: runs automatically for every verified
 // (non-spam) Netlify Forms submission on this site.
+import { getDatabase } from "@netlify/database";
+import { POLL_FORMS } from "./get-poll-results.mjs";
 
 const escapeHtml = (value) =>
   String(value ?? "").replace(/[&<>"']/g, (c) => ({
@@ -19,6 +21,25 @@ export const handler = async (event, context) => {
   } catch (error) {
     console.error("submission-created: invalid JSON body", error);
     return { statusCode: 400, body: "Invalid JSON body" };
+  }
+
+  // Fan Poll votes: store one row per submission so get-poll-results can tally them
+  if (POLL_FORMS.includes(payload.form_name)) {
+    const choice = String(payload.data?.vote || "").trim().slice(0, 100);
+    if (!choice) return { statusCode: 200, body: "Ignored: poll submission without a vote" };
+    try {
+      const db = getDatabase();
+      const submissionId = String(payload.id || `${payload.form_name}-${Date.now()}-${Math.random()}`);
+      await db.sql`
+        INSERT INTO poll_votes (form_name, choice, submission_id)
+        VALUES (${payload.form_name}, ${choice}, ${submissionId})
+        ON CONFLICT (submission_id) DO NOTHING
+      `;
+      return { statusCode: 200, body: "Poll vote recorded" };
+    } catch (error) {
+      console.error("submission-created: failed to record poll vote", error);
+      return { statusCode: 500, body: JSON.stringify({ error: "Failed to record poll vote" }) };
+    }
   }
 
   if (payload.form_name !== "poty-vote") {

@@ -5,6 +5,12 @@ const SANITY_PROJECT_ID = 'llmrml4v';
 const SANITY_DATASET = 'production';
 const SANITY_API_VERSION = 'v2024-03-11';
 
+// Append Sanity image-CDN params (resize, auto-format, quality) to Sanity-hosted images only
+function optimizeSanityImage(url, width) {
+    if (!url || typeof url !== 'string' || !url.includes('cdn.sanity.io')) return url;
+    return `${url}${url.includes('?') ? '&' : '?'}w=${width}&auto=format&q=75`;
+}
+
 function getSanityUrl(query) {
     const encodedQuery = encodeURIComponent(query);
     return `https://${SANITY_PROJECT_ID}.api.sanity.io/${SANITY_API_VERSION}/data/query/${SANITY_DATASET}?query=${encodedQuery}`;
@@ -74,7 +80,8 @@ async function loadHeroSlides() {
             let bgClass = 'bg-gradient-to-b from-black/60 to-black/40';
             
             if (slide.imageUrl) {
-                imgHtml = `<img src="${slide.imageUrl}" alt="${slide.title}" class="w-full h-full object-cover object-top opacity-60" onerror="this.style.display='none'; this.parentElement.classList.add('bg-gradient-to-b', 'from-black/60', 'to-black/40')">`;
+                const priorityAttrs = i === 0 ? 'fetchpriority="high" loading="eager"' : 'fetchpriority="low" loading="eager"';
+                imgHtml = `<img src="${optimizeSanityImage(slide.imageUrl, 1200)}" alt="${slide.title}" width="1200" height="800" ${priorityAttrs} decoding="async" class="w-full h-full object-cover object-top opacity-60" onerror="this.style.display='none'; this.parentElement.classList.add('bg-gradient-to-b', 'from-black/60', 'to-black/40')">`;
                 bgClass = '';
             }
             
@@ -84,9 +91,9 @@ async function loadHeroSlides() {
                 <div class="absolute inset-0 flex items-center justify-center">
                     <div class="container mx-auto px-6 text-center text-white relative z-10">
                         <span class="bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wide mb-4 inline-block">${slide.tag || 'Update'}</span>
-                        <h1 class="font-anton text-5xl md:text-7xl font-black uppercase mb-4 leading-tight">${slide.title}</h1>
+                        <${i === 0 ? 'h1' : 'h2'} class="font-anton text-5xl md:text-7xl font-black uppercase mb-4 leading-tight">${slide.title}</${i === 0 ? 'h1' : 'h2'}>
                         <p class="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto mb-8">${slide.subtitle}</p>
-                        <a href="${slide.link || '#'}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-md transition duration-300 inline-block">${slide.buttonText || 'Read More'}</a>
+                        <a href="${slide.link || '#'}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-md transition duration-300 inline-block">${slide.buttonText || 'Read More'}<span class="sr-only"> about ${slide.title}</span></a>
                     </div>
                 </div>
             </div>
@@ -94,14 +101,14 @@ async function loadHeroSlides() {
         }).join('');
         
         slidesHTML += `
-            <button onclick="changeSlide(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition z-10">
+            <button type="button" onclick="changeSlide(-1)" aria-label="Previous slide" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition z-10">
                 <i class="fas fa-chevron-left text-2xl"></i>
             </button>
-            <button onclick="changeSlide(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition z-10">
+            <button type="button" onclick="changeSlide(1)" aria-label="Next slide" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition z-10">
                 <i class="fas fa-chevron-right text-2xl"></i>
             </button>
             <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-                ${slides.map((_, i) => `<span class="dot w-3 h-3 bg-white rounded-full cursor-pointer ${i === 0 ? 'opacity-100' : 'opacity-50'}" onclick="currentSlide(${i + 1})"></span>`).join('')}
+                ${slides.map((_, i) => `<span class="dot w-3 h-3 bg-white rounded-full cursor-pointer ${i === 0 ? 'opacity-100' : 'opacity-50'}" onclick="currentSlide(${i + 1})" role="button" aria-label="Go to slide ${i + 1}"></span>`).join('')}
             </div>
         `;
         
@@ -253,7 +260,7 @@ async function loadHeadlines() {
             <a href="${link}" class="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
                 <div class="h-32 bg-gray-200 overflow-hidden relative">
                     ${h.imageUrl ? 
-                        `<img src="${h.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${h.title}">` :
+                        `<img src="${optimizeSanityImage(h.imageUrl, 400)}" loading="lazy" decoding="async" width="400" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${h.title}">` :
                         `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500">
                             <i class="fas fa-newspaper text-3xl"></i>
                         </div>`
@@ -408,7 +415,7 @@ function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
                 <div class="md:w-1/2">
                     <div class="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
                         ${featuredArticle.imageUrl ? 
-                            `<img src="${featuredArticle.imageUrl}" class="w-full h-full object-cover" alt="${featuredArticle.title}">` :
+                            `<img src="${optimizeSanityImage(featuredArticle.imageUrl, 800)}" loading="lazy" decoding="async" width="800" class="w-full h-full object-cover" alt="${featuredArticle.title}">` :
                             `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">No Image</div>`
                         }
                     </div>
@@ -417,7 +424,7 @@ function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
                     <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase w-fit mb-3">Canadian Corner</span>
                     <h3 class="text-2xl font-bold mb-3 hover:text-red-600 cursor-pointer">${featuredArticle.title}</h3>
                     <p class="text-gray-700 mb-4">${featuredArticle.excerpt || ''}</p>
-                    <a href="/news/article.html?slug=${featuredArticle.slug}" class="text-red-600 font-semibold hover:underline">Read Full Story →</a>
+                    <a href="/news/article.html?slug=${featuredArticle.slug}" class="text-red-600 font-semibold hover:underline">Read Full Story<span class="sr-only"> about ${featuredArticle.title}</span> →</a>
                 </div>
             `;
             console.log('✅ Updated featured article:', featuredArticle.title);
@@ -427,7 +434,7 @@ function updateCanadianCornerOnPage(featuredArticle, sidebarArticles) {
     if (sidebarArticles && sidebarArticles.length > 0) {
         sidebarContainer.innerHTML = sidebarArticles.map(article => `
             <a href="/news/article.html?slug=${article.slug}" class="block bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition border-l-4 border-red-600">
-                <h4 class="font-bold mb-2 hover:text-red-600">${article.title}</h4>
+                <h3 class="font-bold mb-2 hover:text-red-600">${article.title}</h3>
                 <p class="text-gray-600 text-sm mb-2 line-clamp-2">${article.excerpt || ''}</p>
                 <span class="text-xs text-gray-500">${getTimeAgo(article.publishedAt) || 'Recently'}</span>
             </a>
@@ -493,7 +500,7 @@ async function loadTopNews() {
                 <a href="${article.link}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer" class="group bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 block">
                     <div class="h-40 bg-gray-200 overflow-hidden">
                         ${imgSrc ? 
-                            `<img src="${imgSrc}" class="w-full h-full ${isLogoFallback ? 'object-contain p-6 bg-white' : 'object-cover'} group-hover:scale-105 transition duration-300" alt="${article.title.replace(/"/g, '&quot;')}" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            `<img src="${optimizeSanityImage(imgSrc, 400)}" width="400" decoding="async" class="w-full h-full ${isLogoFallback ? 'object-contain p-6 bg-white' : 'object-cover'} group-hover:scale-105 transition duration-300" alt="${article.title.replace(/"/g, '&quot;')}" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 text-sm" style="display:none">${article.source}</div>` :
                             `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 text-sm">${article.source}</div>`
                         }
@@ -505,7 +512,7 @@ async function loadTopNews() {
                             <span class="text-xs text-gray-400">${timeAgo}</span>
                         </div>
                         <h3 class="font-bold text-base line-clamp-2 group-hover:text-red-600 transition">${article.title}</h3>
-                        <span class="text-sm text-red-600 font-semibold mt-2 inline-block opacity-0 group-hover:opacity-100 transition">Read More →</span>
+                        <span class="text-sm text-red-600 font-semibold mt-2 inline-block opacity-0 group-hover:opacity-100 transition">Read More<span class="sr-only"> about ${article.title}</span> →</span>
                     </div>
                 </a>
             `;
@@ -550,7 +557,7 @@ async function getProducts() {
 
             card.innerHTML = `
                 <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover">
+                    <img src="${optimizeSanityImage(product.imageUrl, 400)}" alt="${product.name}" loading="lazy" decoding="async" width="400" class="w-full h-full object-cover">
                 </div>
                 <h3 class="text-xl font-bold mb-2">${product.name}</h3>
                 <div class="flex justify-between items-center mb-4">
@@ -628,7 +635,7 @@ async function loadPodcasts() {
             return `
                 <div class="bg-gray-900 rounded-lg overflow-hidden">
                     <div class="h-48 bg-gray-800">
-                        <iframe src="${embed}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        <iframe src="${embed}" title="${(p.title || 'Podcast episode').replace(/"/g, '&quot;')}" loading="lazy" width="400" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
                     <div class="p-6">
                         <h3 class="font-bold text-xl mb-2">${p.title || 'Untitled Episode'}</h3>
@@ -705,7 +712,7 @@ async function loadNewsPage() {
                         <span class="mx-2">•</span>
                         <span>${getTimeAgo(featured.publishedAt)}</span>
                     </div>
-                    <a href="article.html?slug=${featured.slug}" class="text-red-600 font-semibold hover:underline">Read Full Story →</a>
+                    <a href="article.html?slug=${featured.slug}" class="text-red-600 font-semibold hover:underline">Read Full Story<span class="sr-only"> about ${featured.title}</span> →</a>
                 </div>
             </div>
         `;
@@ -715,7 +722,7 @@ async function loadNewsPage() {
             <a href="article.html?slug=${article.slug}" class="article-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 block">
                 <div class="h-48 bg-gray-200 overflow-hidden">
                     ${article.imageUrl ? 
-                        `<img src="${article.imageUrl}" class="w-full h-full object-cover hover:scale-105 transition duration-300" alt="">` :
+                        `<img src="${optimizeSanityImage(article.imageUrl, 400)}" loading="lazy" decoding="async" width="400" class="w-full h-full object-cover hover:scale-105 transition duration-300" alt="">` :
                         `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500"><i class="fas fa-newspaper text-3xl"></i></div>`
                     }
                 </div>
@@ -1008,7 +1015,7 @@ function updateCartDisplay() {
         cartItems.innerHTML = cart.map(item => `
             <div class="flex justify-between items-center py-2 border-b">
                 <div class="flex items-center">
-                    <img src="${item.imageUrl}" class="w-16 h-16 object-cover mr-4 rounded">
+                    <img src="${optimizeSanityImage(item.imageUrl, 128)}" loading="lazy" width="64" height="64" class="w-16 h-16 object-cover mr-4 rounded" alt="">
                     <div>
                         <p class="font-semibold text-sm">${item.name}</p>
                         <p class="text-xs text-gray-600">${item.quantity} x $${item.price.toFixed(2)}</p>

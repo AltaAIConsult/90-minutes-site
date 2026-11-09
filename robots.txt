@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+
 Sitemap: https://90minutesormore.com/sitemap.xml

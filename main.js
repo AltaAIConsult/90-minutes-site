@@ -81,7 +81,12 @@ async function loadHeroSlides() {
             
             if (slide.imageUrl) {
                 const priorityAttrs = i === 0 ? 'fetchpriority="high" loading="eager"' : 'fetchpriority="low" loading="eager"';
-                imgHtml = `<img src="${optimizeSanityImage(slide.imageUrl, 1200)}" alt="${slide.title}" width="1200" height="800" ${priorityAttrs} decoding="async" class="w-full h-full object-cover object-top opacity-60" onerror="this.style.display='none'; this.parentElement.classList.add('bg-gradient-to-b', 'from-black/60', 'to-black/40')">`;
+                const isSanity = slide.imageUrl.includes('cdn.sanity.io');
+                const srcsetAttrs = isSanity
+                    ? `srcset="${optimizeSanityImage(slide.imageUrl, 600)} 600w, ${optimizeSanityImage(slide.imageUrl, 1200)} 1200w" sizes="(max-width: 768px) 100vw, 100vw"`
+                    : '';
+                imgHtml = `<img src="${optimizeSanityImage(slide.imageUrl, 1200)}" ${srcsetAttrs} alt="${slide.title}" width="1920" height="1080" ${priorityAttrs} decoding="async" class="absolute inset-0 w-full h-full object-cover object-top opacity-60" onerror="this.style.display='none'">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/60 to-black/40"></div>`;
                 bgClass = '';
             }
             
@@ -92,7 +97,7 @@ async function loadHeroSlides() {
                     <div class="container mx-auto px-6 text-center text-white relative z-10">
                         <span class="bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wide mb-4 inline-block">${slide.tag || 'Update'}</span>
                         <${i === 0 ? 'h1' : 'h2'} class="font-anton text-5xl md:text-7xl font-black uppercase mb-4 leading-tight">${slide.title}</${i === 0 ? 'h1' : 'h2'}>
-                        <p class="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto mb-8">${slide.subtitle}</p>
+                        <p class="text-xl md:text-2xl text-white max-w-3xl mx-auto mb-8">${slide.subtitle}</p>
                         <a href="${slide.link || '#'}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-md transition duration-300 inline-block">${slide.buttonText || 'Read More'}<span class="sr-only"> about ${slide.title}</span></a>
                     </div>
                 </div>
@@ -260,7 +265,7 @@ async function loadHeadlines() {
             <a href="${link}" class="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
                 <div class="h-32 bg-gray-200 overflow-hidden relative">
                     ${h.imageUrl ? 
-                        `<img src="${optimizeSanityImage(h.imageUrl, 400)}" loading="lazy" decoding="async" width="400" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${h.title}">` :
+                        `<img src="${optimizeSanityImage(h.imageUrl, 300)}" loading="lazy" decoding="async" width="300" height="200" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${h.title}">` :
                         `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500">
                             <i class="fas fa-newspaper text-3xl"></i>
                         </div>`
@@ -500,7 +505,7 @@ async function loadTopNews() {
                 <a href="${article.link}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer" class="group bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 block">
                     <div class="h-40 bg-gray-200 overflow-hidden">
                         ${imgSrc ? 
-                            `<img src="${optimizeSanityImage(imgSrc, 400)}" width="400" decoding="async" class="w-full h-full ${isLogoFallback ? 'object-contain p-6 bg-white' : 'object-cover'} group-hover:scale-105 transition duration-300" alt="${article.title.replace(/"/g, '&quot;')}" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            `<img src="${optimizeSanityImage(imgSrc, 400)}" width="400" height="250" decoding="async" class="w-full h-full ${isLogoFallback ? 'object-contain p-6 bg-white' : 'object-cover'} group-hover:scale-105 transition duration-300" alt="${article.title.replace(/"/g, '&quot;')}" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 text-sm" style="display:none">${article.source}</div>` :
                             `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 text-sm">${article.source}</div>`
                         }
@@ -557,7 +562,7 @@ async function getProducts() {
 
             card.innerHTML = `
                 <div class="w-full h-64 bg-gray-100 flex items-center justify-center mb-4 relative overflow-hidden">
-                    <img src="${optimizeSanityImage(product.imageUrl, 400)}" alt="${product.name}" loading="lazy" decoding="async" width="400" class="w-full h-full object-cover">
+                    <img src="${optimizeSanityImage(product.imageUrl, 400)}" alt="${product.name}" loading="lazy" decoding="async" width="300" height="300" class="w-full h-full object-cover">
                 </div>
                 <h3 class="text-xl font-bold mb-2">${product.name}</h3>
                 <div class="flex justify-between items-center mb-4">
@@ -635,7 +640,7 @@ async function loadPodcasts() {
             return `
                 <div class="bg-gray-900 rounded-lg overflow-hidden">
                     <div class="h-48 bg-gray-800">
-                        <iframe src="${embed}" title="${(p.title || 'Podcast episode').replace(/"/g, '&quot;')}" loading="lazy" width="400" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        <iframe src="${embed}" title="${(p.title || 'Podcast episode').replace(/"/g, '&quot;')}" loading="lazy" width="400" height="225" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
                     <div class="p-6">
                         <h3 class="font-bold text-xl mb-2">${p.title || 'Untitled Episode'}</h3>

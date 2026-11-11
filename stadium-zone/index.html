@@ -684,11 +684,11 @@
 
         const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
+        // Live tallies come from the real Netlify Forms submissions (see get-poll-results function)
         async function fetchPollResults(formName) {
-            const url = formName ? `/api/poll-results?form=${encodeURIComponent(formName)}` : '/api/poll-results';
-            const res = await fetch(url, { cache: 'no-store' });
+            const res = await fetch(`/.netlify/functions/get-poll-results?poll=${encodeURIComponent(formName)}`, { cache: 'no-store' });
             if (!res.ok) throw new Error(`Results failed (${res.status})`);
-            return (await res.json()).polls || {};
+            return res.json(); // { results: { option: pct }, counts: { option: n }, total }
         }
 
         // Swap the radio buttons for a percentage bar chart plus the two CTAs
@@ -697,8 +697,9 @@
             const counts = Object.fromEntries(options.map(o => [o, 0]));
             Object.entries((poll && poll.counts) || {}).forEach(([k, n]) => { counts[k] = (counts[k] || 0) + n; });
             let total = Object.values(counts).reduce((a, b) => a + b, 0);
-            // A brand-new vote may not be tallied yet (votes are recorded asynchronously)
-            if (choice && (includeOwnVote || total === 0)) { counts[choice] = (counts[choice] || 0) + 1; total++; }
+            // A brand-new submission can take a moment to show up in the Forms API;
+            // make sure the visitor's own vote is always reflected
+            if (choice && (counts[choice] || 0) === 0 && (includeOwnVote || total === 0)) { counts[choice] = 1; total++; }
 
             const rows = Object.entries(counts)
                 .map(([option, n]) => ({ option, n, pct: total ? Math.round((n / total) * 100) : 0 }))
@@ -775,15 +776,15 @@
                 box.innerHTML = '<p class="text-center text-gray-500 text-xs py-6"><i class="fas fa-spinner fa-spin mr-1"></i> Loading results…</p>';
                 box.classList.remove('hidden');
             });
-            fetchPollResults()
-                .then(polls => alreadyVoted.forEach(form => {
-                    const name = form.getAttribute('name');
-                    renderResults(form, votedChoice(name), polls[name], false);
-                }))
-                .catch(err => {
-                    console.error(err);
-                    alreadyVoted.forEach(form => renderResultsError(form, votedChoice(form.getAttribute('name'))));
-                });
+            alreadyVoted.forEach(form => {
+                const name = form.getAttribute('name');
+                fetchPollResults(name)
+                    .then(poll => renderResults(form, votedChoice(name), poll, false))
+                    .catch(err => {
+                        console.error(err);
+                        renderResultsError(form, votedChoice(name));
+                    });
+            });
         }
 
         pollForms.forEach(form => {
@@ -813,8 +814,8 @@
                 savedVotes[name] = { choice, at: Date.now() };
                 localStorage.setItem(POLL_STORAGE_KEY, JSON.stringify(savedVotes));
                 try {
-                    const polls = await fetchPollResults(name);
-                    renderResults(form, choice, polls[name], true);
+                    const poll = await fetchPollResults(name);
+                    renderResults(form, choice, poll, true);
                 } catch (err) {
                     console.error(err);
                     renderResultsError(form, choice);

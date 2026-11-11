@@ -1,54 +1,86 @@
-// Returns live Fan Poll vote counts and percentages for every poll form.
-// Votes are recorded by submission-created.mjs as Netlify Forms submissions arrive.
-import { getDatabase } from "@netlify/database";
+// Returns live Fan Poll results by tallying the real Netlify Forms submissions
+// through the Netlify API. Usage: /.netlify/functions/get-poll-results?poll=poll-serie-a-2026
+//
+// Response: { "results": { "Inter": 45, "Milan": 30, ... }, "counts": { ... }, "total": 100 }
+// `results` holds whole-number percentages; `counts` holds raw vote counts.
 
-export const POLL_FORMS = [
-  "poll-serie-a-2026",
-  "poll-premier-league-2026",
-  "poll-la-liga-2026",
-  "poll-champions-league-2026-27",
-  "poll-europa-league-2026-27",
-  "poll-copa-libertadores",
-  "poll-copa-sudamericana",
-];
+const API = "https://api.netlify.com/api/v1";
+const PER_PAGE = 100;
+const MAX_PAGES = 50; // safety cap: up to 5,000 submissions per poll
+
+// Only poll forms can be queried, so this endpoint can't expose other forms' data
+const isPollForm = (name) => /^poll-[a-z0-9-]+$/.test(name);
+
+// Form IDs never change, so cache the name -> id lookup per function instance
+let formIdCache = null;
+
+const json = (body, status = 200) =>
+  Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
+
+async function netlifyApi(path, token) {
+  const res = await fetch(`${API}${path}`, {
+    headers: { Authorization: `Bearer ${token}`, "User-Agent": "poll-results-function" },
+  });
+  if (!res.ok) throw new Error(`Netlify API ${path} failed (${res.status})`);
+  return res.json();
+}
+
+async function getFormId(siteId, token, formName) {
+  if (!formIdCache || !formIdCache.has(formName)) {
+    const forms = await netlifyApi(`/sites/${siteId}/forms`, token);
+    formIdCache = new Map(forms.map((f) => [f.name, f.id]));
+  }
+  return formIdCache.get(formName);
+}
+
+async function getAllSubmissions(formId, token) {
+  const all = [];
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const batch = await netlifyApi(
+      `/forms/${formId}/submissions?per_page=${PER_PAGE}&page=${page}`,
+      token
+    );
+    all.push(...batch);
+    if (batch.length < PER_PAGE) break;
+  }
+  return all;
+}
 
 export default async (req) => {
+  const poll = new URL(req.url).searchParams.get("poll") || "";
+  if (!isPollForm(poll)) {
+    return json({ error: "Missing or invalid ?poll= parameter" }, 400);
+  }
+
+  const token = process.env.NETLIFY_ACCESS_TOKEN;
+  const siteId = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+  if (!token || !siteId) {
+    console.error("get-poll-results: NETLIFY_ACCESS_TOKEN or NETLIFY_SITE_ID is not set");
+    return json({ error: "Poll results are not configured" }, 500);
+  }
+
   try {
-    const url = new URL(req.url);
-    const requested = url.searchParams.get("form");
-    const forms = requested ? POLL_FORMS.filter((f) => f === requested) : POLL_FORMS;
-    if (requested && !forms.length) {
-      return Response.json({ error: "Unknown poll" }, { status: 404 });
-    }
+    const formId = await getFormId(siteId, token, poll);
+    if (!formId) return json({ error: "Unknown poll" }, 404);
 
-    const db = getDatabase();
-    const rows = await db.sql`
-      SELECT form_name, choice, COUNT(*)::int AS votes
-      FROM poll_votes
-      WHERE form_name = ANY(${forms})
-      GROUP BY form_name, choice
-    `;
+    const submissions = await getAllSubmissions(formId, token);
 
-    const polls = Object.fromEntries(forms.map((f) => [f, { total: 0, counts: {} }]));
-    for (const row of rows) {
-      const poll = polls[row.form_name];
-      poll.counts[row.choice] = row.votes;
-      poll.total += row.votes;
+    // Each poll form submits its choice in the `vote` field
+    const counts = {};
+    for (const s of submissions) {
+      const choice = String(s?.data?.vote ?? "").trim();
+      if (choice) counts[choice] = (counts[choice] || 0) + 1;
     }
-    for (const poll of Object.values(polls)) {
-      poll.percentages = Object.fromEntries(
-        Object.entries(poll.counts).map(([choice, n]) => [choice, Math.round((n / poll.total) * 100)])
-      );
-    }
-
-    return Response.json(
-      { polls },
-      { headers: { "Cache-Control": "no-store" } }
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
+    const results = Object.fromEntries(
+      Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([choice, n]) => [choice, Math.round((n / total) * 100)])
     );
+
+    return json({ poll, results, counts, total });
   } catch (error) {
     console.error("get-poll-results failed:", error);
-    return Response.json({ error: "Could not load poll results" }, { status: 500 });
+    return json({ error: "Could not load poll results" }, 502);
   }
 };
-
-export const config = { path: "/api/poll-results" };
